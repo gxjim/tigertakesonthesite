@@ -5,7 +5,7 @@
 window.TIGER_CONFIG = {
   // Google Sheet ID (the long string in the sheet URL between /d/ and /edit).
   // The sheet must be shared as "Anyone with the link can view".
-  sheetId: "",
+  sheetId: "1ss0uf0RdpnB8OTYbakJbWtklwme5oo_Q5kM6O6xy6qk",
 
   // Tab names inside the sheet.
   tabs: { config: "Config", checkpoints: "Checkpoints", sponsors: "Sponsors", rehearsal: "Rehearsal" },

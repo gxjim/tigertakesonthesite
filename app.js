@@ -85,7 +85,7 @@
     return rows;
   }
   async function sheetTab(tab) {
-    const url = `https://docs.google.com/spreadsheets/d/${C.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;
+    const url = `/.netlify/functions/sheet?sheetId=${encodeURIComponent(C.sheetId)}&tab=${encodeURIComponent(tab)}&_=${Date.now()}`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error(`Sheet ${tab}: ${res.status}`);
     const rows = parseCSV(await res.text());
