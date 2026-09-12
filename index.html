@@ -4,151 +4,145 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tiger Takes on the Thames</title>
-<meta name="description" content="Tom 'Tiger' Spearman is running all 184 miles of the Thames Path in under 40 hours, 10–11 October 2026, to fund MND research through the My Name'5 Doddie Foundation.">
+<meta name="description" content="Tom 'Tiger' Spearman, 31, is running the entire 184-mile Thames Path in under 40 hours, 10–11 October 2026, to raise £50,000 for MND research through the My Name'5 Doddie Foundation.">
 <meta property="og:title" content="Tiger Takes on the Thames">
-<meta property="og:description" content="184 miles. Source to sea. Under 40 hours. For MND research.">
+<meta property="og:description" content="184 miles. Source to sea. Under 40 hours. Raising £50,000 for MND research.">
 <meta property="og:image" content="img/og.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#002169">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,400&family=Work+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body data-state="before">
+<div class="tartan" aria-hidden="true"></div>
 
 <header class="top">
   <a class="brand" href="#top">Tiger Takes on the Thames</a>
   <nav>
-    <a href="#tracker">Tracker</a>
-    <a href="#story">Story</a>
-    <a href="#sponsor">Sponsor</a>
-    <a href="#training">Training</a>
+    <a href="#river">The river</a>
+    <a href="#story">Why</a>
+    <a href="#updates">Updates</a>
     <a class="btn btn-small" id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
   </nav>
 </header>
 
 <main id="top">
 
-  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <!-- ── Hero: anticipation and scale ─────────────────────── -->
   <section class="hero">
-    <figure class="hero-photo">
-      <img src="img/hero.jpg" alt="Tom running on the Thames Path" onerror="this.parentNode.classList.add('missing')">
-      <figcaption class="placeholder">Hero photo — drop <code>img/hero.jpg</code> in place</figcaption>
-    </figure>
     <div class="hero-copy">
-      <p class="eyebrow" id="hero-eyebrow">Saturday 10 – Sunday 11 October 2026</p>
-      <h1>Tiger Takes on the Thames</h1>
-      <p class="lede">Tom Spearman is running all 184 miles of the Thames Path in one go, from a field near Cirencester to the Thames Barrier, to fund MND research through the My Name'5 Doddie Foundation.</p>
-      <div class="stats">
-        <div><b>184</b><span>miles</span></div>
-        <div><b>&lt;40</b><span>hours</span></div>
-        <div><b>15</b><span>checkpoints</span></div>
-        <div class="countdown" id="countdown"><b>—</b><span>to the start</span></div>
-      </div>
+      <p class="eyebrow">Saturday 10 – Sunday 11 October 2026<span id="countdown"></span></p>
+      <h1>The whole Thames.<br>In one go.</h1>
+      <p class="lede">Tom "Tiger" Spearman, 31, is running the entire Thames Path — source to Thames Barrier — without stopping, to raise £50,000 for MND research through the My Name'5 Doddie Foundation.</p>
     </div>
+    <figure class="hero-photo">
+      <img src="img/hero.jpg" alt="Tom running along the Thames Path" onerror="this.parentNode.classList.add('missing')">
+      <figcaption class="placeholder">hero photo</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── The numbers: a cascade, counted up on scroll ─────── -->
+  <section class="numbers" aria-label="The challenge in numbers">
+    <div class="stat"><b data-count="184">0</b><span>miles, source → Thames Barrier</span></div>
+    <div class="stat"><b data-count="7">0</b><span>marathons, back to back</span></div>
+    <div class="stat"><b data-count="40" data-prefix="under ">under 0</b><span>hours, if everything goes to plan…</span></div>
+    <div class="stat"><b data-count="30" data-suffix="+">0+</b><span>friends running stretches with him</span></div>
+    <div class="stat"><b data-count="1">0</b><span>night without sleep. Hopefully not two.</span></div>
+    <div class="stat"><b data-count="50000" data-prefix="£">£0</b><span>the target, every pound to MND research</span></div>
   </section>
 
   <!-- ── Fundraising ──────────────────────────────────────── -->
-  <section class="raise card" id="donate">
+  <section class="raise" id="donate">
     <div class="raise-row">
       <div class="raise-total"><span id="raised">£—</span><small>raised of <span id="target">£50,000</span></small></div>
       <div class="raise-count" id="donor-count"></div>
     </div>
     <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
-    <a class="btn btn-primary" id="donate-btn" href="#" target="_blank" rel="noopener">Donate on JustGiving</a>
-    <p class="fine">Every pound goes to the My Name'5 Doddie Foundation for MND research. Gift Aid adds 25% at no cost to you.</p>
+    <div class="raise-actions">
+      <a class="btn btn-primary" id="donate-btn" href="#" target="_blank" rel="noopener">Donate on JustGiving</a>
+      <a class="btn btn-outline" href="#river">Sponsor a marathon</a>
+    </div>
+    <p class="fine">Every pound goes to the My Name'5 Doddie Foundation for MND research.</p>
   </section>
 
-  <!-- ── Tracker ──────────────────────────────────────────── -->
-  <section class="tracker" id="tracker">
-    <div class="tracker-head">
-      <p class="eyebrow live-tag"><span class="dot"></span><span id="live-label">Route and target times</span></p>
-      <h2 id="position-headline">184 miles, 15 checkpoints, one weekend</h2>
-      <p class="sub" id="position-sub">Times below are the plan. This section goes live at 05:00 on Saturday 10 October.</p>
-    </div>
-
-    <div class="river-wrap card">
-      <div class="river-scroll" id="river-scroll">
-        <svg id="river" viewBox="0 0 1400 170" width="1400" height="170" aria-label="Stylised map of the Thames with checkpoints"></svg>
+  <!-- ── The river ────────────────────────────────────────── -->
+  <section class="journey" id="river">
+    <div class="journey-head">
+      <p class="eyebrow live-tag"><span class="dot"></span><span id="live-label">The route</span></p>
+      <h2 id="position-headline">From a field in the Cotswolds to the Thames Barrier</h2>
+      <p class="sub" id="position-sub">Fifteen checkpoints, roughly a half-marathon apart. Times are the plan; this page comes alive at 05:00 on Saturday 10 October.</p>
+      <div class="journey-actions">
+        <a class="btn btn-primary" id="livetrack-btn" href="#" target="_blank" rel="noopener" hidden>Where is Tiger right now</a>
+        <button class="btn btn-outline" id="jump-btn" type="button" hidden>Jump to Tiger</button>
+        <button class="btn btn-outline" id="share-btn" type="button">Share this update</button>
       </div>
-      <div class="river-legend">
-        <span><i class="sw done"></i>Done</span>
-        <span><i class="sw tiger"></i>Tiger</span>
-        <span><i class="sw next"></i>To come</span>
-        <span class="updated" id="updated"></span>
+      <p class="fine" id="updated"></p>
+    </div>
+
+    <div class="river-wrap">
+      <svg id="river-svg" aria-hidden="true"></svg>
+      <ol class="flow" id="flow"></ol>
+    </div>
+  </section>
+
+  <!-- Story interlude — moved into the river flow after Oxford by app.js -->
+  <template id="story-template">
+    <li class="interlude" id="story">
+      <div class="interlude-inner">
+        <p class="eyebrow">Why the Thames</p>
+        <blockquote class="pull">"It is a desperately cruel disease. This is especially personal for me because my amazing mum was diagnosed with MND last year."</blockquote>
+        <div class="story-grid">
+          <div class="story-body">
+            <p>Motor neurone disease is a progressive illness that damages the cells carrying messages from the brain to the muscles. As muscles weaken, it becomes harder to walk, talk, eat and breathe. There is no cure — but research is making progress, and science is beginning to understand the genetic and environmental factors behind it.</p>
+            <p>Tiger, a parish councillor who lives in Ford, six miles upstream of Bath, divides his time between local projects, family and farm work. While a student at Oxford he swam in the Thames every week, and rivers have stayed a source of connection and grounding ever since — this summer he completed a 20-mile solstice pilgrimage along the Avon into Bath. "It feels right to follow this river for something that matters so much."</p>
+            <p>The My Name'5 Doddie Foundation was set up by Scotland rugby international Doddie Weir after his own MND diagnosis. Doddie died in 2022, aged 52. The foundation has since committed more than £24 million to research.</p>
+          </div>
+          <figure class="story-photo">
+            <img src="img/story.jpg" alt="Tom sitting on the river wall at Hammersmith" onerror="this.parentNode.classList.add('missing')">
+            <figcaption class="placeholder">story photo</figcaption>
+          </figure>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <!-- ── Notes from the towpath (Updates tab) ─────────────── -->
+  <section class="updates" id="updates" hidden>
+    <p class="eyebrow">Notes from the towpath</p>
+    <h2>Tom's updates</h2>
+    <div class="posts" id="posts"></div>
+    <button class="btn btn-outline" id="posts-more" type="button" hidden>Earlier posts</button>
+  </section>
+
+  <!-- ── After the Barrier ────────────────────────────────── -->
+  <section class="after">
+    <div class="after-grid">
+      <div class="card small" id="follow">
+        <p class="eyebrow">Follow along</p>
+        <p>Training updates and the odd photo, between now and October.</p>
+        <div class="social">
+          <a class="btn btn-outline" id="insta-btn" href="#" target="_blank" rel="noopener">Instagram</a>
+          <a class="btn btn-outline" id="strava-btn" href="#" target="_blank" rel="noopener">Strava</a>
+        </div>
+      </div>
+
+      <div class="card small" id="press">
+        <p class="eyebrow">Press and contact</p>
+        <p>Tom "Tiger" Spearman, 31, a parish councillor from Ford near Bath, is attempting the full 184-mile Thames Path non-stop from 5am on Saturday 10 October 2026, aiming to finish inside 40 hours, after his mum's diagnosis with motor neurone disease last year. More than £30,000 has already been raised toward his £50,000 target.</p>
+        <p>The attempt follows a run of local fundraising for MND: supporters of Lewis Moody raised £60,000 with a 24-hour run near Bath in June, and Colerne Rugby Club's skittles marathon raised £15,000 for the MND Association.</p>
+        <p class="fine">Free-to-use images: <a href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-?usp=drive_link" target="_blank" rel="noopener">download here</a>. Interviews and timings: <a id="press-mail" href="mailto:">email Tom</a> or call 07857 065324.</p>
       </div>
     </div>
-
-    <div class="cp-table card">
-      <div class="cp-row cp-header"><div>Checkpoint</div><div>Mile</div><div>Plan</div><div>Actual · Forecast</div></div>
-      <div id="cp-rows"></div>
-    </div>
-
-    <div class="tracker-actions">
-      <a class="btn btn-outline" id="livetrack-btn" href="#" target="_blank" rel="noopener" hidden>Where is Tiger right now</a>
-      <button class="btn btn-outline" id="share-btn" type="button">Share this update</button>
-    </div>
-  </section>
-
-  <!-- ── Story ────────────────────────────────────────────── -->
-  <section class="story" id="story">
-    <p class="eyebrow">Why</p>
-    <blockquote class="pull">“[Pull quote in Tom's own words — one or two sentences from his story]”</blockquote>
-    <div class="story-body">
-      <p>[Tom's story, migrated from his Google Site and tightened. Why MND, why the Thames, why now. Two to four short paragraphs.]</p>
-      <p>The My Name'5 Doddie Foundation was set up by Scotland rugby international Doddie Weir after his own MND diagnosis. Doddie died in 2022, aged 52. The foundation has since committed more than £24 million to research into a disease that still has no cure.</p>
-    </div>
-    <figure class="story-photo">
-      <img src="img/story.jpg" alt="" onerror="this.parentNode.classList.add('missing')">
-      <figcaption class="placeholder">Second photo — <code>img/story.jpg</code></figcaption>
-    </figure>
-  </section>
-
-  <!-- ── Sponsor a marathon ───────────────────────────────── -->
-  <section class="sponsor" id="sponsor">
-    <p class="eyebrow">Sponsor a marathon</p>
-    <h2>Seven marathons, back to back. Put your name on one.</h2>
-    <p class="sub">Each marathon links two checkpoints. Sponsors get their name and logo on that leg of the map, a mention in every update from that stretch of river, and Tom's undying gratitude at around mile 130.</p>
-    <div class="legs" id="legs"></div>
-    <p class="fine">To sponsor a leg, email <a id="sponsor-mail" href="mailto:">Tom</a> with the leg number.</p>
-  </section>
-
-  <!-- ── Training ─────────────────────────────────────────── -->
-  <section class="training" id="training">
-    <p class="eyebrow">Training</p>
-    <h2>The miles before the miles</h2>
-    <div class="train-stats" id="train-stats">
-      <div><b>—</b><span>miles this year</span></div>
-      <div><b>—</b><span>longest run</span></div>
-      <div><b>—</b><span>runs in the last 4 weeks</span></div>
-    </div>
-    <div id="train-list" class="train-list"></div>
-    <a class="btn btn-outline" id="strava-btn" href="#" target="_blank" rel="noopener">Follow on Strava</a>
-  </section>
-
-  <!-- ── Updates ──────────────────────────────────────────── -->
-  <section class="updates" id="updates">
-    <p class="eyebrow">Updates</p>
-    <h2>Follow along</h2>
-    <p class="sub">Training updates on Instagram and Strava; on race weekend, this page.</p>
-    <div class="social">
-      <a class="btn btn-outline" id="insta-btn" href="#" target="_blank" rel="noopener">Instagram</a>
-      <a class="btn btn-outline" id="strava-btn-2" href="#" target="_blank" rel="noopener">Strava</a>
-    </div>
-  </section>
-
-  <!-- ── Press ────────────────────────────────────────────── -->
-  <section class="press card" id="press">
-    <p class="eyebrow">Press and contact</p>
-    <p>Tom "Tiger" Spearman, [age], from [town], will attempt to run the full 184-mile length of the Thames Path non-stop, from the source near Cirencester to the Thames Barrier, starting at 5am on Saturday 10 October 2026 and aiming to finish inside 40 hours. He is raising £50,000 for the My Name'5 Doddie Foundation. Friends and local runners are joining him for each of the fifteen half-marathon legs through Oxford, Reading, Henley, Marlow, Windsor and Richmond.</p>
-    <p>Photos, interview requests and checkpoint timings: <a id="press-mail" href="mailto:">email Tom</a>.</p>
   </section>
 
 </main>
 
 <footer>
-  <p>In aid of the My Name'5 Doddie Foundation, registered charity SC047906. Site built by friends. <a href="#top">Back to top</a></p>
+  <div class="tartan" aria-hidden="true"></div>
+  <p>In aid of the My Name'5 Doddie Foundation, registered charity SC047871. To sponsor a marathon, <a id="sponsor-mail" href="mailto:">email Tom</a> with the leg number. <a href="#top">Back to top</a></p>
 </footer>
 
 <script src="config.js"></script>

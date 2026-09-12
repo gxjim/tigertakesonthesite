@@ -8,13 +8,14 @@ window.TIGER_CONFIG = {
   sheetId: "1ss0uf0RdpnB8OTYbakJbWtklwme5oo_Q5kM6O6xy6qk",
 
   // Tab names inside the sheet.
-  tabs: { config: "Config", checkpoints: "Checkpoints", sponsors: "Sponsors", rehearsal: "Rehearsal" },
+  tabs: { config: "Config", checkpoints: "Checkpoints", sponsors: "Sponsors", rehearsal: "Rehearsal", updates: "Updates" },
 
-  // JustGiving: the page short name is the bit after justgiving.com/page/ (or /fundraising/).
+  // JustGiving: page link only (used for the Donate button). The raised total
+  // is NOT pulled from the API — JustGiving's public API doesn't cover this
+  // page's newer platform, so the total comes from the Config tab's
+  // total_override cell instead (Tom/crew update it by hand). See README.
   justGiving: {
-    pageShortName: "",
-    appId: "",            // from developer.justgiving.com → Applications
-    pageUrl: "https://www.justgiving.com/",
+    pageUrl: "https://www.justgiving.com/page/thamespathmnd",
     target: 50000
   },
 
