@@ -417,7 +417,14 @@
 
   async function refresh() {
     try {
-      const data = await loadSheet();
+      let data;
+      try { data = await loadSheet(); }
+      catch (e) {
+        // Sheet unreachable: draw the planned route from the built-in copy rather than nothing.
+        console.warn("Sheet unavailable, using built-in plan", e);
+        data = { config: Object.assign({}, SAMPLE_CONFIG, { total_override: "" }), checkpoints: SAMPLE_CHECKPOINTS.map(c => Object.assign({}, c)), sponsors: SAMPLE_SPONSORS, updates: [], source: "fallback" };
+      }
+      document.body.dataset.source = data.source;
       let now = new Date();
       // Preview hook for testing without touching the sheet: ?demo=live or ?demo=finished
       const demo = new URLSearchParams(location.search).get("demo") || window.__DEMO || "";
@@ -445,6 +452,7 @@
       $("#flow").querySelectorAll("img").forEach(img => { if (!img.complete) img.addEventListener("load", () => drawRiver(model, state), { once: true }); });
       if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) { scrolledToTiger = true; setTimeout(scrollToTiger, 600); }
       if (data.source === "sample") console.info("Tiger: rendering sample data — set sheetId in config.js");
+      $("#updated").textContent = data.source === "fallback" ? "Live data temporarily unavailable — showing the plan." : ($("#updated").textContent || "");
     } catch (e) { console.error("Tiger refresh failed", e); }
   }
 
