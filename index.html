@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiger Takes on the Thames</title>
+<meta name="description" content="Tom 'Tiger' Spearman is running all 184 miles of the Thames Path in under 40 hours, 10–11 October 2026, to fund MND research through the My Name'5 Doddie Foundation.">
+<meta property="og:title" content="Tiger Takes on the Thames">
+<meta property="og:description" content="184 miles. Source to sea. Under 40 hours. For MND research.">
+<meta property="og:image" content="img/og.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,400&family=Work+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-state="before">
+
+<header class="top">
+  <a class="brand" href="#top">Tiger Takes on the Thames</a>
+  <nav>
+    <a href="#tracker">Tracker</a>
+    <a href="#story">Story</a>
+    <a href="#sponsor">Sponsor</a>
+    <a href="#training">Training</a>
+    <a class="btn btn-small" id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="hero">
+    <figure class="hero-photo">
+      <img src="img/hero.jpg" alt="Tom running on the Thames Path" onerror="this.parentNode.classList.add('missing')">
+      <figcaption class="placeholder">Hero photo — drop <code>img/hero.jpg</code> in place</figcaption>
+    </figure>
+    <div class="hero-copy">
+      <p class="eyebrow" id="hero-eyebrow">Saturday 10 – Sunday 11 October 2026</p>
+      <h1>Tiger Takes on the Thames</h1>
+      <p class="lede">Tom Spearman is running all 184 miles of the Thames Path in one go, from a field near Cirencester to the Thames Barrier, to fund MND research through the My Name'5 Doddie Foundation.</p>
+      <div class="stats">
+        <div><b>184</b><span>miles</span></div>
+        <div><b>&lt;40</b><span>hours</span></div>
+        <div><b>15</b><span>checkpoints</span></div>
+        <div class="countdown" id="countdown"><b>—</b><span>to the start</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Fundraising ──────────────────────────────────────── -->
+  <section class="raise card" id="donate">
+    <div class="raise-row">
+      <div class="raise-total"><span id="raised">£—</span><small>raised of <span id="target">£50,000</span></small></div>
+      <div class="raise-count" id="donor-count"></div>
+    </div>
+    <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+    <a class="btn btn-primary" id="donate-btn" href="#" target="_blank" rel="noopener">Donate on JustGiving</a>
+    <p class="fine">Every pound goes to the My Name'5 Doddie Foundation for MND research. Gift Aid adds 25% at no cost to you.</p>
+  </section>
+
+  <!-- ── Tracker ──────────────────────────────────────────── -->
+  <section class="tracker" id="tracker">
+    <div class="tracker-head">
+      <p class="eyebrow live-tag"><span class="dot"></span><span id="live-label">Route and target times</span></p>
+      <h2 id="position-headline">184 miles, 15 checkpoints, one weekend</h2>
+      <p class="sub" id="position-sub">Times below are the plan. This section goes live at 05:00 on Saturday 10 October.</p>
+    </div>
+
+    <div class="river-wrap card">
+      <div class="river-scroll" id="river-scroll">
+        <svg id="river" viewBox="0 0 1400 170" width="1400" height="170" aria-label="Stylised map of the Thames with checkpoints"></svg>
+      </div>
+      <div class="river-legend">
+        <span><i class="sw done"></i>Done</span>
+        <span><i class="sw tiger"></i>Tiger</span>
+        <span><i class="sw next"></i>To come</span>
+        <span class="updated" id="updated"></span>
+      </div>
+    </div>
+
+    <div class="cp-table card">
+      <div class="cp-row cp-header"><div>Checkpoint</div><div>Mile</div><div>Plan</div><div>Actual · Forecast</div></div>
+      <div id="cp-rows"></div>
+    </div>
+
+    <div class="tracker-actions">
+      <a class="btn btn-outline" id="livetrack-btn" href="#" target="_blank" rel="noopener" hidden>Where is Tiger right now</a>
+      <button class="btn btn-outline" id="share-btn" type="button">Share this update</button>
+    </div>
+  </section>
+
+  <!-- ── Story ────────────────────────────────────────────── -->
+  <section class="story" id="story">
+    <p class="eyebrow">Why</p>
+    <blockquote class="pull">“[Pull quote in Tom's own words — one or two sentences from his story]”</blockquote>
+    <div class="story-body">
+      <p>[Tom's story, migrated from his Google Site and tightened. Why MND, why the Thames, why now. Two to four short paragraphs.]</p>
+      <p>The My Name'5 Doddie Foundation was set up by Scotland rugby international Doddie Weir after his own MND diagnosis. Doddie died in 2022, aged 52. The foundation has since committed more than £24 million to research into a disease that still has no cure.</p>
+    </div>
+    <figure class="story-photo">
+      <img src="img/story.jpg" alt="" onerror="this.parentNode.classList.add('missing')">
+      <figcaption class="placeholder">Second photo — <code>img/story.jpg</code></figcaption>
+    </figure>
+  </section>
+
+  <!-- ── Sponsor a marathon ───────────────────────────────── -->
+  <section class="sponsor" id="sponsor">
+    <p class="eyebrow">Sponsor a marathon</p>
+    <h2>Seven marathons, back to back. Put your name on one.</h2>
+    <p class="sub">Each marathon links two checkpoints. Sponsors get their name and logo on that leg of the map, a mention in every update from that stretch of river, and Tom's undying gratitude at around mile 130.</p>
+    <div class="legs" id="legs"></div>
+    <p class="fine">To sponsor a leg, email <a id="sponsor-mail" href="mailto:">Tom</a> with the leg number.</p>
+  </section>
+
+  <!-- ── Training ─────────────────────────────────────────── -->
+  <section class="training" id="training">
+    <p class="eyebrow">Training</p>
+    <h2>The miles before the miles</h2>
+    <div class="train-stats" id="train-stats">
+      <div><b>—</b><span>miles this year</span></div>
+      <div><b>—</b><span>longest run</span></div>
+      <div><b>—</b><span>runs in the last 4 weeks</span></div>
+    </div>
+    <div id="train-list" class="train-list"></div>
+    <a class="btn btn-outline" id="strava-btn" href="#" target="_blank" rel="noopener">Follow on Strava</a>
+  </section>
+
+  <!-- ── Updates ──────────────────────────────────────────── -->
+  <section class="updates" id="updates">
+    <p class="eyebrow">Updates</p>
+    <h2>Follow along</h2>
+    <p class="sub">Training updates on Instagram and Strava; on race weekend, this page.</p>
+    <div class="social">
+      <a class="btn btn-outline" id="insta-btn" href="#" target="_blank" rel="noopener">Instagram</a>
+      <a class="btn btn-outline" id="strava-btn-2" href="#" target="_blank" rel="noopener">Strava</a>
+    </div>
+  </section>
+
+  <!-- ── Press ────────────────────────────────────────────── -->
+  <section class="press card" id="press">
+    <p class="eyebrow">Press and contact</p>
+    <p>Tom "Tiger" Spearman, [age], from [town], will attempt to run the full 184-mile length of the Thames Path non-stop, from the source near Cirencester to the Thames Barrier, starting at 5am on Saturday 10 October 2026 and aiming to finish inside 40 hours. He is raising £50,000 for the My Name'5 Doddie Foundation. Friends and local runners are joining him for each of the fifteen half-marathon legs through Oxford, Reading, Henley, Marlow, Windsor and Richmond.</p>
+    <p>Photos, interview requests and checkpoint timings: <a id="press-mail" href="mailto:">email Tom</a>.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p>In aid of the My Name'5 Doddie Foundation, registered charity SC047906. Site built by friends. <a href="#top">Back to top</a></p>
+</footer>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
