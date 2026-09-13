@@ -152,7 +152,7 @@ body[data-state="live"] .live-tag .dot { display: inline-block; animation: pulse
   .node { grid-template-columns: 1fr; gap: 2px; }
   .node .times { text-align: left; white-space: normal; }
   .node .times b { display: inline; margin-right: 8px; }
-  .tiger .label { left: 22px; top: 22px; transform: none; max-width: 200px; white-space: normal; line-height: 1.25; }
+  .tiger .label { left: 50%; top: 30px; transform: translateX(-50%); font-size: 11px; padding: 2px 6px; white-space: nowrap; }
   main { overflow-x: clip; }
 }
 
@@ -231,6 +231,12 @@ footer p { padding: 18px 20px 26px; margin: 0; }
 /* Wider rail on larger screens so the meander has room */
 @media (min-width: 720px) { :root { --rail: 150px; } .node { padding-left: 14px; } .leg { padding-left: 14px; grid-template-columns: 1fr; } }
 @media (min-width: 900px) { .leg { grid-template-columns: 1fr 1fr; } .leg-meta { grid-column: 1 / -1; } }
+
+/* Rehearsal: single-column flow (no marathon blocks), a quiet banner */
+body[data-rehearsal="yes"] .flow-key { display: none; }
+body[data-rehearsal="yes"] .flow { grid-template-columns: var(--rail) minmax(0, 1fr); }
+body[data-rehearsal="yes"] .node, body[data-rehearsal="yes"] .spacer { grid-column: 2; }
+body[data-rehearsal="yes"] .journey-head::before { content: "Test run — the Thames plan is back afterwards"; display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); background: var(--gold-soft); border: 1px solid #f1dc8c; border-radius: 4px; padding: 4px 8px; margin-bottom: 12px; }
 
 /* States */
 body[data-state="finished"] .bar-fill { background: var(--gold); }

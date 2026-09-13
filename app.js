@@ -131,7 +131,8 @@
   // Returns checkpoints enriched with Date objects, forecast Dates and status.
   function computeForecast(cps, now, config = {}) {
     const configPace = parsePace(config.current_pace);
-    let prevRef = raceStart;
+    const start = (cps[0] && parseLondon(cps[0].target, raceStart)) || raceStart;
+    let prevRef = start;
     cps.forEach(cp => {
       cp.targetAt = parseLondon(cp.target, prevRef) || prevRef;
       cp.actualAt = cp.actual ? parseLondon(cp.actual, cp.targetAt) : null;
@@ -180,7 +181,7 @@
       position.fraction = f;
       position.miles = lastDone.miles + f * (position.next.miles - lastDone.miles);
     } else if (lastDone && !position.next) { position.miles = lastDone.miles; position.fraction = 1; }
-    return { cps, ratio, lastDone, position, delayMin: lastDone ? minutes(lastDone.actualAt - lastDone.targetAt) : 0 };
+    return { cps, ratio, lastDone, position, start, delayMin: lastDone ? minutes(lastDone.actualAt - lastDone.targetAt) : 0 };
   }
 
   // ── Render: the river (vertical flow of checkpoints and legs) ─────────────
@@ -229,7 +230,7 @@
       // Marathon that starts at this checkpoint (if any): its photo + note sit on the right, under the checkpoint.
       const n = legForIndex(i, legCount);
       let stretch = "";
-      if (n && !last) {
+      if (n && !last && (config.rehearsal || "").toLowerCase() !== "yes") {
         const sp = legs.find(l => l.leg === n) || {};
         const photo = sp.photo || `img/leg-${n}.jpg`;
         const cap = sp.caption ? `<figcaption class="cap">${esc(sp.caption)}</figcaption>` : "";
@@ -243,8 +244,8 @@
         <div class="times">${times}</div>${runners}${cpNote}${stretch}</li>`);
       if (!last) html.push(`<li class="spacer" style="grid-row:${rowOf(i) + 1};min-height:${Math.max(28, Math.round(nextMiles * 4.5))}px"></li>`);
 
-      // Marathon block (left column), spanning its two half-marathons.
-      if (n && !last) {
+      // Marathon block (left column), spanning its two half-marathons. Not during a rehearsal — the legs don't map.
+      if (n && !last && (config.rehearsal || "").toLowerCase() !== "yes") {
         const s = legs.find(l => l.leg === n) || { leg: n, status: "available" };
         const [a, b] = legBounds(n, cps, legCount);
         const bi = cps.indexOf(b);
@@ -267,15 +268,16 @@
 
     if (state === "finished") {
       const fin = cps[cps.length - 1];
-      const elapsed = fin.actualAt ? (fin.actualAt - raceStart) / 3600000 : null;
-      html.push(`<li class="finish-card" style="grid-row:${rowOf(cps.length - 1) + 1}"><h3>He did it.</h3><p>${elapsed ? `184 miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes.` : "184 miles, one go."} The fundraising page stays open — if the run moved you, the button at the top is the way to say so.</p></li>`);
+      const elapsed = fin.actualAt ? (fin.actualAt - model.start) / 3600000 : null;
+      html.push(`<li class="finish-card" style="grid-row:${rowOf(cps.length - 1) + 1}"><h3>He did it.</h3><p>${elapsed ? `${cps[cps.length - 1].miles} miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes.` : `${cps[cps.length - 1].miles} miles, one go.`} The fundraising page stays open — if the run moved you, the button at the top is the way to say so.</p></li>`);
     }
     flow.innerHTML = html.join("");
 
     // Tiger marker element
     let tiger = $(".tiger");
     if (!tiger) { tiger = document.createElement("div"); tiger.className = "tiger"; tiger.innerHTML = `T<span class="label"></span>`; $(".river-wrap").appendChild(tiger); }
-    tiger.querySelector(".label").textContent = model.lastDone && model.position.next ? `Tiger · mile ${model.position.miles.toFixed(0)} · ${delayText(model.delayMin)}` : "";
+    const narrow = window.innerWidth < 900;
+    tiger.querySelector(".label").textContent = model.lastDone && model.position.next ? (narrow ? `mile ${model.position.miles.toFixed(0)}` : `Tiger · mile ${model.position.miles.toFixed(0)} · ${delayText(model.delayMin)}`) : "";
 
     drawRiver(model, state);
   }
@@ -332,20 +334,27 @@
   // ── Render: headline, buttons, fundraising ────────────────────────────────
   function renderHead(model, state, config) {
     const h = $("#position-headline"), s = $("#position-sub"), l = $("#live-label");
-    if (state === "before") {
+    const reh = (config.rehearsal || "").toLowerCase() === "yes";
+    const first = model.cps[0], lastCp = model.cps[model.cps.length - 1];
+    document.body.dataset.rehearsal = reh ? "yes" : "no";
+    if (reh && state === "before") {
+      l.textContent = "Test run";
+      h.textContent = `${config.rehearsal_title || "Rehearsal"}: ${first.name} to ${lastCp.name}`;
+      s.textContent = `${lastCp.miles} miles, ${model.cps.length} checkpoints. A dress rehearsal for the tracker, the crew and the legs. Starts ${fmtDay(model.start)} ${fmtTime(model.start)}.`;
+    } else if (state === "before") {
       l.textContent = "The route";
       h.textContent = "From a field in the Cotswolds to the Thames Barrier";
       s.textContent = "Fifteen checkpoints, roughly a half-marathon apart. Times are the plan; this page comes alive at 05:00 on Saturday 10 October.";
     } else if (state === "finished") {
       const fin = model.cps[model.cps.length - 1];
-      l.textContent = "Finished";
-      h.textContent = fin.actualAt ? `He did it. Thames Barrier at ${fmtTime(fin.actualAt)} on ${fmtDay(fin.actualAt)}.` : "He did it.";
-      const elapsed = fin.actualAt ? (fin.actualAt - raceStart) / 3600000 : null;
-      s.textContent = elapsed ? `184 miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes. The fundraising page stays open.` : "The fundraising page stays open.";
+      l.textContent = reh ? "Test run · finished" : "Finished";
+      h.textContent = fin.actualAt ? `He did it. ${fin.name} at ${fmtTime(fin.actualAt)} on ${fmtDay(fin.actualAt)}.` : "He did it.";
+      const elapsed = fin.actualAt ? (fin.actualAt - model.start) / 3600000 : null;
+      s.textContent = elapsed ? `${model.cps[model.cps.length - 1].miles} miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes. The fundraising page stays open.` : "The fundraising page stays open.";
     } else {
-      l.textContent = `Live · ${fmtDay(new Date())} ${fmtTime(new Date())}`;
-      if (!model.lastDone) { h.textContent = "At the source, waiting for 05:00"; s.textContent = "The first checkpoint is Cricklade, 12.5 miles downstream."; }
-      else if (!model.position.next) { h.textContent = "Tom has reached the Thames Barrier"; s.textContent = ""; }
+      l.textContent = `${reh ? "Test run · live" : "Live"} · ${fmtDay(new Date())} ${fmtTime(new Date())}`;
+      if (!model.lastDone) { h.textContent = `At ${first.name}, waiting for ${fmtTime(model.start)}`; s.textContent = `The first checkpoint is ${model.cps[1].name}, ${model.cps[1].miles} miles in.`; }
+      else if (!model.position.next) { h.textContent = `Tom has reached ${lastCp.name}`; s.textContent = ""; }
       else {
         h.textContent = `Tiger is between ${model.lastDone.name} and ${model.position.next.name}`;
         s.textContent = `${model.position.miles.toFixed(0)} miles in · ${delayText(model.delayMin)} · ${model.position.next.name} ${model.position.next.manual === "eta" ? "expected (Tom's estimate)" : model.position.next.manual === "pace" ? "at Tom's current pace" : "forecast"} ${fmtTime(model.position.next.forecastAt)}${config.pace_note ? " · " + config.pace_note : ""}`;
@@ -425,6 +434,8 @@
   // ── Share ─────────────────────────────────────────────────────────────────
   function shareText(model, state, jg) {
     const raised = jg && jg.raised != null ? fmtGBP(jg.raised) : "over £30,000";
+    if (document.body.dataset.rehearsal === "yes" && model.lastDone && model.position.next)
+      return `Test run: Tiger is between ${model.lastDone.name} and ${model.position.next.name}, ${model.position.miles.toFixed(0)} miles in — a dress rehearsal for 184 miles of Thames in October. ${location.origin}`;
     if (state === "live" && model.lastDone && model.position.next)
       return `Tiger is between ${model.lastDone.name} and ${model.position.next.name}, ${model.position.miles.toFixed(0)} miles into 184 along the Thames for MND. ${raised} raised so far. Follow and donate: ${location.origin}`;
     if (state === "finished") return `Tom ran the whole Thames. 184 miles, one go, for MND. ${raised} raised. ${location.origin}`;
@@ -446,7 +457,7 @@
     if (config.state && ["before","live","finished"].includes(config.state.toLowerCase())) return config.state.toLowerCase();
     const now = new Date();
     if (model.cps[model.cps.length - 1].actualAt) return "finished";
-    return now >= raceStart ? "live" : "before";
+    return now >= model.start ? "live" : "before";
   }
 
   function scrollToTiger() {
