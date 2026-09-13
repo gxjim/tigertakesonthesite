@@ -22,9 +22,8 @@
 <header class="top">
   <a class="brand" href="#top">Tiger Takes on the Thames</a>
   <nav>
-    <a href="#river">The river</a>
-    <a href="#story">Why</a>
     <a href="#updates">Updates</a>
+    <a href="#river">Sponsor a marathon</a>
     <a class="btn btn-small" id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
   </nav>
 </header>
@@ -52,6 +51,24 @@
     <div class="stat"><b data-count="30" data-suffix="+">0+</b><span>friends running stretches with him</span></div>
     <div class="stat"><b data-count="1">0</b><span>night without sleep. Hopefully not two.</span></div>
     <div class="stat"><b data-count="50000" data-prefix="£">£0</b><span>the target, every pound to MND research</span></div>
+  </section>
+
+  <!-- ── Why: story + video, above the river ─────────────── -->
+  <section class="why" id="story">
+    <p class="eyebrow">Why the Thames</p>
+    <blockquote class="pull">"It is a desperately cruel disease. This is especially personal for me because my amazing mum was diagnosed with MND last year."</blockquote>
+    <div class="video" id="video" hidden><iframe title="Tom on why he's running the Thames" src="about:blank" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="story-grid">
+      <div class="story-body">
+        <p>Motor neurone disease is a progressive illness that damages the cells carrying messages from the brain to the muscles. As muscles weaken, it becomes harder to walk, talk, eat and breathe. There is no cure — but research is making progress, and science is beginning to understand the genetic and environmental factors behind it.</p>
+        <p>Tiger, a parish councillor who lives in Ford, six miles upstream of Bath, divides his time between local projects, family and farm work. While a student at Oxford he swam in the Thames every week, and rivers have stayed a source of connection and grounding ever since — this summer he completed a 20-mile solstice pilgrimage along the Avon into Bath. "It feels right to follow this river for something that matters so much."</p>
+        <p>The My Name'5 Doddie Foundation was set up by Scotland rugby international Doddie Weir after his own MND diagnosis. Doddie died in 2022, aged 52. The foundation has since committed more than £24 million to research.</p>
+      </div>
+      <figure class="story-photo">
+        <img src="img/story.jpg" alt="Tom sitting on the river wall at Hammersmith" onerror="this.parentNode.classList.add('missing')">
+        <figcaption class="placeholder">story photo</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- ── Fundraising ──────────────────────────────────────── -->
@@ -82,32 +99,24 @@
       <p class="fine" id="updated"></p>
     </div>
 
+    <div class="komoot" id="komoot" hidden><iframe title="The route on Komoot" src="about:blank" loading="lazy" allowfullscreen></iframe></div>
+
+    <div class="flow-key" aria-hidden="true"><span>Sponsor a marathon</span><span>Checkpoints, times and who's running</span></div>
     <div class="river-wrap">
       <svg id="river-svg" aria-hidden="true"></svg>
       <ol class="flow" id="flow"></ol>
     </div>
   </section>
 
-  <!-- Story interlude — moved into the river flow after Oxford by app.js -->
-  <template id="story-template">
-    <li class="interlude" id="story">
-      <div class="interlude-inner">
-        <p class="eyebrow">Why the Thames</p>
-        <blockquote class="pull">"It is a desperately cruel disease. This is especially personal for me because my amazing mum was diagnosed with MND last year."</blockquote>
-        <div class="story-grid">
-          <div class="story-body">
-            <p>Motor neurone disease is a progressive illness that damages the cells carrying messages from the brain to the muscles. As muscles weaken, it becomes harder to walk, talk, eat and breathe. There is no cure — but research is making progress, and science is beginning to understand the genetic and environmental factors behind it.</p>
-            <p>Tiger, a parish councillor who lives in Ford, six miles upstream of Bath, divides his time between local projects, family and farm work. While a student at Oxford he swam in the Thames every week, and rivers have stayed a source of connection and grounding ever since — this summer he completed a 20-mile solstice pilgrimage along the Avon into Bath. "It feels right to follow this river for something that matters so much."</p>
-            <p>The My Name'5 Doddie Foundation was set up by Scotland rugby international Doddie Weir after his own MND diagnosis. Doddie died in 2022, aged 52. The foundation has since committed more than £24 million to research.</p>
-          </div>
-          <figure class="story-photo">
-            <img src="img/story.jpg" alt="Tom sitting on the river wall at Hammersmith" onerror="this.parentNode.classList.add('missing')">
-            <figcaption class="placeholder">story photo</figcaption>
-          </figure>
-        </div>
-      </div>
-    </li>
-  </template>
+
+  <!-- ── Photos ───────────────────────────────────────────── -->
+  <section class="gallery" id="gallery">
+    <div class="gallery-head">
+      <div><p class="eyebrow">Along the river</p><h2>Photos</h2></div>
+      <div class="gallery-nav"><button class="btn btn-outline" id="gal-prev" type="button" aria-label="Previous photos">←</button><button class="btn btn-outline" id="gal-next" type="button" aria-label="Next photos">→</button></div>
+    </div>
+    <div class="gallery-track" id="gallery-track"></div>
+  </section>
 
   <!-- ── Notes from the towpath (Updates tab) ─────────────── -->
   <section class="updates" id="updates" hidden>

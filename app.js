@@ -37,6 +37,7 @@
   const fmtTime = (d) => d ? d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone: LONDON }) : "—";
   const fmtDay = (d) => d ? d.toLocaleDateString("en-GB", { weekday:"short", timeZone: LONDON }) : "";
   const minutes = (ms) => Math.round(ms / 60000);
+  const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
   const raceStart = new Date(C.race.start);
 
   // Parse "2026-10-10 12:58" (London time) or "12:58" (day inferred from a reference time).
@@ -95,12 +96,12 @@
 
   // ── Data loading ──────────────────────────────────────────────────────────
   async function loadSheet() {
-    if (!C.sheetId) return { config: SAMPLE_CONFIG, checkpoints: SAMPLE_CHECKPOINTS, sponsors: SAMPLE_SPONSORS, updates: [], source: "sample" };
-    const [cfgRows, sponsors, updates] = await Promise.all([sheetTab(C.tabs.config), sheetTab(C.tabs.sponsors), sheetTab(C.tabs.updates || "Updates").catch(() => [])]);
+    if (!C.sheetId) return { config: SAMPLE_CONFIG, checkpoints: SAMPLE_CHECKPOINTS, sponsors: SAMPLE_SPONSORS, updates: [], photos: [], source: "sample" };
+    const [cfgRows, sponsors, updates, photos] = await Promise.all([sheetTab(C.tabs.config), sheetTab(C.tabs.sponsors), sheetTab(C.tabs.updates || "Updates").catch(() => []), sheetTab(C.tabs.photos || "Photos").catch(() => [])]);
     const config = Object.assign({}, SAMPLE_CONFIG, Object.fromEntries(cfgRows.map(r => [r.key, r.value])));
     const tab = (config.rehearsal || "").toLowerCase() === "yes" ? C.tabs.rehearsal : C.tabs.checkpoints;
-    const cps = (await sheetTab(tab)).map(r => ({ id:+r.id, name:r.name, miles:+r.miles, target:r.target, actual:r.actual, runners:r.runners || "", note:r.note || "", eta:r.eta || r.tom_eta || "", pace:r.pace || r.current_pace || "" }));
-    return { config, checkpoints: cps, sponsors: sponsors.map(s => ({ leg:+s.leg, from:s.from, to:s.to, price:s.price, status:(s.status||"available").toLowerCase(), sponsor:s.sponsor, logo:s.logo_url || s.logo || "", photo:s.photo_url || s.photo || "", caption:s.caption || "", note:s.note || "" })), updates: updates.map(u => ({ date:u.date || "", title:u.title || "", body:u.body || u.text || "", photo:u.photo_url || u.photo || "", link:u.link || "" })).filter(u => u.title || u.body), source: "sheet" };
+    const cps = (await sheetTab(tab)).map(r => { const rk = Object.keys(r).find(k => /runner/.test(k)); return { id:+r.id, name:r.name, miles:+r.miles, target:r.target, actual:r.actual, runners:(rk ? r[rk] : "") || "", note:r.note || "", eta:r.eta || r.tom_eta || "", pace:r.pace || r.current_pace || "" }; });
+    return { config, checkpoints: cps, sponsors: sponsors.map(s => ({ leg:+s.leg, from:s.from, to:s.to, price:s.price, status:(s.status||"available").toLowerCase(), sponsor:s.sponsor, logo:s.logo_url || s.logo || "", photo:s.photo_url || s.photo || "", caption:s.caption || "", note:s.note || "" })), updates: updates.map(u => ({ date:u.date || "", title:u.title || "", body:u.body || u.text || "", photo:u.photo_url || u.photo || "", link:u.link || "" })).filter(u => u.title || u.body), photos: photos.map(p => ({ url: p.url || p.photo_url || "", caption: p.caption || "" })).filter(p => p.url), source: "sheet" };
   }
 
   // Fundraising total comes from the Config tab (Tom or crew type in the
@@ -201,9 +202,13 @@
     const cps = model.cps;
     const legs = sponsors.length ? sponsors : SAMPLE_SPONSORS;
     const legCount = legs.length;
-    const total = cps[cps.length - 1].miles;
     const html = [];
     const meander = (i) => 0.5 + 0.42 * Math.sin(i * 1.15); // 0.08–0.92 across the rail
+    // Grid rows: checkpoint i sits on row 2i+1; the row after it (2i+2) is a spacer whose
+    // height gives the river its length. Marathon blocks (left column) span from their
+    // first checkpoint's row to their last checkpoint's row.
+    // Three rows per checkpoint: (3i+1) marathon strip on phones, (3i+2) the checkpoint, (3i+3) spacer.
+    const rowOf = (i) => 3 * i + 2;
 
     cps.forEach((cp, i) => {
       const first = i === 0, last = i === cps.length - 1;
@@ -218,52 +223,54 @@
         const d = minutes(cp.forecastAt - cp.targetAt);
         times = `<b>${fmtTime(cp.forecastAt)}${d ? `<span class="delta ${d > 0 ? "late" : "early"}">${d > 0 ? "+" : "−"}${Math.abs(d)}m</span>` : ""}</b><span>${cp.manual === "eta" ? "Tom's estimate" : cp.manual === "pace" ? "at Tom's pace" : "forecast"} · plan ${fmtTime(cp.targetAt)}</span>`;
       }
-      const runners = cp.runners ? `<div class="runners">Next stretch with ${cp.runners}</div>` : "";
-      html.push(`<li class="node ${cp.status || ""} ${first ? "first" : ""} ${last ? "last" : ""}" data-i="${i}" data-miles="${cp.miles}" style="--mx:${mx}">
-        <span class="mark"></span>
-        <div class="name">${cp.name}<small>mile ${cp.miles}</small></div>
-        <div class="times">${times}</div>${runners}</li>`);
-      // Story interlude sits just after Oxford — where he swam as a student.
-      if (i === 4 || (i === cps.length - 1 && !html.includes("<!--story-->"))) html.push(`<!--story-->`);
+      const runners = cp.runners ? `<div class="runners">${last ? "" : "Next stretch with "}${esc(cp.runners)}</div>` : "";
+      const cpNote = cp.note ? `<p class="cp-note">${esc(cp.note)}</p>` : "";
 
-      // Leg block after this checkpoint
+      // Marathon that starts at this checkpoint (if any): its photo + note sit on the right, under the checkpoint.
       const n = legForIndex(i, legCount);
+      let stretch = "";
+      if (n && !last) {
+        const sp = legs.find(l => l.leg === n) || {};
+        const photo = sp.photo || `img/leg-${n}.jpg`;
+        const cap = sp.caption ? `<figcaption class="cap">${esc(sp.caption)}</figcaption>` : "";
+        const note = sp.note ? `<p class="note">${esc(sp.note)}</p>` : "";
+        stretch = `<figure class="leg-photo"><img src="${esc(photo)}" alt="" loading="lazy" onload="this.parentNode.classList.add('loaded')">${cap}</figure>${note}`;
+      }
+      const nextMiles = last ? 0 : cps[i + 1].miles - cp.miles;
+      html.push(`<li class="node ${cp.status || ""} ${first ? "first" : ""} ${last ? "last" : ""}" data-i="${i}" style="--mx:${mx};grid-row:${rowOf(i)}">
+        <span class="mark"></span>
+        <div class="name">${esc(cp.name)}<small>mile ${cp.miles}</small></div>
+        <div class="times">${times}</div>${runners}${cpNote}${stretch}</li>`);
+      if (!last) html.push(`<li class="spacer" style="grid-row:${rowOf(i) + 1};min-height:${Math.max(28, Math.round(nextMiles * 4.5))}px"></li>`);
+
+      // Marathon block (left column), spanning its two half-marathons.
       if (n && !last) {
         const s = legs.find(l => l.leg === n) || { leg: n, status: "available" };
         const [a, b] = legBounds(n, cps, legCount);
+        const bi = cps.indexOf(b);
         const miles = a && b ? b.miles - a.miles : 0;
         const taken = s.status === "taken" || s.status === "sponsored";
         const price = s.price ? (/^\d+(\.\d+)?$/.test(String(s.price).trim()) ? "£" + Number(s.price).toLocaleString("en-GB") : s.price) : "";
         const status = taken
-          ? `<span class="sponsor">Marathon ${n} sponsored by ${s.sponsor || "a friend of Tom's"}</span>`
-          : `<span class="open">Marathon ${n} is unsponsored${price ? ` · ${price}` : ""} · <a href="mailto:${C.contactEmail}?subject=Sponsor%20marathon%20${n}">put your name on it</a></span>`;
-        const photo = s.photo || `img/leg-${n}.jpg`;
-        const cap = s.caption ? `<figcaption class="cap">${s.caption}</figcaption>` : "";
-        const note = s.note ? `<p class="note">${s.note}</p>` : "";
-        const minH = Math.max(56, Math.round(miles * 5.5));
-        html.push(`<li class="leg" data-leg="${n}" style="min-height:${minH}px">
-          <div class="leg-meta"><span class="n">Marathon ${n}</span><span>${a.name} → ${b.name} · ${miles.toFixed(0)} miles</span>${status}</div>
-          <figure class="leg-photo"><img src="${photo}" alt="" loading="lazy" onload="this.parentNode.classList.add('loaded')">${cap}</figure>${note}</li>`);
-      } else if (!last && !n) {
-        // odd checkpoint: a short connector so the river has length between nodes
-        const next = cps[i + 1];
-        const minH = Math.max(32, Math.round((next.miles - cp.miles) * 5.5));
-        html.push(`<li class="leg connector" style="min-height:${minH}px"></li>`);
+          ? `<span class="sponsor">Sponsored by ${esc(s.sponsor || "a friend of Tom's")}</span>`
+          : `<span class="open">Unsponsored${price ? ` · ${price}` : ""}</span><a class="btn btn-small btn-ghost" href="mailto:${C.contactEmail}?subject=Sponsor%20marathon%20${n}">Sponsor this marathon</a>`;
+        html.push(`<li class="leg ${taken ? "taken" : "open"}" data-leg="${n}" style="--r1:${rowOf(i)};--r2:${rowOf(bi) + 1};--mrow:${rowOf(i) - 1}">
+          <span class="arrow" aria-hidden="true"></span>
+          <div class="leg-inner">
+            <span class="n">Marathon ${n}</span>
+            <span class="route">${esc(a.name)} → ${esc(b.name)}</span>
+            <span class="miles">${miles.toFixed(0)} miles · two checkpoints</span>
+            ${status}
+          </div></li>`);
       }
     });
 
     if (state === "finished") {
       const fin = cps[cps.length - 1];
       const elapsed = fin.actualAt ? (fin.actualAt - raceStart) / 3600000 : null;
-      html.push(`<li class="finish-card"><h3>He did it.</h3><p>${elapsed ? `184 miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes.` : "184 miles, one go."} The fundraising page stays open — if the run moved you, the button at the top is the way to say so.</p></li>`);
+      html.push(`<li class="finish-card" style="grid-row:${rowOf(cps.length - 1) + 1}"><h3>He did it.</h3><p>${elapsed ? `184 miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes.` : "184 miles, one go."} The fundraising page stays open — if the run moved you, the button at the top is the way to say so.</p></li>`);
     }
-
-    // Preserve the story node across refreshes (it's static content).
-    const existingStory = $("#story");
     flow.innerHTML = html.join("");
-    const slot = Array.from(flow.childNodes).find(n => n.nodeType === 8 && n.nodeValue === "story");
-    const story = existingStory || document.importNode($("#story-template").content, true).firstElementChild;
-    if (slot) slot.replaceWith(story); else if (!$("#story")) flow.appendChild(story);
 
     // Tiger marker element
     let tiger = $(".tiger");
@@ -351,7 +358,6 @@
   }
 
   // ── Render: updates (Tom's posts from the Updates tab) ────────────────────
-  const esc = (t) => String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
   function renderUpdates(updates) {
     const sec = $("#updates"), list = $("#posts");
     if (!updates || !updates.length) { sec.hidden = true; return; }
@@ -369,6 +375,39 @@
     const more = $("#posts-more");
     more.hidden = posts.length <= 3;
     more.onclick = () => { list.querySelectorAll(".older").forEach(p => p.classList.remove("older")); more.hidden = true; };
+  }
+
+  // ── Render: photo carousel ────────────────────────────────────────────────
+  // Photos from the `Photos` tab (url, caption) if present; otherwise img/photo-1.jpg … photo-24.jpg
+  // plus the four we know exist. Missing files are skipped silently.
+  let galleryBuilt = false;
+  function renderGallery(photos) {
+    if (galleryBuilt) return; galleryBuilt = true;
+    const track = $("#gallery-track"), sec = $("#gallery");
+    let list = photos && photos.length ? photos : [
+      { url: "img/hero.jpg", caption: "" }, { url: "img/towpath.jpg", caption: "" }, { url: "img/story.jpg", caption: "" }, { url: "img/stretching.jpg", caption: "" },
+      ...Array.from({ length: 24 }, (_, i) => ({ url: `img/photo-${i + 1}.jpg`, caption: "" }))
+    ];
+    track.innerHTML = list.map(p => `<figure class="slide"><img src="${esc(p.url)}" alt="${esc(p.caption)}" loading="lazy" onload="this.parentNode.classList.add('loaded')" onerror="this.parentNode.remove()">${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
+    const step = (dir) => { const w = track.querySelector(".slide")?.getBoundingClientRect().width || 300; track.scrollBy({ left: dir * (w + 12), behavior: "smooth" }); };
+    $("#gal-prev").onclick = () => step(-1); $("#gal-next").onclick = () => step(1);
+    // Hide the whole section if nothing loaded after a moment.
+    setTimeout(() => { if (!track.querySelector(".slide.loaded")) sec.hidden = true; }, 4000);
+  }
+
+  // ── Render: Komoot map (optional) ────────────────────────────────────────
+  function renderVideo() {
+    const v = $("#video"); if (!v) return;
+    if (!C.youtubeId) { v.hidden = true; return; }
+    v.hidden = false; v.querySelector("iframe").src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(C.youtubeId)}?rel=0`;
+  }
+  function renderKomoot() {
+    const wrap = $("#komoot"); if (!wrap) return;
+    let src = C.komootEmbed || "";
+    const m = src.match(/src="([^"]+)"/); if (m) src = m[1];              // accept the whole <iframe> code too
+    if (!src) { wrap.hidden = true; return; }
+    wrap.hidden = false;
+    wrap.querySelector("iframe").src = src;
   }
 
   function renderRaise(jg) {
@@ -422,7 +461,7 @@
       catch (e) {
         // Sheet unreachable: draw the planned route from the built-in copy rather than nothing.
         console.warn("Sheet unavailable, using built-in plan", e);
-        data = { config: Object.assign({}, SAMPLE_CONFIG, { total_override: "" }), checkpoints: SAMPLE_CHECKPOINTS.map(c => Object.assign({}, c)), sponsors: SAMPLE_SPONSORS, updates: [], source: "fallback" };
+        data = { config: Object.assign({}, SAMPLE_CONFIG, { total_override: "" }), checkpoints: SAMPLE_CHECKPOINTS.map(c => Object.assign({}, c)), sponsors: SAMPLE_SPONSORS, updates: [], photos: [], source: "fallback" };
       }
       document.body.dataset.source = data.source;
       let now = new Date();
@@ -448,6 +487,7 @@
       renderRaise(jg);
       renderJourney(model, state, data.config, data.sponsors);
       renderUpdates(data.updates);
+      renderGallery(data.photos);
       // Images load later and change layout — redraw the river when they do.
       $("#flow").querySelectorAll("img").forEach(img => { if (!img.complete) img.addEventListener("load", () => drawRiver(model, state), { once: true }); });
       if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) { scrolledToTiger = true; setTimeout(scrollToTiger, 600); }
@@ -492,6 +532,8 @@
 
   window.__refresh = refresh;
   wireStatic();
+  renderKomoot();
+  renderVideo();
   animateStats();
   tickCountdown(); setInterval(tickCountdown, 30000);
   refresh(); setInterval(refresh, (C.refreshSeconds || 60) * 1000);

@@ -3,10 +3,10 @@
 Plain HTML/CSS/JS, no build step. Deploys to Netlify (functions included) or any static host (without the JustGiving/Strava functions).
 
 ## Files
-- `index.html` — the page. Hero → fundraising → **the river** (every checkpoint and marathon, top to bottom, with the story after Oxford) → training / press.
+- `index.html` — the page. Hero → numbers → why (video + story) → fundraising → **the river** (marathons on the left, river in the middle, checkpoints/runners/photos on the right; stacked on phones) → photos → Tom's updates → press.
 - `styles.css` — v2 "river spine": My Name'5 Doddie navy (#002169) on paper, yellow only for Tiger/live, tartan as a thin strip. Lora + Work Sans.
 - `app.js` — reads the Google Sheet, computes forecasts, builds the vertical river (checkpoints, marathons, sponsors, photos), positions Tiger, wires share/donate. Preview the live/finished look without touching the sheet: add `?demo=live` or `?demo=finished` to the URL.
-- `config.js` — the only file you edit per deployment (sheet ID, JustGiving page link, handles). No secrets.
+- `config.js` — the only file you edit per deployment (sheet ID, JustGiving link, YouTube ID, Komoot embed, Instagram/Strava). No secrets.
 - `netlify/functions/sheet.mjs` — proxies the Google Sheet CSV (Google doesn't allow the browser to fetch it directly).
 - `netlify/functions/strava.mjs` — training stats (needs env `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`).
 - `img/` — `hero.jpg` (portrait 4:5), `story.jpg` (4:5 / 4:3), `og.jpg` (1200×630 for link previews), and one photo per marathon: `leg-1.jpg` … `leg-7.jpg` (landscape, ~1600px wide, under 400KB). A marathon with no photo simply shows no photo. Or point at any image URL from the sheet (`photo_url` column, Sponsors tab).
@@ -37,9 +37,14 @@ Plain HTML/CSS/JS, no build step. Deploys to Netlify (functions included) or any
   - **Tom's own estimate for one checkpoint** — add a column headed `eta`. When Tom (or whoever's with him) has a view on the next checkpoint — "I'll be in Henley about 02:40" — type `02:40` into that checkpoint's `eta` cell. The page shows it as *Tom's estimate* instead of the automatic forecast, and re-flows the later checkpoints from it. Leave it blank and the page forecasts from his recent pace. Clear it (or it's ignored) once the actual time is in.
   - Same for the `Rehearsal` tab.
 - `Updates` tab (Tom's posts — "Notes from the towpath"): columns `date`, `title`, `body`, `photo_url`, `link`. One row per post, oldest at the top; the page shows newest first, three at a time with an "Earlier posts" button. `body` can be several paragraphs (Alt+Enter for a new line inside the cell); web addresses become links. `photo_url` is optional — a direct image link (a photo committed to `img/` works: `img/post-1.jpg`), or a public Google Drive image in the form `https://drive.google.com/uc?export=view&id=FILE_ID`. `link` is optional (a Strava or Instagram post gets a matching button label). The section is hidden until the first post exists.
+- `Photos` tab (optional, for the carousel): columns `url`, `caption`. If the tab doesn't exist the carousel shows whatever is in `img/` named `photo-1.jpg`, `photo-2.jpg` … (up to 24) plus the hero/story photos.
 - `Config` tab extra: `pace_note` — a short free-text line shown under the live headline, e.g. `Tom: legs fine, walking the hills` or `Stopped 10 min at Goring for food`. Blank hides it.
 - Forecast: pace ratio over the last 2 completed legs vs plan (clamped 0.85–1.6×) applied to each remaining planned leg.
 - The page re-reads the sheet every 60 s. Google's CSV endpoint can lag by up to a minute or two.
+
+## Komoot and the video
+- `config.js → komootEmbed`: in Komoot open the tour → Share → Embed → copy the code (or just the `src` URL) and paste it between the quotes. A map appears above the river. Blank = no map.
+- `config.js → youtubeId`: the bit after `v=` in the YouTube link. Blank = no video.
 
 ## Rehearsal
 Set `rehearsal` to `yes`, put made-up checkpoints for the training route in the `Rehearsal` tab, run the drill, then set it back to `no`. The public `Checkpoints` tab is untouched.

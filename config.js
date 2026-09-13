@@ -8,7 +8,13 @@ window.TIGER_CONFIG = {
   sheetId: "1ss0uf0RdpnB8OTYbakJbWtklwme5oo_Q5kM6O6xy6qk",
 
   // Tab names inside the sheet.
-  tabs: { config: "Config", checkpoints: "Checkpoints", sponsors: "Sponsors", rehearsal: "Rehearsal", updates: "Updates" },
+  tabs: { config: "Config", checkpoints: "Checkpoints", sponsors: "Sponsors", rehearsal: "Rehearsal", updates: "Updates", photos: "Photos" },
+
+  // Komoot: paste the embed code (or just its src URL) from Komoot → Share → Embed. Blank hides the map.
+  komootEmbed: "",
+
+  // YouTube video ID for the "Why" section (the bit after v= in the link). Blank hides the video.
+  youtubeId: "-kX5uTaqBJs",
 
   // JustGiving: page link only (used for the Donate button). The raised total
   // is NOT pulled from the API — JustGiving's public API doesn't cover this
