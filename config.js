@@ -11,7 +11,7 @@ window.TIGER_CONFIG = {
   tabs: { config: "Config", checkpoints: "Checkpoints", sponsors: "Sponsors", rehearsal: "Rehearsal", updates: "Updates", photos: "Photos" },
 
   // Komoot: paste the embed code (or just its src URL) from Komoot → Share → Embed. Blank hides the map.
-  komootEmbed: "",
+  komootEmbed: "<iframe src="https://www.komoot.com/tour/3077428873/embed?share_token=a0QZMTeBSsMuIspt8KnK497MrGJJs54heZVr7n4fAiZWEpcSiO&amp;layout=classic&amp;profile=1" width="100%" height="700" frameborder="0" scrolling="no" allow="fullscreen" allowfullscreen></iframe>",
 
   // YouTube video ID for the "Why" section (the bit after v= in the link). Blank hides the video.
   youtubeId: "-kX5uTaqBJs",
@@ -33,8 +33,8 @@ window.TIGER_CONFIG = {
   },
 
   // Social
-  instagram: "",        // handle without @
-  stravaAthleteUrl: "",  // e.g. https://www.strava.com/athletes/12345
+  instagram: "tigerspearman_",        // handle without @
+  stravaAthleteUrl: "https://www.strava.com/athletes/21649114",  // e.g. https://www.strava.com/athletes/12345
   contactEmail: "tom.spearman@pm.me",
 
   // Behaviour
