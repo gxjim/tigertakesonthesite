@@ -35,9 +35,7 @@ window.TIGER_CONFIG = {
     totalMiles: 184
   },
 
-  // Social
-  instagram: "",        // handle without @
-  stravaAthleteUrl: "",  // e.g. https://www.strava.com/athletes/12345
+  // Contact
   contactEmail: "tom.spearman@pm.me",
 
   // Behaviour

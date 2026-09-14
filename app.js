@@ -38,7 +38,7 @@
   ].map(r => ({ id:+r[0], name:r[1], miles:+r[2], target:r[3], actual:r[4], runners:r[5], note:r[6] }));
 
   const SAMPLE_SPONSORS = [1,2,3,4,5,6,7].map(n => ({ leg:n, from:"", to:"", price:"", status:"available", sponsor:"", logo:"", photo:"", caption:"", note:"" }));
-  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"", strava_embed:"", instagram_embed:"" };
+  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"", instagram_embed:"", instagram_embed_2:"", instagram_embed_3:"" };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 const fmtGBP = (n) => "£" + Math.round(n).toLocaleString("en-GB");
@@ -408,7 +408,7 @@ async function loadSheet() {
         const status = taken
           ? `<span class="sponsor">Sponsored by ${esc(s.sponsor || "a friend of Tom's")}</span>`
           : `<span class="open">Unsponsored${price ? ` · ${price}` : ""}</span><a class="btn btn-small btn-ghost" href="sponsor.html">Sponsor this marathon</a>`;
-        html.push(`<li class="leg ${taken ? "taken" : "open"}" data-leg="${n}" style="--r1:${rowOf(i)};--r2:${rowOf(bi) + 1};--mrow:${rowOf(i) - 1}">
+        html.push(`<li class="leg ${taken ? "taken" : "open"}" data-leg="${n}" style="--r1:${rowOf(i)};--r2:${rowOf(bi)};--mrow:${rowOf(i) - 1}">
           <span class="arrow" aria-hidden="true"></span>
           <div class="leg-inner">
             <span class="n">Marathon ${n}</span>
@@ -587,65 +587,31 @@ async function loadSheet() {
     const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0`;
     v.hidden = false; const f = v.querySelector("iframe"); if (f.src !== src) f.src = src;
   }
-  // Embedded Strava activity / Instagram post. Both are driven from the sheet: paste an
-  // activity or post link (or the whole embed snippet) into Config `strava_embed` /
-  // `instagram_embed`. Nothing is embedded unless a link is there, and only Strava and
-  // Instagram addresses are accepted — anything else is ignored.
-  let embedScripts = {};   // scripts we've injected once (Instagram)
-  function loadOnce(key, src) {
-    if (embedScripts[key]) return;
-    embedScripts[key] = true;
-    const sc = document.createElement("script");
-    sc.async = true; sc.src = src;
-    document.body.appendChild(sc);
-  }
-
+  // Instagram posts, driven from the sheet: paste post links into Config `instagram_embed`
+  // (one cell can hold several, separated by commas or new lines) or `instagram_embed_2` /
+  // `instagram_embed_3`. Only instagram.com addresses are accepted; nothing shows without one.
+  let instaLoaded = false;
   function renderEmbeds(config = {}) {
-    const sEl = $("#strava-embed"), iEl = $("#insta-embed");
+    const wrap = $("#insta-embeds"), follow = $("#follow");
+    if (!wrap) return;
+    const raw = [config.instagram_embed, config.instagram_embed_2, config.instagram_embed_3].filter(Boolean).join(" ");
+    const urls = (String(raw).match(/https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel|tv)\/[\w-]+\/?/g) || []).slice(0, 3);
+    const key = urls.join("|");
+    if (wrap.dataset.key === key) return;
+    wrap.dataset.key = key;
 
-    // Strava: pull the activity id out of a link or an embed snippet.
-    const sRaw = String(config.strava_embed || "").trim();
-    const sId = (sRaw.match(/strava\.com\/activities\/(\d+)/) || sRaw.match(/data-embed-id=["'](\d+)["']/) || [])[1];
-    if (sEl) {
-      if (sId) {
-        if (sEl.dataset.id !== sId) {
-          sEl.dataset.id = sId;
-          sEl.innerHTML = `<div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="${sId}" data-style="standard" data-from-embed="false"></div>`;
-          // Strava's script only scans for placeholders when it loads, so re-add it each time
-          // the activity changes rather than relying on a one-time load.
-          document.querySelectorAll('script[data-strava]').forEach(n => n.remove());
-          const sc = document.createElement("script");
-          sc.async = true; sc.dataset.strava = "1"; sc.src = "https://strava-embeds.com/embed.js";
-          document.body.appendChild(sc);
-          // If it hasn't turned into an embed shortly (blocked by a tracker blocker, or the
-          // activity can't be embedded), show a plain link instead of an empty box.
-          setTimeout(() => {
-            if (!sEl.querySelector("iframe")) {
-              sEl.innerHTML = `<p class="fine" style="margin:0"><a href="https://www.strava.com/activities/${sId}" target="_blank" rel="noopener">See Tom's latest run on Strava →</a></p>`;
-            }
-          }, 3500);
-        }
-        sEl.hidden = false;
-      } else sEl.hidden = true;
+    if (!urls.length) { wrap.innerHTML = ""; if (follow) follow.hidden = true; return; }
+    if (follow) follow.hidden = false;
+    wrap.innerHTML = urls.map(u => `<blockquote class="instagram-media" data-instgrm-permalink="${esc(u)}" data-instgrm-version="14"></blockquote>`).join("");
+
+    if (!instaLoaded) {
+      instaLoaded = true;
+      const sc = document.createElement("script");
+      sc.async = true; sc.src = "https://www.instagram.com/embed.js";
+      document.body.appendChild(sc);
+    } else if (window.instgrm && window.instgrm.Embeds) {
+      window.instgrm.Embeds.process();
     }
-
-    // Instagram: needs the post permalink.
-    const iRaw = String(config.instagram_embed || "").trim();
-    const iUrl = (iRaw.match(/https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel|tv)\/[\w-]+\/?/) || [])[0];
-    if (iEl) {
-      if (iUrl) {
-        if (iEl.dataset.url !== iUrl) {
-          iEl.dataset.url = iUrl;
-          iEl.innerHTML = `<blockquote class="instagram-media" data-instgrm-permalink="${esc(iUrl)}" data-instgrm-version="14"></blockquote>`;
-          loadOnce("instagram", "https://www.instagram.com/embed.js");
-          if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
-        }
-        iEl.hidden = false;
-      } else iEl.hidden = true;
-    }
-
-    const follow = $("#follow");
-    if (follow && follow.hidden && (sId || iUrl)) follow.hidden = false;
   }
 
   function renderKomoot(config = {}) {
@@ -683,8 +649,28 @@ async function loadSheet() {
   }
 
   // ── Countdown ─────────────────────────────────────────────────────────────
+  // Banner: "£x raised so far" alternating with "x days to go", scrolling slowly.
+  function renderTicker(jg) {
+    const track = $("#ticker-track"); if (!track) return;
+    const ms = raceStart - new Date();
+    const days = Math.max(0, Math.ceil(ms / 86400000));
+    const raised = jg && jg.raised != null ? fmtGBP(jg.raised) : null;
+    const bits = [];
+    if (raised) bits.push(`${raised} raised so far`);
+    if (ms > 0) bits.push(days === 1 ? "1 day to go" : `${days} days to go`);
+    else bits.push("Running now");
+    if (!bits.length) return;
+    const key = bits.join("|");
+    if (track.dataset.key === key) return;
+    track.dataset.key = key;
+    // Repeated so the strip is always wider than the screen and the loop is seamless.
+    const run = bits.concat(bits, bits, bits).map(b => `<span>${esc(b)}</span>`).join('<i aria-hidden="true">•</i>');
+    track.innerHTML = `<div class="ticker-run">${run}</div><div class="ticker-run" aria-hidden="true">${run}</div>`;
+  }
+
   function tickCountdown() {
-    const el = $("#countdown"); const ms = raceStart - new Date();
+    const el = $("#countdown"); if (!el) return;
+    const ms = raceStart - new Date();
     if (ms <= 0) { el.textContent = ""; return; }
     const d = Math.floor(ms / 86400000), h = Math.floor(ms % 86400000 / 3600000);
     el.textContent = " · " + (d > 0 ? `${d} day${d === 1 ? "" : "s"} to go` : `${h}h ${Math.floor(ms % 3600000 / 60000)}m to go`);
@@ -736,6 +722,7 @@ async function loadSheet() {
       latest = { model, state, jg };
       renderHead(model, state, data.config);
       renderRaise(jg);
+      renderTicker(jg);
       renderJourney(model, state, data.config, data.sponsors);
       renderUpdates(data.updates);
       renderGallery(data.photos);
@@ -754,10 +741,6 @@ async function loadSheet() {
     const jgUrl = C.justGiving.pageUrl;
     ["#donate-btn", "#nav-donate"].forEach(s => { $(s).href = jgUrl; });
     ["#sponsor-mail", "#press-mail"].forEach(s => { $(s).href = `mailto:${C.contactEmail}?subject=Tiger%20Takes%20on%20the%20Thames`; });
-    const insta = $("#insta-btn"), strava = $("#strava-btn");
-    if (C.instagram) insta.href = `https://www.instagram.com/${C.instagram}/`; else insta.hidden = true;
-    if (C.stravaAthleteUrl) strava.href = C.stravaAthleteUrl; else strava.hidden = true;
-    $("#follow").hidden = !(C.instagram || C.stravaAthleteUrl);
     $("#jump-btn").addEventListener("click", scrollToTiger);
     $("#share-btn").addEventListener("click", async () => {
       const text = shareText(latest.model || computeForecast(SAMPLE_CHECKPOINTS, new Date()), latest.state, latest.jg);

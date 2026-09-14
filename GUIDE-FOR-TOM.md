@@ -27,10 +27,11 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 | `last_update` | Optional free text, e.g. `Sat 13:12`, shown under the route. |
 | `komoot_embed` | Paste the whole Komoot embed code here (Komoot → Share → Embed → copy), or just its web address. The map appears above the river. **Do this here, not in config.js** — the sheet doesn't mind the quote marks in the code; a code file does. |
 | `youtube_id` | Optional: a YouTube link or ID for the video in the "Why" section. |
-| `strava_embed` | Optional: paste the web address of one Strava activity (e.g. `https://www.strava.com/activities/1234567890`). Strava embeds only work if the activity's privacy is set to **Everyone** (including the map), and some ad/tracker blockers block Strava's embed entirely — if that happens the site quietly shows a link to the run instead of an empty box. |
-| `instagram_embed` | Optional: paste the web address of one Instagram post (`https://www.instagram.com/p/XXXXXXX/`). Same idea — the post itself appears on the page. |
+| `instagram_embed` | Optional: paste the web address of one Instagram post (`https://www.instagram.com/p/XXXXXXX/`). The post itself then appears on the page under "Follow along". You can put two or three addresses in this one cell, separated by commas or line breaks, or use the extra keys below. |
+| `instagram_embed_2` | Optional: a second Instagram post. |
+| `instagram_embed_3` | Optional: a third Instagram post. Three is the maximum the page shows. |
 
-**The Config tab must be one key per row**: `key` in A1 and `value` in B1, then `state` in A2, `livetrack_url` in A3, and so on down column A, each with its value in column B of the same row. If several keys end up in one cell (it happens when text is pasted in), the site can't read any of them and falls back to a placeholder total.
+**The Config tab is one key per row**: `key` in A1 and `value` in B1, then `state` in A2, `livetrack_url` in A3, and so on down column A, each with its value in column B of the same row. Leaving values blank is fine.
 
 ### Checkpoints tab (one row per checkpoint, Source to Thames Barrier)
 - `actual` — **the one thing the crew must do on the day.** When you reach a checkpoint, type the time in that row, e.g. `12:58` (the site works out which day). This turns that checkpoint navy on the river and moves the yellow Tiger marker.
@@ -40,8 +41,8 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 - `pace` — optional, per checkpoint, same format as `current_pace`, if one stretch will be slower than the rest.
 - Don't change `id`, `name`, `miles` or `target` — the route is fixed.
 
-### Photos tab (optional) — the photo carousel
-Headers across row 1: `url`, `caption`. One row per photo. `url` can be a photo on GitHub (`img/photo-3.jpg`) or a public Google Drive image written as `https://drive.google.com/uc?export=view&id=THE_FILE_ID`. If you'd rather not use the tab at all, just upload photos to the `img` folder on GitHub named `photo-1.jpg`, `photo-2.jpg`, … and they appear automatically.
+### Photos tab — the photo carousel
+Headers across row 1: `url`, `caption`. **One row per photo, and every row needs something in `url`** — a row with only a caption shows nothing, because there's no photo to show. `url` can be a normal Google Drive share link pasted straight in (`https://drive.google.com/file/d/FILE_ID/view?usp=drive_link` — the site converts it for you), a photo on GitHub (`img/photo-3.jpg`), or any web address ending .jpg/.png. Drive photos must be shared as **Anyone with the link can view**, or they'll show as gaps. If you'd rather not use the tab at all, just upload photos to the `img` folder on GitHub named `photo-1.jpg`, `photo-2.jpg`, … and they appear automatically.
 
 ### Sponsors tab (one row per marathon, 1–7)
 - `price` — a number (`250` shows as £250).
@@ -58,8 +59,8 @@ The five headers go **across row 1**, one per column: A1 `date`, B1 `title`, C1 
 - `date` — anything, e.g. `3 Oct`.
 - `title` — short.
 - `body` — as long as you like. For a new paragraph inside the cell press **Alt+Enter** (Ctrl+Enter on some setups; on the phone app, just press return). Web addresses turn into links.
-- `photo_url` — optional. Either a photo you've put on GitHub (`img/post-1.jpg`) or a Google Drive photo shared as "anyone with the link" written as `https://drive.google.com/uc?export=view&id=THE_FILE_ID` (the file ID is the long string in the Drive link between `/d/` and `/view`).
-- `link` — optional, e.g. a Strava or Instagram post.
+- `photo_url` — optional, and it must be something a browser can open. Either a photo you've uploaded to the `img` folder on GitHub, written as `img/post-1.jpg`, or a full web address starting `https://`. A bare filename off your phone (`IMG_3430.HEIC`) won't work — the site has no idea where that file is, and browsers can't display HEIC at all. Convert iPhone photos to JPG first (on the phone: Settings → Camera → Formats → Most Compatible, or just email the photo to yourself and save the JPG).
+- `link` — optional, e.g. an Instagram post.
 
 Each post appears collapsed — just the date and the headline — and opens when someone clicks it. The three newest are listed, with an "Earlier posts" button for the rest. The section is hidden until the first post exists.
 
@@ -69,9 +70,10 @@ Each post appears collapsed — just the date and the headline — and opens whe
 
 You'll have had an email inviting you to `gxjim/tigertakesonthesite`. Accept it, then go to **github.com/gxjim/tigertakesonthesite**. You'll see a list of files. The ones that matter:
 
-- `index.html` — all the fixed words on the page (headline, your story, the press paragraph, footer).
+- `index.html` — all the fixed words on the main page (headline, your story, the press paragraph, footer).
+- `sponsor.html` — the "Sponsor a marathon" page. Prices and availability come from the sheet; the words around them are in this file.
 - `img/` — a folder with the photos.
-- `config.js` — a few settings (Instagram handle, Strava link, contact email).
+- `config.js` — a couple of settings (contact email, refresh rate).
 - `styles.css` and `app.js` — design and behaviour. **Leave these alone.**
 
 **Upload everything you want to change in one go.** Each commit makes Netlify republish the site, and the hosting plan only allows so many of those per month — five files committed separately costs five times as much as five files committed together.
@@ -114,8 +116,6 @@ To upload:
 Click `config.js` → pencil icon. The lines you might touch:
 - `komootEmbed` → **don't put the Komoot code here**; put it in the sheet (Config → `komoot_embed`). The embed code contains quote marks, and a stray quote in this file stops the whole site loading (this happened once — the page went blank apart from the headings). If you ever must edit this file, change only text between the existing quotes/backticks, and check the site a minute later.
 - `youtubeId: "-kX5uTaqBJs"` → the bit after `v=` in a YouTube link; this is the video on the "Why" section.
-- `instagram: ""` → put your handle between the quotes, without the @. An Instagram button then appears in "Follow along".
-- `stravaAthleteUrl: ""` → your Strava profile web address between the quotes, if you want a Strava button. Leave blank for none.
 - `contactEmail: "tom.spearman@pm.me"` → where the "email Tom" links go.
 Commit as above.
 

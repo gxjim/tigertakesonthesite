@@ -50,19 +50,23 @@
 <main id="top">
 
   <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="hero-head">
+    <h1>
+      184 Miles<br>
+      England’s Longest River<br>
+      No stopping ’til the end!
+    </h1>
+    <p class="hero-dates">Saturday 10 – Sunday 11 October 2026</p>
+  </section>
+
+  <!-- Moving banner: the total raised and the countdown, alternating. -->
+  <div class="ticker" id="ticker" aria-label="Fundraising total and countdown">
+    <div class="ticker-track" id="ticker-track"></div>
+  </div>
+
   <section class="hero">
 
     <div class="hero-copy">
-      <p class="eyebrow">
-        Saturday 10 – Sunday 11 October 2026
-        <span id="countdown"></span>
-      </p>
-
-      <h1>
-        184 Miles<br>
-        England’s Longest River<br>
-        No stopping ’til the end!
-      </h1>
 
       <p class="lede">
         I’m Tom, known to many through family as Tiger.
@@ -102,10 +106,6 @@
   <section class="gallery" id="gallery">
 
     <div class="gallery-head">
-      <div>
-        <p class="eyebrow">Along the river</p>
-        <h2>Photos</h2>
-      </div>
 
       <div class="gallery-nav">
         <button class="btn btn-outline" id="gal-prev" type="button" aria-label="Previous photos">←</button>
@@ -134,7 +134,7 @@
     </div>
 
     <div class="raise-actions">
-      <a class="btn btn-primary" id="donate-btn" href="#" target="_blank" rel="noopener">Donate on JustGiving</a>
+      <a class="btn btn-primary" id="donate-btn" href="#" target="_blank" rel="noopener">Donate</a>
       <a class="btn btn-outline" href="sponsor.html">Sponsor a marathon</a>
     </div>
 
@@ -252,7 +252,6 @@
     <div class="panel" id="panel-reason" role="tabpanel" aria-labelledby="tab-reason" hidden>
   <section class="why" id="story">
 
-    <p class="eyebrow">Why the Thames</p>
 
     <blockquote class="pull"></blockquote>
 
@@ -293,10 +292,6 @@
     <div class="panel" id="panel-updates" role="tabpanel" aria-labelledby="tab-updates" hidden>
   <section class="updates" id="updates" hidden>
 
-    <p class="eyebrow">Notes from the towpath</p>
-
-    <h2>Tom's updates</h2>
-
     <div class="posts" id="posts"></div>
 
     <button
@@ -315,38 +310,18 @@
 
   <section class="after">
 
-    <div class="after-grid">
+    <div class="card small" id="follow">
+      <p class="eyebrow">Follow along</p>
+      <div class="embeds" id="insta-embeds"></div>
+    </div>
 
-      <div class="card small" id="follow">
+    <div class="card small" id="press">
 
-        <p class="eyebrow">Follow along</p>
+      <p class="eyebrow">Press and contact</p>
 
-        <p>
-          Training updates and the odd photo, between now and October.
-        </p>
-
-        <div class="social">
-          <a class="btn btn-outline" id="insta-btn" href="#" target="_blank" rel="noopener">Instagram</a>
-          <a class="btn btn-outline" id="strava-btn" href="#" target="_blank" rel="noopener">Strava</a>
-        </div>
-
-        <!-- Filled in from the sheet: Config keys `strava_embed` and `instagram_embed`. -->
-        <div class="embeds">
-          <div class="embed" id="strava-embed" hidden></div>
-          <div class="embed" id="insta-embed" hidden></div>
-        </div>
-
-      </div>
-
-      <div class="card small" id="press">
-
-        <p class="eyebrow">Press and contact</p>
-
-        <p>
-          Free-to-use images and press release <a href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-" target="_blank" rel="noopener">download here</a>. Press release <a href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-" target="_blank" rel="noopener">download here</a>. You are welcome to contact Tom by email <a id="press-mail" href="mailto:tom.spearman@pm.me">tom.spearman@pm.me</a> or mobile 07857 065324.
-        </p>
-
-      </div>
+      <p>
+        Free-to-use images and press release <a href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-" target="_blank" rel="noopener">download here</a>. You are welcome to contact Tom by email <a id="press-mail" href="mailto:tom.spearman@pm.me">tom.spearman@pm.me</a> or mobile 07857 065324.
+      </p>
 
     </div>
 
