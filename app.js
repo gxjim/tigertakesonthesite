@@ -5,6 +5,14 @@
    the page renders before anything is connected.                             */
 
 (() => {
+  if (!window.TIGER_CONFIG) {
+    // config.js failed to load or parse (a stray quote is the usual cause). Say so visibly rather than showing a blank river.
+    const n = document.createElement("p");
+    n.style.cssText = "margin:16px auto;max-width:60ch;padding:12px 16px;background:#fff4cc;border:1px solid #f1dc8c;border-radius:6px;font:14px system-ui,sans-serif;color:#14181f";
+    n.textContent = "The site's settings file (config.js) has an error, so live data can't load. Usually a quote mark in the wrong place — restore the previous version of config.js on GitHub.";
+    (document.querySelector("main") || document.body).prepend(n);
+    return;
+  }
   const C = window.TIGER_CONFIG;
   const $ = (s) => document.querySelector(s);
   const LONDON = "Europe/London";
@@ -30,7 +38,7 @@
   ].map(r => ({ id:+r[0], name:r[1], miles:+r[2], target:r[3], actual:r[4], runners:r[5], note:r[6] }));
 
   const SAMPLE_SPONSORS = [1,2,3,4,5,6,7].map(n => ({ leg:n, from:"", to:"", price:"", status:"available", sponsor:"", logo:"", photo:"", caption:"", note:"" }));
-  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"26000", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"" };
+  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"" };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   const fmtGBP = (n) => "£" + Math.round(n).toLocaleString("en-GB");
@@ -101,7 +109,7 @@
     const config = Object.assign({}, SAMPLE_CONFIG, Object.fromEntries(cfgRows.map(r => [r.key, r.value])));
     const tab = (config.rehearsal || "").toLowerCase() === "yes" ? C.tabs.rehearsal : C.tabs.checkpoints;
     const cps = (await sheetTab(tab)).map(r => { const rk = Object.keys(r).find(k => /runner/.test(k)); return { id:+r.id, name:r.name, miles:+r.miles, target:r.target, actual:r.actual, runners:(rk ? r[rk] : "") || "", note:r.note || "", eta:r.eta || r.tom_eta || "", pace:r.pace || r.current_pace || "" }; });
-    return { config, checkpoints: cps, sponsors: sponsors.map(s => ({ leg:+s.leg, from:s.from, to:s.to, price:s.price, status:(s.status||"available").toLowerCase(), sponsor:s.sponsor, logo:s.logo_url || s.logo || "", photo:s.photo_url || s.photo || "", caption:s.caption || "", note:s.note || "" })), updates: updates.map(u => ({ date:u.date || "", title:u.title || "", body:u.body || u.text || "", photo:u.photo_url || u.photo || "", link:u.link || "" })).filter(u => u.title || u.body), photos: photos.map(p => ({ url: p.url || p.photo_url || "", caption: p.caption || "" })).filter(p => p.url), source: "sheet" };
+    return { config, checkpoints: cps, sponsors: sponsors.map(s => ({ leg:+s.leg, from:s.from, to:s.to, price:s.price, status:(s.status||"available").toLowerCase(), sponsor:s.sponsor, logo:s.logo_url || s.logo || "", photo:s.photo_url || s.photo || "", caption:s.caption || "", note:s.note || "" })), updates: updates.map(u => ({ date:u.date || "", title:u.title || "", body:u.body || u.text || "", photo:u.photo_url || u.photo || "", link:u.link || u[Object.keys(u).find(k => /^link/.test(k)) || "link"] || "" })).filter(u => u.title || u.body), photos: photos.map(p => ({ url: p.url || p.photo_url || "", caption: p.caption || "" })).filter(p => p.url), source: "sheet" };
   }
 
   // Fundraising total comes from the Config tab (Tom or crew type in the
@@ -405,18 +413,23 @@
   }
 
   // ── Render: Komoot map (optional) ────────────────────────────────────────
-  function renderVideo() {
+  function renderVideo(config = {}) {
     const v = $("#video"); if (!v) return;
-    if (!C.youtubeId) { v.hidden = true; return; }
-    v.hidden = false; v.querySelector("iframe").src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(C.youtubeId)}?rel=0`;
+    let id = config.youtube_id || C.youtubeId || "";
+    const m = id.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{6,})/); if (m) id = m[1];   // a full link works too
+    if (!id) { v.hidden = true; return; }
+    const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0`;
+    v.hidden = false; const f = v.querySelector("iframe"); if (f.src !== src) f.src = src;
   }
-  function renderKomoot() {
+  function renderKomoot(config = {}) {
     const wrap = $("#komoot"); if (!wrap) return;
-    let src = C.komootEmbed || "";
+    let src = config.komoot_embed || C.komootEmbed || "";
+    src = src.replace(/&amp;/g, "&");
     const m = src.match(/src="([^"]+)"/); if (m) src = m[1];              // accept the whole <iframe> code too
     if (!src) { wrap.hidden = true; return; }
     wrap.hidden = false;
-    wrap.querySelector("iframe").src = src;
+    const f = wrap.querySelector("iframe");
+    if (f.src !== src) f.src = src;
   }
 
   function renderRaise(jg) {
@@ -427,13 +440,13 @@
       $("#bar-fill").style.width = Math.min(100, (jg.raised / target) * 100).toFixed(1) + "%";
       $("#donor-count").textContent = jg.donors ? `${jg.donors.toLocaleString("en-GB")} supporters` : "";
     } else {
-      $("#raised").textContent = "£30,000+";
-      $("#bar-fill").style.width = "60%";
+      $("#raised").textContent = "£31,000+";
+      $("#bar-fill").style.width = "62%";
     }
   }
   // ── Share ─────────────────────────────────────────────────────────────────
   function shareText(model, state, jg) {
-    const raised = jg && jg.raised != null ? fmtGBP(jg.raised) : "over £30,000";
+    const raised = jg && jg.raised != null ? fmtGBP(jg.raised) : "over £31,000";
     if (document.body.dataset.rehearsal === "yes" && model.lastDone && model.position.next)
       return `Test run: Tiger is between ${model.lastDone.name} and ${model.position.next.name}, ${model.position.miles.toFixed(0)} miles in — a dress rehearsal for 184 miles of Thames in October. ${location.origin}`;
     if (state === "live" && model.lastDone && model.position.next)
@@ -499,6 +512,8 @@
       renderJourney(model, state, data.config, data.sponsors);
       renderUpdates(data.updates);
       renderGallery(data.photos);
+      renderKomoot(data.config);
+      renderVideo(data.config);
       // Images load later and change layout — redraw the river when they do.
       $("#flow").querySelectorAll("img").forEach(img => { if (!img.complete) img.addEventListener("load", () => drawRiver(model, state), { once: true }); });
       if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) { scrolledToTiger = true; setTimeout(scrollToTiger, 600); }

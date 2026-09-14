@@ -25,6 +25,10 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 | `state` | Leave blank — the site works out before / live / finished by itself. Only type `live` or `finished` to force it. |
 | `rehearsal` | `yes` makes the site use the Rehearsal tab instead of Checkpoints (for a practice run). Set back to `no` afterwards. |
 | `last_update` | Optional free text, e.g. `Sat 13:12`, shown under the route. |
+| `komoot_embed` | Paste the whole Komoot embed code here (Komoot → Share → Embed → copy), or just its web address. The map appears above the river. **Do this here, not in config.js** — the sheet doesn't mind the quote marks in the code; a code file does. |
+| `youtube_id` | Optional: a YouTube link or ID for the video in the "Why" section. |
+
+**The Config tab must be one key per row**: `key` in A1 and `value` in B1, then `state` in A2, `livetrack_url` in A3, and so on down column A, each with its value in column B of the same row. If several keys end up in one cell (it happens when text is pasted in), the site can't read any of them and falls back to a placeholder total.
 
 ### Checkpoints tab (one row per checkpoint, Source to Thames Barrier)
 - `actual` — **the one thing the crew must do on the day.** When you reach a checkpoint, type the time in that row, e.g. `12:58` (the site works out which day). This turns that checkpoint navy on the river and moves the yellow Tiger marker.
@@ -78,9 +82,9 @@ Every change on GitHub is made with a "commit" — that's just GitHub's word for
    you can change anything between `>` and `</p>`, but don't delete the `<p class="lede">` or `</p>` parts.
 5. Click the green **Commit changes…** button (top right), then **Commit changes** again in the box that pops up. Done.
 
-If something goes wrong (page looks broken), tell Jamie — GitHub keeps every previous version and it's a two-click restore.
+If something goes wrong (page looks broken, or a yellow box says the settings file has an error), tell Jamie — GitHub keeps every previous version and it's a two-click restore: on the file's page click **History**, open the last good version, and use the **⋯ → Revert** or copy its contents back.
 
-Where things are in `index.html`, top to bottom: the headline and intro (`class="hero"`), the six big numbers (`class="numbers"`), the route intro (`class="journey-head"`), your story (inside `<template id="story-template">` — the quote is in `<blockquote class="pull">`, the paragraphs below it), the "Follow along" and "Press and contact" boxes near the bottom, and the footer.
+Where things are in `index.html`, top to bottom: the headline and intro (`class="hero"`), the six big numbers (`class="numbers"`), the route intro (`class="journey-head"`), your story (`class="why"` — the quote is in `<blockquote class="pull">`, the paragraphs below it), the "Follow along" and "Press and contact" boxes near the bottom, and the footer.
 
 ### Changing or adding photos (img folder)
 Photos have fixed names and the page picks them up by name:
@@ -103,7 +107,7 @@ To upload:
 
 ### Settings (config.js)
 Click `config.js` → pencil icon. The lines you might touch:
-- `komootEmbed: ""` → in Komoot, open the tour → Share → Embed → copy the code and paste it between the quotes. A map of the route appears above the river.
+- `komootEmbed` → **don't put the Komoot code here**; put it in the sheet (Config → `komoot_embed`). The embed code contains quote marks, and a stray quote in this file stops the whole site loading (this happened once — the page went blank apart from the headings). If you ever must edit this file, change only text between the existing quotes/backticks, and check the site a minute later.
 - `youtubeId: "-kX5uTaqBJs"` → the bit after `v=` in a YouTube link; this is the video on the "Why" section.
 - `instagram: ""` → put your handle between the quotes, without the @. An Instagram button then appears in "Follow along".
 - `stravaAthleteUrl: ""` → your Strava profile web address between the quotes, if you want a Strava button. Leave blank for none.
