@@ -199,6 +199,7 @@ async function loadSheet() {
 
   const cps = (await sheetTab(tab)).map(r => {
     const rk = Object.keys(r).find(k => /runner/.test(k));
+      const ck = Object.keys(r).find(k => /crew/.test(k));
 
     return {
       id: +r.id,
@@ -375,7 +376,8 @@ async function loadSheet() {
         const d = minutes(cp.forecastAt - cp.targetAt);
         times = `<b>${fmtTime(cp.forecastAt)}${d ? `<span class="delta ${d > 0 ? "late" : "early"}">${d > 0 ? "+" : "−"}${Math.abs(d)}m</span>` : ""}</b><span>${cp.manual === "eta" ? "Tom's estimate" : cp.manual === "pace" ? "at Tom's pace" : "forecast"} · plan ${fmtTime(cp.targetAt)}</span>`;
       }
-      const runners = cp.runners ? `<div class="runners">${last ? "" : "Next stretch with "}${esc(cp.runners)}</div>` : "";
+      const runners = cp.runners ? `<div class="runners">Main support runner is ${esc(cp.runners)}</div>` : "";
+      const crew = cp.crew ? `<div class="runners">Support crew is ${esc(cp.crew)}</div>` : "";
       const cpNote = cp.note ? `<p class="cp-note">${esc(cp.note)}</p>` : "";
 
       // Marathon that starts at this checkpoint (if any): its photo + note sit on the right, under the checkpoint.
@@ -392,7 +394,7 @@ async function loadSheet() {
       html.push(`<li class="node ${cp.status || ""} ${first ? "first" : ""} ${last ? "last" : ""}" data-i="${i}" style="--mx:${mx};grid-row:${rowOf(i)}">
         <span class="mark"></span>
         <div class="name">${esc(cp.name)}<small>mile ${cp.miles}</small></div>
-        <div class="times">${times}</div>${runners}${cpNote}${stretch}</li>`);
+        <div class="times">${times}</div>${runners}${crew}${cpNote}${stretch}</li>`);
       if (!last) html.push(`<li class="spacer" style="grid-row:${rowOf(i) + 1};min-height:${Math.max(28, Math.round(nextMiles * 4.5))}px"></li>`);
 
       // Marathon block (left column), spanning its two half-marathons. Not during a rehearsal — the legs don't map.
@@ -494,8 +496,8 @@ async function loadSheet() {
       s.textContent = `${lastCp.miles} miles, ${model.cps.length} checkpoints. A dress rehearsal for the tracker, the crew and the legs. Starts ${fmtDay(model.start)} ${fmtTime(model.start)}.`;
     } else if (state === "before") {
       l.textContent = "The route";
-      h.textContent = "From the source in the Cotswolds to London";
-      s.textContent = "I will have a checkpoint roughly every 13 miles, where I will meet support crew. The path is mostly trail, running along the river course as it grows from a muddy field to the biggest river in England.";
+      h.textContent = "Running the Length of the Thames";
+      s.textContent = "The Thames Path runs for 184 miles from the river\u2019s source in the Cotswolds to the Thames Barrier in London. I\u2019m aiming to run at around 6:30 min/km, with a short walking break every 30 minutes, and to finish in under 40 hours \u2014 before sunset on Sunday.";
     } else if (state === "finished") {
       const fin = model.cps[model.cps.length - 1];
       l.textContent = reh ? "Test run · finished" : "Finished";
@@ -560,7 +562,7 @@ async function loadSheet() {
       ...Array.from({ length: 24 }, (_, i) => ({ url: `img/photo-${i + 1}.jpg`, caption: "" }))
     ];
     track.innerHTML = list.map((p, i) => `<figure class="slide">
-      <img src="${esc(p.url)}" alt="${esc(p.caption)}" ${i < 3 ? "" : 'loading="lazy"'}>
+      <img src="${esc(p.url)}" alt="${esc(p.caption)}" ${i < 12 ? "" : 'loading="lazy"'}>
       ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
 
     // Show each photo as it arrives; drop the ones that fail. The section only disappears if
@@ -589,7 +591,7 @@ async function loadSheet() {
   // activity or post link (or the whole embed snippet) into Config `strava_embed` /
   // `instagram_embed`. Nothing is embedded unless a link is there, and only Strava and
   // Instagram addresses are accepted — anything else is ignored.
-  let embedScripts = {};
+  let embedScripts = {};   // scripts we've injected once (Instagram)
   function loadOnce(key, src) {
     if (embedScripts[key]) return;
     embedScripts[key] = true;
@@ -608,8 +610,20 @@ async function loadSheet() {
       if (sId) {
         if (sEl.dataset.id !== sId) {
           sEl.dataset.id = sId;
-          sEl.innerHTML = `<div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="${sId}" data-style="standard"></div>`;
-          loadOnce("strava", "https://strava-embeds.com/embed.js");
+          sEl.innerHTML = `<div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="${sId}" data-style="standard" data-from-embed="false"></div>`;
+          // Strava's script only scans for placeholders when it loads, so re-add it each time
+          // the activity changes rather than relying on a one-time load.
+          document.querySelectorAll('script[data-strava]').forEach(n => n.remove());
+          const sc = document.createElement("script");
+          sc.async = true; sc.dataset.strava = "1"; sc.src = "https://strava-embeds.com/embed.js";
+          document.body.appendChild(sc);
+          // If it hasn't turned into an embed shortly (blocked by a tracker blocker, or the
+          // activity can't be embedded), show a plain link instead of an empty box.
+          setTimeout(() => {
+            if (!sEl.querySelector("iframe")) {
+              sEl.innerHTML = `<p class="fine" style="margin:0"><a href="https://www.strava.com/activities/${sId}" target="_blank" rel="noopener">See Tom's latest run on Strava →</a></p>`;
+            }
+          }, 3500);
         }
         sEl.hidden = false;
       } else sEl.hidden = true;
@@ -770,8 +784,42 @@ async function loadSheet() {
     document.querySelectorAll(".stat, .hero-stat").forEach((el, i) => { el.style.setProperty("--i", i); });
   }
 
+  // ── Tabs ──────────────────────────────────────────────────────────────────
+  function wireTabs() {
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    if (!tabs.length) return;
+    const show = (id) => {
+      tabs.forEach(t => {
+        const on = t.id === id;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        const panel = document.getElementById(t.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+      if (latest.model) drawRiver(latest.model, latest.state);   // the river needs a visible box to measure
+    };
+    tabs.forEach(t => t.addEventListener("click", () => show(t.id)));
+    // Keyboard: left/right move between tabs, as people expect of a tablist.
+    tabs.forEach((t, i) => t.addEventListener("keydown", e => {
+      const n = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!n) return;
+      e.preventDefault();
+      const next = tabs[(i + n + tabs.length) % tabs.length];
+      next.focus(); show(next.id);
+    }));
+    // A link to #river or #updates should open that tab, not just jump.
+    const forHash = { "#river": "tab-run", "#story": "tab-reason", "#updates": "tab-updates" };
+    const openForHash = () => { const id = forHash[location.hash]; if (id) { show(id); document.getElementById("tabs").scrollIntoView({ behavior: "smooth", block: "start" }); } };
+    document.querySelectorAll('a[href^="#"], a[href*="index.html#"]').forEach(a => {
+      a.addEventListener("click", () => { const h = "#" + a.getAttribute("href").split("#")[1]; if (forHash[h]) setTimeout(() => show(forHash[h]), 0); });
+    });
+    window.addEventListener("hashchange", openForHash);
+    openForHash();
+    window.__showTab = show;
+  }
+
   window.__refresh = refresh;
   wireStatic();
+  wireTabs();
   renderKomoot();
   renderVideo();
   animateStats();

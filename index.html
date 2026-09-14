@@ -145,44 +145,15 @@
   </section>
 
   <!-- ── Why the Thames ───────────────────────────────────── -->
-  <section class="why" id="story">
-
-    <p class="eyebrow">Why the Thames</p>
-
-    <blockquote class="pull"></blockquote>
-
-    <div class="story-grid">
-      <div class="story-body">
-
-        <p>
-          I have a good pair of legs, so I better put them to use for a cause that desperately needs more funding. Motor Neurone Disease is a progressive disease that damages the cells carrying messages from the brain to the muscles. As muscles weaken, it becomes harder to walk, talk, eat and breathe. It is a desperately cruel disease. This is especially personal for me because my amazing mum, Elisa, was diagnosed with MND last year.
-        </p>
-
-        <p>
-          I am raising money for My Name’5 Doddie Foundation (MNDF), supporting their vital research and their mission to create a world free of MND. MNDF was set up by former Scotland rugby player and sports personality Doddie Weir after he was diagnosed with the disease. Doddie died aged 52 in 2022, almost six years after his diagnosis. His charity has so far committed over £24 million to cutting-edge research. There is no cure for MND, but research is making progress. Treatments are improving, and science is beginning to understand genetic and environmental factors behind MND.
-        </p>
-
-        <p>
-          The Thames has been my guide in the past. When I was a student, I swam in it every week, and rivers have continued to be a source of connection and grounding for me. So it feels right to follow this river for something that matters so much.
-        </p>
-
-      </div>
+  <!-- ── The Run / The Reason / Updates ───────────────────── -->
+  <section class="tabs" id="tabs">
+    <div class="tablist" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-run" aria-controls="panel-run" aria-selected="true">The Run</button>
+      <button class="tab" role="tab" id="tab-reason" aria-controls="panel-reason" aria-selected="false">The Reason</button>
+      <button class="tab" role="tab" id="tab-updates" aria-controls="panel-updates" aria-selected="false">Updates</button>
     </div>
 
-    <div class="video" id="video" hidden>
-      <iframe
-        title="Tom on why he's running the Thames"
-        src="about:blank"
-        loading="lazy"
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
-        referrerpolicy="strict-origin-when-cross-origin">
-      </iframe>
-    </div>
-
-  </section>
-
-  <!-- ── The river ────────────────────────────────────────── -->
+    <div class="panel" id="panel-run" role="tabpanel" aria-labelledby="tab-run">
   <section class="journey" id="river">
 
     <div class="journey-head">
@@ -193,13 +164,20 @@
       </p>
 
       <h2 id="position-headline">
-        From the source in the Cotswolds to London
+        Running the Length of the Thames
       </h2>
 
       <p class="sub" id="position-sub">
-        I will have a checkpoint roughly every 13 miles, where I will meet support crew. The path is mostly trail, running along the river course as it grows from a muddy field to the biggest river in England.
+        The Thames Path runs for 184 miles from the river’s source in the Cotswolds to the Thames Barrier in London. I’m aiming to run at around 6:30 min/km, with a short walking break every 30 minutes, and to finish in under 40 hours — before sunset on Sunday.
       </p>
 
+      <p class="sub">
+        There will be a checkpoint roughly every 13 miles, where my crew will help with food, water and kit, while friends and support runners will join me for different sections along the way. The plan is simple: keep the stops short, keep moving through the night, and no stopping until the end.
+      </p>
+
+      <p class="sub">
+        You’ll be able to follow my progress live on the tracker, and anyone who would like to come out and support — or even join me for part of the route — is very welcome.
+      </p>
       <div class="hero-stats route-stats" aria-label="The route in numbers">
 
         <div class="hero-stat" style="--i:0">
@@ -269,6 +247,50 @@
   </section>
 
   <!-- ── Updates ──────────────────────────────────────────── -->
+    </div>
+
+    <div class="panel" id="panel-reason" role="tabpanel" aria-labelledby="tab-reason" hidden>
+  <section class="why" id="story">
+
+    <p class="eyebrow">Why the Thames</p>
+
+    <blockquote class="pull"></blockquote>
+
+    <div class="story-grid">
+      <div class="story-body">
+
+        <p>
+          I have a good pair of legs, so I better put them to use for a cause that desperately needs more funding. Motor Neurone Disease is a progressive disease that damages the cells carrying messages from the brain to the muscles. As muscles weaken, it becomes harder to walk, talk, eat and breathe. It is a desperately cruel disease. This is especially personal for me because my amazing mum, Elisa, was diagnosed with MND last year.
+        </p>
+
+        <p>
+          I am raising money for My Name’5 Doddie Foundation (MNDF), supporting their vital research and their mission to create a world free of MND. MNDF was set up by former Scotland rugby player and sports personality Doddie Weir after he was diagnosed with the disease. Doddie died aged 52 in 2022, almost six years after his diagnosis. His charity has so far committed over £24 million to cutting-edge research. There is no cure for MND, but research is making progress. Treatments are improving, and science is beginning to understand genetic and environmental factors behind MND.
+        </p>
+
+        <p>
+          The Thames has been my guide in the past. When I was a student, I swam in it every week, and rivers have continued to be a source of connection and grounding for me. So it feels right to follow this river for something that matters so much.
+        </p>
+
+      </div>
+    </div>
+
+    <div class="video" id="video" hidden>
+      <iframe
+        title="Tom on why he's running the Thames"
+        src="about:blank"
+        loading="lazy"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin">
+      </iframe>
+    </div>
+
+  </section>
+
+  <!-- ── The river ────────────────────────────────────────── -->
+    </div>
+
+    <div class="panel" id="panel-updates" role="tabpanel" aria-labelledby="tab-updates" hidden>
   <section class="updates" id="updates" hidden>
 
     <p class="eyebrow">Notes from the towpath</p>
@@ -288,6 +310,9 @@
   </section>
 
   <!-- ── After the Barrier ────────────────────────────────── -->
+    </div>
+  </section>
+
   <section class="after">
 
     <div class="after-grid">
@@ -318,24 +343,7 @@
         <p class="eyebrow">Press and contact</p>
 
         <p>
-          Tom "Tiger" Spearman, 31, a parish councillor from Ford near Bath, is attempting the full 184-mile Thames Path non-stop from 5am on Saturday 10 October 2026, aiming to finish inside 40 hours, after his mum's diagnosis with motor neurone disease last year. More than £30,000 has already been raised toward his £50,000 target.
-        </p>
-
-        <p>
-          The attempt follows a run of local fundraising for MND: supporters of Lewis Moody raised £60,000 with a 24-hour run near Bath in June, and Colerne Rugby Club's skittles marathon raised £15,000 for the MND Association.
-        </p>
-
-        <p class="fine">
-          Free-to-use images:
-          <a
-            href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-?usp=drive_link"
-            target="_blank"
-            rel="noopener">
-            download here
-          </a>.
-          Interviews and timings:
-          <a id="press-mail" href="mailto:">email Tom</a>
-          or call 07857 065324.
+          Free-to-use images and press release <a href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-" target="_blank" rel="noopener">download here</a>. Press release <a href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-" target="_blank" rel="noopener">download here</a>. You are welcome to contact Tom by email <a id="press-mail" href="mailto:tom.spearman@pm.me">tom.spearman@pm.me</a> or mobile 07857 065324.
         </p>
 
       </div>

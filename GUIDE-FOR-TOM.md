@@ -27,14 +27,15 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 | `last_update` | Optional free text, e.g. `Sat 13:12`, shown under the route. |
 | `komoot_embed` | Paste the whole Komoot embed code here (Komoot → Share → Embed → copy), or just its web address. The map appears above the river. **Do this here, not in config.js** — the sheet doesn't mind the quote marks in the code; a code file does. |
 | `youtube_id` | Optional: a YouTube link or ID for the video in the "Why" section. |
-| `strava_embed` | Optional: paste the web address of one Strava activity (e.g. `https://www.strava.com/activities/1234567890`). That run is then shown properly on the page, not just linked. Change it whenever you want a different run on there. |
+| `strava_embed` | Optional: paste the web address of one Strava activity (e.g. `https://www.strava.com/activities/1234567890`). Strava embeds only work if the activity's privacy is set to **Everyone** (including the map), and some ad/tracker blockers block Strava's embed entirely — if that happens the site quietly shows a link to the run instead of an empty box. |
 | `instagram_embed` | Optional: paste the web address of one Instagram post (`https://www.instagram.com/p/XXXXXXX/`). Same idea — the post itself appears on the page. |
 
 **The Config tab must be one key per row**: `key` in A1 and `value` in B1, then `state` in A2, `livetrack_url` in A3, and so on down column A, each with its value in column B of the same row. If several keys end up in one cell (it happens when text is pasted in), the site can't read any of them and falls back to a placeholder total.
 
 ### Checkpoints tab (one row per checkpoint, Source to Thames Barrier)
 - `actual` — **the one thing the crew must do on the day.** When you reach a checkpoint, type the time in that row, e.g. `12:58` (the site works out which day). This turns that checkpoint navy on the river and moves the yellow Tiger marker.
-- `runners` — who is running the next stretch with you, e.g. `Ed, Sam and the Colerne lot`. Shows under the checkpoint name.
+- `runners` (the "Principal Support runners" column) — shows as **"Main support runner is …"** under the checkpoint name.
+- `crew` — optional new column. Add a column with `crew` in the header and it shows as **"Support crew is …"** on the same checkpoint.
 - `eta` — optional. If you want to say "I'll be in Henley about 02:40" for one specific checkpoint, type `02:40` here. It overrides the forecast for that checkpoint only. Usually `current_pace` in Config is easier.
 - `pace` — optional, per checkpoint, same format as `current_pace`, if one stretch will be slower than the rest.
 - Don't change `id`, `name`, `miles` or `target` — the route is fixed.

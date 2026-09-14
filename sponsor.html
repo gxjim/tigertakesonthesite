@@ -33,8 +33,8 @@
   <section class="page-head">
     <a class="back" href="index.html">← Back to the run</a>
     <p class="eyebrow">Sponsor a marathon</p>
-    <h1>Seven marathons.<br>Put your name on one.</h1>
-    <p class="lede">184 miles of the Thames Path, run in one go, is a little over seven consecutive marathons. Each one is a named stretch of river with its own character — and each one can carry the name of a business, a family or a friend who made it possible.</p>
+    <h1 class="page-title">Put your name on one of the marathons</h1>
+    <p class="lede">I am inviting local businesses to sponsor a marathon. The length of the River Thames is over 7 marathons long, and they will become progressively harder!</p>
   </section>
 
   <section>
@@ -43,19 +43,19 @@
     <div class="what">
       <div>
         <h3>On the river</h3>
-        <p>Your name sits beside your stretch on the live tracker, from now until long after the run. Thousands of people will follow that page over race weekend.</p>
+        <p>Your name sits beside your stretch on the tracker, before and after the run.</p>
+      </div>
+      <div>
+        <h3>On the shirt</h3>
+        <p>Your logo can be printed on the shirt I wear for your marathon — I have to change shirts every marathon anyway.</p>
       </div>
       <div>
         <h3>In the updates</h3>
-        <p>When Tom passes through your stretch, you're named in the update from that part of the river — on the site and in whatever gets shared from it.</p>
+        <p>You get a mention in the update from your part of the river, and in anything shared from it.</p>
       </div>
       <div>
-        <h3>In the press</h3>
-        <p>Sponsors are credited in the media release and in any local coverage that follows. Bath, Wiltshire and Thames-side press have already been in touch.</p>
-      </div>
-      <div>
-        <h3>Where it actually goes</h3>
-        <p>Every pound goes to the My Name'5 Doddie Foundation, which has committed more than £24 million to research into a disease that still has no cure.</p>
+        <h3>Where it goes</h3>
+        <p>Every pound goes to the My Name'5 Doddie Foundation, for MND research.</p>
       </div>
     </div>
   </section>
@@ -63,16 +63,13 @@
   <section>
     <p class="eyebrow">The seven</p>
     <h2>Choose your stretch</h2>
-    <p class="sub">Prices reflect the character of each leg — the later marathons are the hard ones, through the night and into London. Availability updates live.</p>
+    <p class="sub">The later marathons are the harder ones, through the night and into London.</p>
     <div class="marathons" id="marathons"></div>
     <p class="fine" id="m-note"></p>
   </section>
 
-  <section class="cta-card">
-    <h2>Interested?</h2>
-    <p>Email Tom with the marathon number and he'll come back to you the same day. Businesses can be invoiced, and he's happy to talk through anything you'd want in return — a logo, a mention, a photo from your stretch of river.</p>
-    <p><a class="btn" id="sponsor-mail" href="mailto:">Email Tom about sponsoring</a></p>
-    <p class="fine" style="color:rgba(255,255,255,0.7)">Or call 07857 065324. In aid of the My Name'5 Doddie Foundation, registered charity SC047871.</p>
+  <section class="contact-plain">
+    <p>If you would like to sponsor one, email Tom at <a id="sponsor-mail" href="mailto:tom.spearman@pm.me">tom.spearman@pm.me</a> or call 07857 065324. Happy to talk through what would work for you.</p>
   </section>
 
 </main>
@@ -90,7 +87,7 @@
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
   const mail = `mailto:${C.contactEmail || ""}`;
   $("#nav-donate").href = (C.justGiving && C.justGiving.pageUrl) || "#";
-  $("#sponsor-mail").href = `${mail}?subject=Sponsoring%20a%20marathon%20-%20Tiger%20Takes%20on%20the%20Thames`;
+  const sm = $("#sponsor-mail"); if (sm) sm.href = `${mail}?subject=Sponsoring%20a%20marathon%20-%20Tiger%20Takes%20on%20the%20Thames`;
 
   // Same fallback list as the main page, replaced by the sheet when it answers.
   const FALLBACK = [
