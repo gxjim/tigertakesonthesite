@@ -71,6 +71,8 @@ You'll have had an email inviting you to `gxjim/tigertakesonthesite`. Accept it,
 - `config.js` — a few settings (Instagram handle, Strava link, contact email).
 - `styles.css` and `app.js` — design and behaviour. **Leave these alone.**
 
+**Upload everything you want to change in one go.** Each commit makes Netlify republish the site, and the hosting plan only allows so many of those per month — five files committed separately costs five times as much as five files committed together.
+
 Every change on GitHub is made with a "commit" — that's just GitHub's word for "save". After you commit, Netlify republishes the site automatically; give it one to two minutes, then refresh **tigertakesonthethames.com** (hard refresh: Ctrl+Shift+R on Windows, Cmd+Shift+R on Mac).
 
 ### Changing words (index.html)

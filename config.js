@@ -41,6 +41,7 @@ window.TIGER_CONFIG = {
   contactEmail: "tom.spearman@pm.me",
 
   // Behaviour
-  refreshSeconds: 60,
+  refreshSeconds: 60,        // while he's running
+  idleRefreshSeconds: 300,   // before and after — keeps Netlify credit use down
   forecast: { minRatio: 0.85, maxRatio: 1.6, legsToAverage: 2 }
 };

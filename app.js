@@ -94,8 +94,10 @@
     return rows;
   }
   async function sheetTab(tab) {
-    const url = `/.netlify/functions/sheet?sheetId=${encodeURIComponent(C.sheetId)}&tab=${encodeURIComponent(tab)}&_=${Date.now()}`;
-    const res = await fetch(url, { cache: "no-store" });
+    // `_` changes only every 30s: fresh enough for the day, but lets the CDN serve most polls.
+    const bucket = Math.floor(Date.now() / 30000);
+    const url = `/.netlify/functions/sheet?sheetId=${encodeURIComponent(C.sheetId)}&tab=${encodeURIComponent(tab)}&_=${bucket}`;
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`Sheet ${tab}: ${res.status}`);
     const rows = parseCSV(await res.text());
     const head = rows.shift().map(h => h.trim().toLowerCase().replace(/\s+/g, "_"));
@@ -103,9 +105,17 @@
   }
 
   // ── Data loading ──────────────────────────────────────────────────────────
+  const SLOW = { at: 0 };   // sponsors / updates / photos, re-read every 10 minutes
   async function loadSheet() {
     if (!C.sheetId) return { config: SAMPLE_CONFIG, checkpoints: SAMPLE_CHECKPOINTS, sponsors: SAMPLE_SPONSORS, updates: [], photos: [], source: "sample" };
-    const [cfgRows, sponsors, updates, photos] = await Promise.all([sheetTab(C.tabs.config), sheetTab(C.tabs.sponsors), sheetTab(C.tabs.updates || "Updates").catch(() => []), sheetTab(C.tabs.photos || "Photos").catch(() => [])]);
+    // Config + checkpoints change minute to minute on the day; sponsors, updates and photos don't.
+    const slowDue = !SLOW.at || (Date.now() - SLOW.at) > 10 * 60 * 1000;
+    const [cfgRows, ...slow] = await Promise.all([
+      sheetTab(C.tabs.config),
+      ...(slowDue ? [sheetTab(C.tabs.sponsors), sheetTab(C.tabs.updates || "Updates").catch(() => []), sheetTab(C.tabs.photos || "Photos").catch(() => [])] : [])
+    ]);
+    if (slowDue) { SLOW.sponsors = slow[0]; SLOW.updates = slow[1]; SLOW.photos = slow[2]; SLOW.at = Date.now(); }
+    const sponsors = SLOW.sponsors || [], updates = SLOW.updates || [], photos = SLOW.photos || [];
     const config = Object.assign({}, SAMPLE_CONFIG, Object.fromEntries(cfgRows.map(r => [r.key, r.value])));
     const tab = (config.rehearsal || "").toLowerCase() === "yes" ? C.tabs.rehearsal : C.tabs.checkpoints;
     const cps = (await sheetTab(tab)).map(r => { const rk = Object.keys(r).find(k => /runner/.test(k)); return { id:+r.id, name:r.name, miles:+r.miles, target:r.target, actual:r.actual, runners:(rk ? r[rk] : "") || "", note:r.note || "", eta:r.eta || r.tom_eta || "", pace:r.pace || r.current_pace || "" }; });
@@ -562,5 +572,15 @@
   renderVideo();
   animateStats();
   tickCountdown(); setInterval(tickCountdown, 30000);
-  refresh(); setInterval(refresh, (C.refreshSeconds || 60) * 1000);
+  // Poll fast only when it matters: every minute once the run is under way, otherwise every 5.
+  let pollMs = 0, pollTimer = null;
+  function schedulePoll() {
+    const live = document.body.dataset.state === "live";
+    const want = (live ? (C.refreshSeconds || 60) : (C.idleRefreshSeconds || 300)) * 1000;
+    if (want === pollMs) return;
+    pollMs = want; clearInterval(pollTimer); pollTimer = setInterval(() => { refresh().then(schedulePoll); }, pollMs);
+  }
+  // Don't poll at all while the tab is hidden in someone's background.
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh().then(schedulePoll); });
+  refresh().then(schedulePoll);
 })();
