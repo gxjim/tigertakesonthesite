@@ -60,35 +60,39 @@
 
       <h1>
         184 Miles<br>
-        England's Longest River<br>
-        No stopping 'til the end!
+        England’s Longest River<br>
+        No stopping ’til the end!
       </h1>
 
       <p class="lede">
-        I’m Tom, known to many through family as Tiger. On 10 October, I’ll attempt to run the entire 184-mile Thames Path, from its source near Cirencester to the Thames Barrier in London, raising £50,000 for motor neurone disease research.
+        I’m Tom, known to many through family as Tiger.
+      </p>
+
+      <p class="lede">
+        On 10 October, I’ll be attempting to run the entire 184-mile length of the River Thames, from its source near Cirencester to the Thames Barrier in London, to raise money for Motor Neurone Disease research.
       </p>
     </div>
 
     <div class="hero-stats" aria-label="The challenge in numbers">
 
-      <div class="hero-stat">
-        <b data-count="184">184</b>
-        <span>miles, source → Thames Barrier</span>
+      <div class="hero-stat" style="--i:0">
+        <b data-count="184" data-suffix=" Miles">184 Miles</b>
+        <span>Source → Thames Barrier</span>
       </div>
 
-      <div class="hero-stat">
-        <b data-count="40" data-prefix="under ">under 40</b>
-        <span>hours, if everything goes to plan</span>
+      <div class="hero-stat" style="--i:1">
+        <b data-count="40" data-prefix="&lt;" data-suffix=" Hours">&lt;40 Hours</b>
+        <span>if everything goes to plan</span>
       </div>
 
-      <div class="hero-stat">
+      <div class="hero-stat" style="--i:2">
         <b data-count="30" data-suffix="+">30+</b>
-        <span>friends joining me along the route</span>
+        <span>friends joining along the route</span>
       </div>
 
-      <div class="hero-stat">
+      <div class="hero-stat" style="--i:3">
         <b data-count="50000" data-prefix="£">£50,000</b>
-        <span>fundraising target for MND research</span>
+        <span>fundraising target</span>
       </div>
 
     </div>
@@ -196,6 +200,20 @@
         I will have a checkpoint roughly every 13 miles, where I will meet support crew. The path is mostly trail, running along the river course as it grows from a muddy field to the biggest river in England.
       </p>
 
+      <div class="hero-stats route-stats" aria-label="The route in numbers">
+
+        <div class="hero-stat" style="--i:0">
+          <b data-count="7">7</b>
+          <span>marathons, back to back</span>
+        </div>
+
+        <div class="hero-stat" style="--i:1">
+          <b data-count="1">1</b>
+          <span>night without sleep — hopefully not two</span>
+        </div>
+
+      </div>
+
       <div class="journey-actions">
         <a
           class="btn btn-primary"
@@ -215,7 +233,7 @@
           Jump to Tiger
         </button>
 
-        <!-- Kept in the DOM because app.js wires it; remove hidden to show it. -->
+        <!-- Kept in the DOM (app.js wires it) but not shown. Remove `hidden` to bring it back. -->
         <button
           class="btn btn-outline"
           id="share-btn"
@@ -279,7 +297,7 @@
         <p class="eyebrow">Follow along</p>
 
         <p>
-          Training updates and more photos of me in yellow and blue tartan:
+          Training updates and the odd photo, between now and October.
         </p>
 
         <div class="social">
@@ -287,11 +305,25 @@
           <a class="btn btn-outline" id="strava-btn" href="#" target="_blank" rel="noopener">Strava</a>
         </div>
 
+        <!-- Filled in from the sheet: Config keys `strava_embed` and `instagram_embed`. -->
+        <div class="embeds">
+          <div class="embed" id="strava-embed" hidden></div>
+          <div class="embed" id="insta-embed" hidden></div>
+        </div>
+
       </div>
 
       <div class="card small" id="press">
 
         <p class="eyebrow">Press and contact</p>
+
+        <p>
+          Tom "Tiger" Spearman, 31, a parish councillor from Ford near Bath, is attempting the full 184-mile Thames Path non-stop from 5am on Saturday 10 October 2026, aiming to finish inside 40 hours, after his mum's diagnosis with motor neurone disease last year. More than £30,000 has already been raised toward his £50,000 target.
+        </p>
+
+        <p>
+          The attempt follows a run of local fundraising for MND: supporters of Lewis Moody raised £60,000 with a 24-hour run near Bath in June, and Colerne Rugby Club's skittles marathon raised £15,000 for the MND Association.
+        </p>
 
         <p class="fine">
           Free-to-use images:
@@ -301,8 +333,8 @@
             rel="noopener">
             download here
           </a>.
-          Please contact Tom through
-          <a href="mailto:tom.spearman@pm.me">email tom.spearman@pm.me</a>
+          Interviews and timings:
+          <a id="press-mail" href="mailto:">email Tom</a>
           or call 07857 065324.
         </p>
 

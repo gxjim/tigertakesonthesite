@@ -125,7 +125,6 @@
         <p class="fine" style="margin:6px 0 0">${esc(FLAVOUR[s.leg] || "")}</p>
         ${price ? `<span class="price">${price}</span>` : ""}
         <span class="state">${taken ? `Sponsored by ${esc(s.sponsor || "a friend of Tom's")}` : "Available"}</span>
-        <a class="btn btn-primary" href="${mail}?subject=${encodeURIComponent(`Sponsoring marathon ${s.leg}: ${s.from} to ${s.to}`)}">Sponsor this marathon</a>
       </div>`;
     }).join("");
     $("#m-note").textContent = live ? "" : "Prices shown are the published ones; email to confirm availability.";

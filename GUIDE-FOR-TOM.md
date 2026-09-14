@@ -27,6 +27,8 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 | `last_update` | Optional free text, e.g. `Sat 13:12`, shown under the route. |
 | `komoot_embed` | Paste the whole Komoot embed code here (Komoot → Share → Embed → copy), or just its web address. The map appears above the river. **Do this here, not in config.js** — the sheet doesn't mind the quote marks in the code; a code file does. |
 | `youtube_id` | Optional: a YouTube link or ID for the video in the "Why" section. |
+| `strava_embed` | Optional: paste the web address of one Strava activity (e.g. `https://www.strava.com/activities/1234567890`). That run is then shown properly on the page, not just linked. Change it whenever you want a different run on there. |
+| `instagram_embed` | Optional: paste the web address of one Instagram post (`https://www.instagram.com/p/XXXXXXX/`). Same idea — the post itself appears on the page. |
 
 **The Config tab must be one key per row**: `key` in A1 and `value` in B1, then `state` in A2, `livetrack_url` in A3, and so on down column A, each with its value in column B of the same row. If several keys end up in one cell (it happens when text is pasted in), the site can't read any of them and falls back to a placeholder total.
 
@@ -58,7 +60,7 @@ The five headers go **across row 1**, one per column: A1 `date`, B1 `title`, C1 
 - `photo_url` — optional. Either a photo you've put on GitHub (`img/post-1.jpg`) or a Google Drive photo shared as "anyone with the link" written as `https://drive.google.com/uc?export=view&id=THE_FILE_ID` (the file ID is the long string in the Drive link between `/d/` and `/view`).
 - `link` — optional, e.g. a Strava or Instagram post.
 
-The section is hidden until the first post exists.
+Each post appears collapsed — just the date and the headline — and opens when someone clicks it. The three newest are listed, with an "Earlier posts" button for the rest. The section is hidden until the first post exists.
 
 ---
 

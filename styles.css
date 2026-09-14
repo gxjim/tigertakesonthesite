@@ -17,6 +17,13 @@
   --gold-soft: #fff4cc;
   --gold-text: #8f6a00;
 
+  /* Yellow accent. --yellow is the bright Doddie yellow, used for rules, marks and anything
+     on navy. --yellow-text is the small-label colour: the same hue, darkened only as far as
+     it must be to stay readable on the cream background. Change these two and the accent
+     changes everywhere. */
+  --yellow: #f5c400;
+  --yellow-text: #a87c00;
+
   --late: #b3410f;
   --early: #1f7a4a;
 
@@ -288,7 +295,7 @@ section {
 }
 
 #countdown {
-  color: var(--gold-text);
+  color: var(--yellow-text);
   font-weight: 600;
 }
 
@@ -339,12 +346,51 @@ section {
   display: block;
   margin-top: 6px;
 
-  font-size: 13px;
+  font-size: 13.5px;
   line-height: 1.35;
-  font-weight: 500;
+  font-weight: 600;
 
-  color: var(--gold-text);
+  color: var(--yellow-text);
 }
+
+/* The rule between stats picks up the bright yellow rather than the neutral line colour. */
+.hero-stat {
+  border-bottom-color: rgba(245, 196, 0, 0.45);
+}
+
+/* Two extra numbers under the route text — same look and animation as the hero stats. */
+.route-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  margin: 26px 0 22px;
+
+  border-top: 1px solid rgba(245, 196, 0, 0.45);
+  border-bottom: 1px solid rgba(245, 196, 0, 0.45);
+}
+
+.route-stats .hero-stat {
+  padding: 18px 14px;
+  border-bottom: 0;
+}
+
+.route-stats .hero-stat:first-child {
+  border-right: 1px solid rgba(245, 196, 0, 0.45);
+}
+
+@media (max-width: 600px) {
+
+  .route-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .route-stats .hero-stat:first-child {
+    border-right: 0;
+    border-bottom: 1px solid rgba(245, 196, 0, 0.45);
+  }
+
+}
+
 
 @keyframes rise {
 
@@ -691,7 +737,11 @@ section {
 
 .journey-head {
   margin-bottom: 28px;
-  max-width: 70ch;
+}
+
+/* The route intro runs the full content width, like everything else on the page. */
+.journey-head .sub {
+  max-width: none;
 }
 
 .live-tag .dot {
@@ -1416,9 +1466,6 @@ body[data-state="finished"] .tiger .label {
   border-radius: var(--radius);
 
   overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
 }
 
 .post.older {
@@ -1426,14 +1473,71 @@ body[data-state="finished"] .tiger .label {
 }
 
 
+/* Collapsed state: date, title and opening line. Clicking the row opens the post. */
+
+.post > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 22px 26px;
+
+  cursor: pointer;
+  list-style: none;
+}
+
+.post > summary::-webkit-details-marker {
+  display: none;
+}
+
+.post > summary:hover {
+  background: var(--blue-faint);
+}
+
+.post > summary:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: -3px;
+}
+
+.post-head {
+  min-width: 0;
+}
+
+.post-head .eyebrow {
+  margin-bottom: 4px;
+}
+
+.post-head h3 {
+  margin: 0 0 6px;
+}
+
+/* Chevron: points down when closed, up when open. */
+
+.post-toggle {
+  flex: none;
+
+  width: 12px;
+  height: 12px;
+
+  border-right: 2px solid var(--navy);
+  border-bottom: 2px solid var(--navy);
+
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.post[open] .post-toggle {
+  transform: rotate(-135deg);
+}
+
+
 /* Always put update image above the text */
 
 .post-photo {
-  order: -1;
-
   width: 100%;
 
-  margin: 0;
+  margin: 0 0 18px;
 
   background: #e9e4da;
 
@@ -1453,7 +1557,7 @@ body[data-state="finished"] .tiger .label {
   width: 100%;
   max-width: none;
 
-  padding: 26px 30px;
+  padding: 0 26px 26px;
 }
 
 .post-body h3 {
@@ -1473,10 +1577,36 @@ body[data-state="finished"] .tiger .label {
     aspect-ratio: 16 / 9;
   }
 
-  .post-body {
-    padding: 20px;
+  .post > summary {
+    padding: 18px 20px;
   }
 
+  .post-body {
+    padding: 0 20px 20px;
+  }
+
+}
+
+
+/* Embedded Strava activity / Instagram post, both optional and sheet-driven. */
+
+.embeds {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  margin-top: 18px;
+}
+
+.embed[hidden] {
+  display: none;
+}
+
+.embed iframe,
+.embed blockquote {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
 }
 
 
@@ -1622,4 +1752,128 @@ body[data-rehearsal="yes"] .journey-head::before {
 
 body[data-state="finished"] .bar-fill {
   background: var(--gold);
+}
+
+
+/* ── Sponsor page ─────────────────────────────────────────────────────────── */
+
+.page-head {
+  margin: 40px 0 28px;
+  max-width: 62ch;
+}
+
+.back {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+
+.marathons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 24px 0 40px;
+}
+
+.m-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m-card.taken {
+  background: var(--blue-faint);
+  border-color: var(--blue-soft);
+}
+
+.m-card .n {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.m-card .route {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.15;
+}
+
+.m-card .miles {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.m-card .price {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 6px;
+}
+
+.m-card .state {
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.m-card.taken .state {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+/* Leg cards are text only — the one call to action lives in the card below them. */
+.m-card .btn {
+  display: none;
+}
+
+.what {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+  margin: 8px 0 36px;
+}
+
+.what h3 {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.what p {
+  font-size: 15px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.cta-card {
+  background: var(--navy);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 28px;
+  margin: 8px 0 40px;
+}
+
+.cta-card h2,
+.cta-card h3 {
+  color: #fff;
+}
+
+.cta-card p {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 60ch;
+}
+
+.cta-card .btn {
+  background: var(--yellow);
+  color: var(--ink);
+  margin-top: 8px;
 }

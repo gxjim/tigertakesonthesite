@@ -38,7 +38,7 @@
   ].map(r => ({ id:+r[0], name:r[1], miles:+r[2], target:r[3], actual:r[4], runners:r[5], note:r[6] }));
 
   const SAMPLE_SPONSORS = [1,2,3,4,5,6,7].map(n => ({ leg:n, from:"", to:"", price:"", status:"available", sponsor:"", logo:"", photo:"", caption:"", note:"" }));
-  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"" };
+  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"", strava_embed:"", instagram_embed:"" };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 const fmtGBP = (n) => "£" + Math.round(n).toLocaleString("en-GB");
@@ -524,14 +524,24 @@ async function loadSheet() {
     sec.hidden = false;
     const posts = updates.slice().reverse(); // sheet is oldest-first; show newest first
     const linkify = (t) => esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-    list.innerHTML = posts.map((u, i) => `<article class="post${i >= 3 ? " older" : ""}">
-      ${u.photo ? `<figure class="post-photo"><img src="${esc(u.photo)}" alt="" loading="lazy" onerror="this.parentNode.remove()"></figure>` : ""}
-      <div class="post-body">
-        <p class="eyebrow">${esc(u.date)}</p>
-        ${u.title ? `<h3>${esc(u.title)}</h3>` : ""}
-        ${u.body.split(/\n{2,}|\n/).filter(Boolean).map(par => `<p>${linkify(par)}</p>`).join("")}
-        ${u.link ? `<p><a href="${esc(u.link)}" target="_blank" rel="noopener">${/strava/i.test(u.link) ? "See the run on Strava" : /instagram/i.test(u.link) ? "See the post on Instagram" : "Read more"}</a></p>` : ""}
-      </div></article>`).join("");
+    // Each post is collapsed to its date, title and opening line; clicking opens it.
+    // <details> does the work natively, so it keeps working without JS and is keyboard accessible.
+    list.innerHTML = posts.map((u, i) => {
+      const paras = u.body.split(/\n{2,}|\n/).map(t => t.trim()).filter(Boolean);
+      return `<details class="post${i >= 3 ? " older" : ""}">
+        <summary>
+          <div class="post-head">
+            <p class="eyebrow">${esc(u.date)}</p>
+            ${u.title ? `<h3>${esc(u.title)}</h3>` : ""}
+          </div>
+          <span class="post-toggle" aria-hidden="true"></span>
+        </summary>
+        <div class="post-body">
+          ${u.photo ? `<figure class="post-photo"><img src="${esc(u.photo)}" alt="" loading="lazy" onerror="this.parentNode.remove()"></figure>` : ""}
+          ${paras.map(par => `<p>${linkify(par)}</p>`).join("")}
+          ${u.link ? `<p><a href="${esc(u.link)}" target="_blank" rel="noopener">${/strava/i.test(u.link) ? "See the run on Strava" : /instagram/i.test(u.link) ? "See the post on Instagram" : "Read more"}</a></p>` : ""}
+        </div></details>`;
+    }).join("");
     const more = $("#posts-more");
     more.hidden = posts.length <= 3;
     more.onclick = () => { list.querySelectorAll(".older").forEach(p => p.classList.remove("older")); more.hidden = true; };
@@ -545,15 +555,25 @@ async function loadSheet() {
     if (galleryBuilt) return; galleryBuilt = true;
     const track = $("#gallery-track"), sec = $("#gallery");
     photos = (photos || []).filter(p => p && p.url);
-    let list = photos && photos.length ? photos : [
+    const list = photos.length ? photos : [
       { url: "img/hero.jpg", caption: "" }, { url: "img/towpath.jpg", caption: "" }, { url: "img/story.jpg", caption: "" }, { url: "img/stretching.jpg", caption: "" },
       ...Array.from({ length: 24 }, (_, i) => ({ url: `img/photo-${i + 1}.jpg`, caption: "" }))
     ];
-    track.innerHTML = list.map(p => `<figure class="slide"><img src="${esc(p.url)}" alt="${esc(p.caption)}" loading="lazy" onload="this.parentNode.classList.add('loaded')" onerror="this.parentNode.remove()">${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
+    track.innerHTML = list.map((p, i) => `<figure class="slide">
+      <img src="${esc(p.url)}" alt="${esc(p.caption)}" ${i < 3 ? "" : 'loading="lazy"'}>
+      ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
+
+    // Show each photo as it arrives; drop the ones that fail. The section only disappears if
+    // every single image failed — never on a timer, because images below the fold load late.
+    track.querySelectorAll("img").forEach(img => {
+      const done = () => { if (!track.querySelector(".slide")) sec.hidden = true; };
+      img.addEventListener("load", () => { img.parentNode.classList.add("loaded"); sec.hidden = false; });
+      img.addEventListener("error", () => { img.parentNode.remove(); done(); });
+      if (img.complete && img.naturalWidth) img.parentNode.classList.add("loaded");
+    });
+
     const step = (dir) => { const w = track.querySelector(".slide")?.getBoundingClientRect().width || 300; track.scrollBy({ left: dir * (w + 12), behavior: "smooth" }); };
     $("#gal-prev").onclick = () => step(-1); $("#gal-next").onclick = () => step(1);
-    // Hide the whole section if nothing loaded after a moment.
-    setTimeout(() => { if (!track.querySelector(".slide.loaded")) sec.hidden = true; }, 4000);
   }
 
   // ── Render: Komoot map (optional) ────────────────────────────────────────
@@ -565,6 +585,55 @@ async function loadSheet() {
     const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0`;
     v.hidden = false; const f = v.querySelector("iframe"); if (f.src !== src) f.src = src;
   }
+  // Embedded Strava activity / Instagram post. Both are driven from the sheet: paste an
+  // activity or post link (or the whole embed snippet) into Config `strava_embed` /
+  // `instagram_embed`. Nothing is embedded unless a link is there, and only Strava and
+  // Instagram addresses are accepted — anything else is ignored.
+  let embedScripts = {};
+  function loadOnce(key, src) {
+    if (embedScripts[key]) return;
+    embedScripts[key] = true;
+    const sc = document.createElement("script");
+    sc.async = true; sc.src = src;
+    document.body.appendChild(sc);
+  }
+
+  function renderEmbeds(config = {}) {
+    const sEl = $("#strava-embed"), iEl = $("#insta-embed");
+
+    // Strava: pull the activity id out of a link or an embed snippet.
+    const sRaw = String(config.strava_embed || "").trim();
+    const sId = (sRaw.match(/strava\.com\/activities\/(\d+)/) || sRaw.match(/data-embed-id=["'](\d+)["']/) || [])[1];
+    if (sEl) {
+      if (sId) {
+        if (sEl.dataset.id !== sId) {
+          sEl.dataset.id = sId;
+          sEl.innerHTML = `<div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="${sId}" data-style="standard"></div>`;
+          loadOnce("strava", "https://strava-embeds.com/embed.js");
+        }
+        sEl.hidden = false;
+      } else sEl.hidden = true;
+    }
+
+    // Instagram: needs the post permalink.
+    const iRaw = String(config.instagram_embed || "").trim();
+    const iUrl = (iRaw.match(/https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel|tv)\/[\w-]+\/?/) || [])[0];
+    if (iEl) {
+      if (iUrl) {
+        if (iEl.dataset.url !== iUrl) {
+          iEl.dataset.url = iUrl;
+          iEl.innerHTML = `<blockquote class="instagram-media" data-instgrm-permalink="${esc(iUrl)}" data-instgrm-version="14"></blockquote>`;
+          loadOnce("instagram", "https://www.instagram.com/embed.js");
+          if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
+        }
+        iEl.hidden = false;
+      } else iEl.hidden = true;
+    }
+
+    const follow = $("#follow");
+    if (follow && follow.hidden && (sId || iUrl)) follow.hidden = false;
+  }
+
   function renderKomoot(config = {}) {
     const wrap = $("#komoot"); if (!wrap) return;
     let src = config.komoot_embed || C.komootEmbed || "";
@@ -658,6 +727,7 @@ async function loadSheet() {
       renderGallery(data.photos);
       renderKomoot(data.config);
       renderVideo(data.config);
+      renderEmbeds(data.config);
       // Images load later and change layout — redraw the river when they do.
       $("#flow").querySelectorAll("img").forEach(img => { if (!img.complete) img.addEventListener("load", () => drawRiver(model, state), { once: true }); });
       if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) { scrolledToTiger = true; setTimeout(scrollToTiger, 600); }
