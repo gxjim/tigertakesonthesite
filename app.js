@@ -41,12 +41,31 @@
   const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"" };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
-  const fmtGBP = (n) => "£" + Math.round(n).toLocaleString("en-GB");
-  const fmtTime = (d) => d ? d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone: LONDON }) : "—";
-  const fmtDay = (d) => d ? d.toLocaleDateString("en-GB", { weekday:"short", timeZone: LONDON }) : "";
-  const minutes = (ms) => Math.round(ms / 60000);
-  const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
-  const raceStart = new Date(C.race.start);
+const fmtGBP = (n) => "£" + Math.round(n).toLocaleString("en-GB");
+const fmtTime = (d) => d ? d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone: LONDON }) : "—";
+const fmtDay = (d) => d ? d.toLocaleDateString("en-GB", { weekday:"short", timeZone: LONDON }) : "";
+const minutes = (ms) => Math.round(ms / 60000);
+const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+
+function driveImageUrl(url) {
+  if (!url) return "";
+
+  const s = String(url).trim();
+
+  const fileMatch = s.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (fileMatch) {
+    return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1600`;
+  }
+
+  const openMatch = s.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (openMatch) {
+    return `https://drive.google.com/thumbnail?id=${openMatch[1]}&sz=w1600`;
+  }
+
+  return s;
+}
+
+const raceStart = new Date(C.race.start);
 
   // Parse "2026-10-10 12:58" (London time) or "12:58" (day inferred from a reference time).
   function parseLondon(str, ref) {
@@ -105,22 +124,115 @@
   }
 
   // ── Data loading ──────────────────────────────────────────────────────────
-  const SLOW = { at: 0 };   // sponsors / updates / photos, re-read every 10 minutes
-  async function loadSheet() {
-    if (!C.sheetId) return { config: SAMPLE_CONFIG, checkpoints: SAMPLE_CHECKPOINTS, sponsors: SAMPLE_SPONSORS, updates: [], photos: [], source: "sample" };
-    // Config + checkpoints change minute to minute on the day; sponsors, updates and photos don't.
-    const slowDue = !SLOW.at || (Date.now() - SLOW.at) > 10 * 60 * 1000;
-    const [cfgRows, ...slow] = await Promise.all([
-      sheetTab(C.tabs.config),
-      ...(slowDue ? [sheetTab(C.tabs.sponsors), sheetTab(C.tabs.updates || "Updates").catch(() => []), sheetTab(C.tabs.photos || "Photos").catch(() => [])] : [])
-    ]);
-    if (slowDue) { SLOW.sponsors = slow[0]; SLOW.updates = slow[1]; SLOW.photos = slow[2]; SLOW.at = Date.now(); }
-    const sponsors = SLOW.sponsors || [], updates = SLOW.updates || [], photos = SLOW.photos || [];
-    const config = Object.assign({}, SAMPLE_CONFIG, Object.fromEntries(cfgRows.map(r => [r.key, r.value])));
-    const tab = (config.rehearsal || "").toLowerCase() === "yes" ? C.tabs.rehearsal : C.tabs.checkpoints;
-    const cps = (await sheetTab(tab)).map(r => { const rk = Object.keys(r).find(k => /runner/.test(k)); return { id:+r.id, name:r.name, miles:+r.miles, target:r.target, actual:r.actual, runners:(rk ? r[rk] : "") || "", note:r.note || "", eta:r.eta || r.tom_eta || "", pace:r.pace || r.current_pace || "" }; });
-    return { config, checkpoints: cps, sponsors: sponsors.map(s => ({ leg:+s.leg, from:s.from, to:s.to, price:s.price, status:(s.status||"available").toLowerCase(), sponsor:s.sponsor, logo:s.logo_url || s.logo || "", photo:s.photo_url || s.photo || "", caption:s.caption || "", note:s.note || "" })), updates: updates.map(u => ({ date:u.date || "", title:u.title || "", body:u.body || u.text || "", photo:u.photo_url || u.photo || "", link:u.link || u[Object.keys(u).find(k => /^link/.test(k)) || "link"] || "" })).filter(u => u.title || u.body), photos: photos.map(p => ({ url: p.url || p.photo_url || "", caption: p.caption || "" })).filter(p => p.url), source: "sheet" };
+// ── Data loading ──────────────────────────────────────────────────────────
+const SLOW = { at: 0 };   // sponsors / updates / photos, re-read every 10 minutes
+
+async function loadSheet() {
+  if (!C.sheetId) {
+    return {
+      config: SAMPLE_CONFIG,
+      checkpoints: SAMPLE_CHECKPOINTS,
+      sponsors: SAMPLE_SPONSORS,
+      updates: [],
+      photos: [],
+      source: "sample"
+    };
   }
+
+  // Config + checkpoints change minute to minute on the day;
+  // sponsors, updates and photos don't.
+  const slowDue = !SLOW.at || (Date.now() - SLOW.at) > 10 * 60 * 1000;
+
+  const [cfgRows, ...slow] = await Promise.all([
+    sheetTab(C.tabs.config),
+    ...(slowDue
+      ? [
+          sheetTab(C.tabs.sponsors),
+          sheetTab(C.tabs.updates || "Updates").catch(() => []),
+          sheetTab(C.tabs.photos || "Photos").catch(() => [])
+        ]
+      : [])
+  ]);
+
+  if (slowDue) {
+    SLOW.sponsors = slow[0];
+    SLOW.updates = slow[1];
+    SLOW.photos = slow[2];
+    SLOW.at = Date.now();
+  }
+
+  const sponsors = SLOW.sponsors || [];
+  const updates = SLOW.updates || [];
+  const photos = SLOW.photos || [];
+
+  const config = Object.assign(
+    {},
+    SAMPLE_CONFIG,
+    Object.fromEntries(cfgRows.map(r => [r.key, r.value]))
+  );
+
+  const tab =
+    (config.rehearsal || "").toLowerCase() === "yes"
+      ? C.tabs.rehearsal
+      : C.tabs.checkpoints;
+
+  const cps = (await sheetTab(tab)).map(r => {
+    const rk = Object.keys(r).find(k => /runner/.test(k));
+
+    return {
+      id: +r.id,
+      name: r.name,
+      miles: +r.miles,
+      target: r.target,
+      actual: r.actual,
+      runners: (rk ? r[rk] : "") || "",
+      note: r.note || "",
+      eta: r.eta || r.tom_eta || "",
+      pace: r.pace || r.current_pace || ""
+    };
+  });
+
+  return {
+    config,
+
+    checkpoints: cps,
+
+    sponsors: sponsors.map(s => ({
+      leg: +s.leg,
+      from: s.from,
+      to: s.to,
+      price: s.price,
+      status: (s.status || "available").toLowerCase(),
+      sponsor: s.sponsor,
+      logo: s.logo_url || s.logo || "",
+      photo: driveImageUrl(s.photo_url || s.photo || ""),
+      caption: s.caption || "",
+      note: s.note || ""
+    })),
+
+    updates: updates
+      .map(u => ({
+        date: u.date || "",
+        title: u.title || "",
+        body: u.body || u.text || "",
+        photo: driveImageUrl(u.photo_url || u.photo || ""),
+        link:
+          u.link ||
+          u[Object.keys(u).find(k => /^link/.test(k)) || "link"] ||
+          ""
+      }))
+      .filter(u => u.title || u.body),
+
+    photos: photos
+      .map(p => ({
+        url: driveImageUrl(p.url || p.photo_url || ""),
+        caption: p.caption || ""
+      }))
+      .filter(p => p.url),
+
+    source: "sheet"
+  };
+}
 
   // Fundraising total comes from the Config tab (Tom or crew type in the
   // current JustGiving total by hand — see README). No API call: JustGiving's
