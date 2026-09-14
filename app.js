@@ -650,14 +650,18 @@ async function loadSheet() {
 
   // ── Countdown ─────────────────────────────────────────────────────────────
   // Banner: "£x raised so far" alternating with "x days to go", scrolling slowly.
-  function renderTicker(jg) {
+  function renderTicker(jg, state) {
     const track = $("#ticker-track"); if (!track) return;
     const ms = raceStart - new Date();
     const days = Math.max(0, Math.ceil(ms / 86400000));
     const raised = jg && jg.raised != null ? fmtGBP(jg.raised) : null;
     const bits = [];
     if (raised) bits.push(`${raised} raised so far`);
-    if (ms > 0) bits.push(days === 1 ? "1 day to go" : `${days} days to go`);
+    // The second message follows the state of the run, not the calendar, so a
+    // rehearsal or a demo preview doesn't sit there counting down to October.
+    if (state === "finished") bits.push("He did it — 184 miles");
+    else if (state === "live") bits.push("Running now");
+    else if (ms > 0) bits.push(days === 1 ? "1 day to go" : `${days} days to go`);
     else bits.push("Running now");
     if (!bits.length) return;
     const key = bits.join("|");
@@ -722,7 +726,7 @@ async function loadSheet() {
       latest = { model, state, jg };
       renderHead(model, state, data.config);
       renderRaise(jg);
-      renderTicker(jg);
+      renderTicker(jg, state);
       renderJourney(model, state, data.config, data.sponsors);
       renderUpdates(data.updates);
       renderGallery(data.photos);
@@ -735,6 +739,15 @@ async function loadSheet() {
       if (data.source === "sample") console.info("Tiger: rendering sample data — set sheetId in config.js");
       $("#updated").textContent = data.source === "fallback" ? "Live data temporarily unavailable — showing the plan." : ($("#updated").textContent || "");
     } catch (e) { console.error("Tiger refresh failed", e); }
+  }
+
+  // The header carries the banner, the title and the dates at the top of the page,
+  // then collapses to a slim bar once you have scrolled past the intro — otherwise
+  // it would follow you down the whole page and eat a third of a phone screen.
+  function wireHeader() {
+    const mark = () => document.body.classList.toggle("scrolled", window.scrollY > 220);
+    mark();
+    window.addEventListener("scroll", mark, { passive: true });
   }
 
   function wireStatic() {
@@ -802,6 +815,7 @@ async function loadSheet() {
 
   window.__refresh = refresh;
   wireStatic();
+  wireHeader();
   wireTabs();
   renderKomoot();
   renderVideo();

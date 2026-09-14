@@ -37,8 +37,17 @@
 
 <div class="tartan" aria-hidden="true"></div>
 
-<header class="top">
-  <a class="brand" href="#top">Tiger Takes on the Thames</a>
+<header class="top" id="top-bar">
+
+  <!-- Moving banner: the total raised and the state of the run, alternating. -->
+  <div class="ticker" id="ticker" aria-label="Fundraising total and countdown">
+    <div class="ticker-track" id="ticker-track"></div>
+  </div>
+
+  <div class="top-main">
+    <a class="brand" href="#top">Tiger Takes on the Thames</a>
+    <p class="top-date">Sat 10 – Sun 11 October 2026</p>
+  </div>
 
   <nav>
     <a href="#updates">Updates</a>
@@ -50,23 +59,15 @@
 <main id="top">
 
   <!-- ── Hero ─────────────────────────────────────────────── -->
-  <section class="hero-head">
-    <h1>
-      184 Miles<br>
-      England’s Longest River<br>
-      No stopping ’til the end!
-    </h1>
-    <p class="hero-dates">Saturday 10 – Sunday 11 October 2026</p>
-  </section>
-
-  <!-- Moving banner: the total raised and the countdown, alternating. -->
-  <div class="ticker" id="ticker" aria-label="Fundraising total and countdown">
-    <div class="ticker-track" id="ticker-track"></div>
-  </div>
-
   <section class="hero">
 
     <div class="hero-copy">
+
+      <h1>
+        184 Miles<br>
+        England’s Longest River<br>
+        No stopping ’til the end!
+      </h1>
 
       <p class="lede">
         I’m Tom, known to many through family as Tiger.
@@ -105,15 +106,12 @@
   <!-- ── Photos ───────────────────────────────────────────── -->
   <section class="gallery" id="gallery">
 
-    <div class="gallery-head">
-
-      <div class="gallery-nav">
-        <button class="btn btn-outline" id="gal-prev" type="button" aria-label="Previous photos">←</button>
-        <button class="btn btn-outline" id="gal-next" type="button" aria-label="Next photos">→</button>
-      </div>
-    </div>
-
     <div class="gallery-track" id="gallery-track"></div>
+
+    <div class="gallery-nav">
+      <button class="btn btn-outline" id="gal-prev" type="button" aria-label="Previous photos">←</button>
+      <button class="btn btn-outline" id="gal-next" type="button" aria-label="Next photos">→</button>
+    </div>
 
   </section>
 

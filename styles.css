@@ -206,16 +206,28 @@ p {
   background: rgba(246, 244, 239, 0.94);
   backdrop-filter: blur(8px);
 
-  border-bottom: 1px solid var(--line);
+  /* The yellow rule under the whole header. */
+  border-bottom: 3px solid var(--yellow);
 
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  align-items: stretch;
 
-  padding: 10px 16px 8px;
+  padding: 0 0 8px;
 
   text-align: center;
+}
+
+/* Brand on the left, dates on the right, on one line. */
+.top-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+
+  width: min(100%, var(--max));
+  margin: 0 auto;
+  padding: 12px 16px 2px;
 }
 
 .brand {
@@ -223,17 +235,50 @@ p {
   font-weight: 600;
   color: var(--navy);
   text-decoration: none;
-  font-size: 20px;
+  font-size: clamp(22px, 3.4vw, 34px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.top-date {
+  margin: 0;
+  color: var(--yellow-text);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
+}
+
+/* Once you are past the intro the header collapses to a slim bar, so it isn't
+   following you down the whole page on a phone. */
+body.scrolled .ticker,
+body.scrolled .top-date {
+  display: none;
+}
+body.scrolled .top-main {
+  padding: 8px 16px 0;
+}
+body.scrolled .brand {
+  font-size: 19px;
+}
+body.scrolled .top nav {
+  gap: 14px;
+  font-size: 13px;
 }
 
 .top nav {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 18px;
   font-size: 14px;
   flex-wrap: wrap;
+
+  /* Same gutter as the brand row above it, so the two line up. */
+  width: min(100%, var(--max));
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 .top nav a:not(.btn) {
@@ -246,15 +291,41 @@ p {
   min-height: 34px;
 }
 
+/* Narrow: the date drops under the title rather than squeezing it to three lines. */
+@media (max-width: 640px) {
+
+  .top-main {
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 16px 4px;
+  }
+
+  .top-date {
+    font-size: 11.5px;
+  }
+
+  .brand {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .top nav {
+    justify-content: center;
+  }
+
+}
+
 @media (max-width: 420px) {
 
   .top nav {
     gap: 12px;
     font-size: 13px;
+    justify-content: center;
   }
 
   .brand {
-    font-size: 18px;
+    font-size: 21px;
   }
 
 }
@@ -273,51 +344,33 @@ section {
 }
 
 
-/* ── Hero header: centred title, yellow rule, dates ───────────────────────── */
+/* ── Hero title ───────────────────────────────────────────────────────────── */
 
-.hero-head {
-  text-align: center;
-  margin: 44px 0 0;
+/* Back on the left, above the intro, a little smaller than before so the
+   header carries the top of the page. */
+.hero h1 {
+  font-size: clamp(31px, 4.1vw, 46px);
+  line-height: 1.1;
+  margin: 0 0 22px;
 }
 
-.hero-head h1 {
-  font-size: clamp(34px, 5.4vw, 60px);
-  line-height: 1.08;
-  margin: 0 auto;
-  max-width: 18ch;
-}
-
-.hero-head h1::after {
+.hero h1::after {
   content: "";
   display: block;
-  width: 120px;
-  height: 5px;
-  margin: 20px auto 0;
+  width: 84px;
+  height: 4px;
+  margin: 18px 0 0;
   background: var(--yellow);
   border-radius: 3px;
-}
-
-.hero-dates {
-  margin: 18px 0 0;
-
-  font-size: clamp(14px, 1.6vw, 17px);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-
-  color: var(--muted);
 }
 
 
 /* ── Moving banner ────────────────────────────────────────────────────────── */
 
+/* Lives inside the sticky header now, so it is already full width. */
 .ticker {
-  width: 100vw;
-  margin: 30px calc(50% - 50vw) 0;
-
   background: var(--navy);
-  border-top: 3px solid var(--yellow);
-  border-bottom: 3px solid var(--yellow);
+  border-bottom: 2px solid var(--yellow);
 
   overflow: hidden;
 }
@@ -333,7 +386,7 @@ section {
   display: flex;
   align-items: center;
 
-  padding: 13px 0;
+  padding: 7px 0;
   white-space: nowrap;
 }
 
@@ -341,16 +394,16 @@ section {
   color: #fff;
 
   font-family: var(--serif);
-  font-size: clamp(17px, 2vw, 23px);
+  font-size: clamp(14px, 1.5vw, 17px);
   font-weight: 600;
 
-  padding: 0 26px;
+  padding: 0 22px;
 }
 
 .ticker-run i {
   color: var(--yellow);
   font-style: normal;
-  font-size: 18px;
+  font-size: 15px;
 }
 
 @keyframes ticker {
@@ -379,11 +432,6 @@ section {
   gap: 64px;
   align-items: start;
   margin-top: 46px;
-}
-
-.hero h1 {
-  font-size: clamp(34px, 4.7vw, 52px);
-  line-height: 1.1;
 }
 
 .lede {
@@ -554,17 +602,11 @@ section {
   margin-top: 50px;
 }
 
-.gallery-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 16px;
-  margin-bottom: 14px;
-}
-
 .gallery-nav {
   display: flex;
   gap: 8px;
+  justify-content: center;
+  margin-top: 14px;
 }
 
 .gallery-nav .btn {
