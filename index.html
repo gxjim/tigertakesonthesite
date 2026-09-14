@@ -48,179 +48,291 @@
 </header>
 
 <main id="top">
-  
-<!-- ── Hero: anticipation and scale ─────────────────────── -->
-<section class="hero">
-  <div class="hero-copy">
-    <p class="eyebrow">Saturday 10 – Sunday 11 October 2026<span id="countdown"></span></p>
 
-    <h1>
-      184 miles along England’s longest river<br>
-      I’m not stopping until I finish.
-    </h1>
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="hero">
 
-    <p class="lede">
-      I’m Tom, known to many through family as Tiger. On 10 October, I’ll attempt to run the entire 184-mile Thames Path, from its source near Cirencester to the Thames Barrier in London, raising £50,000 for motor neurone disease research.
-    </p>
-  </div>
-
-  <figure class="hero-photo">
-    <img src="img/story.jpg" alt="Tom sitting on the river wall at Hammersmith" onerror="this.parentNode.classList.add('missing')">
-    <figcaption class="placeholder">hero photo</figcaption>
-  </figure>
-</section>
-
-<!-- ── The numbers: a cascade, counted up on scroll ─────── -->
-<section class="numbers" aria-label="The challenge in numbers">
-  <div class="stat">
-    <b data-count="184">0</b>
-    <span>miles, from source to Thames Barrier</span>
-  </div>
-
-  <div class="stat">
-    <b data-count="7">0</b>
-    <span>marathons, back to back</span>
-  </div>
-
-  <div class="stat">
-    <b data-count="40" data-prefix="under ">under 0</b>
-    <span>hours, if everything goes to plan</span>
-  </div>
-
-  <div class="stat">
-    <b data-count="30" data-suffix="+">0+</b>
-    <span>friends joining me along the route</span>
-  </div>
-
-  <div class="stat">
-    <b data-count="1">0</b>
-    <span>night without sleep. Hopefully not two.</span>
-  </div>
-
-  <div class="stat">
-    <b data-count="50000" data-prefix="£">£0</b>
-    <span>fundraising target for MND research</span>
-  </div>
-</section>
-
-<!-- ── Why: story + video, above the river ─────────────── -->
-<section class="why" id="story">
-  <p class="eyebrow">Why the Thames</p>
-
-  <blockquote class="pull"></blockquote>
-
-  <div class="video" id="video" hidden>
-    <iframe
-      title="Tom on why he's running the Thames"
-      src="about:blank"
-      loading="lazy"
-      allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowfullscreen
-      referrerpolicy="strict-origin-when-cross-origin">
-    </iframe>
-  </div>
-
-  <div class="story-grid">
-    <div class="story-body">
-      <p>
-        I have a good pair of legs, so I better put them to use for a cause that desperately needs more funding. Motor Neurone Disease is a progressive disease that damages the cells carrying messages from the brain to the muscles. As muscles weaken, it becomes harder to walk, talk, eat and breathe. It is a desperately cruel disease. This is especially personal for me because my amazing mum, Elisa, was diagnosed with MND last year.
+    <div class="hero-copy">
+      <p class="eyebrow">
+        Saturday 10 – Sunday 11 October 2026
+        <span id="countdown"></span>
       </p>
 
-      <p>
-        I am raising money for My Name’5 Doddie Foundation (MNDF), supporting their vital research and their mission to create a world free of MND. MNDF was set up by former Scotland rugby player and sports personality Doddie Weir after he was diagnosed with the disease. Doddie died aged 52 in 2022, almost six years after his diagnosis. His charity has so far committed over £24 million to cutting-edge research. There is no cure for MND, but research is making progress. Treatments are improving, and science is beginning to understand genetic and environmental factors behind MND.
-      </p>
+      <h1>
+        184 miles along England’s longest river<br>
+        I’m not stopping until I finish.
+      </h1>
 
-      <p>
-        The Thames has been my guide in the past. When I was a student, I swam in it every week, and rivers have continued to be a source of connection and grounding for me. So it feels right to follow this river for something that matters so much.
+      <p class="lede">
+        I’m Tom, known to many through family as Tiger. On 10 October, I’ll attempt to run the entire 184-mile Thames Path, from its source near Cirencester to the Thames Barrier in London, raising £50,000 for motor neurone disease research.
       </p>
     </div>
-  </div>
-</section>
+
+    <div class="hero-stats" aria-label="The challenge in numbers">
+
+      <div class="hero-stat">
+        <b data-count="184">184</b>
+        <span>miles, source → Thames Barrier</span>
+      </div>
+
+      <div class="hero-stat">
+        <b data-count="40" data-prefix="under ">under 40</b>
+        <span>hours, if everything goes to plan</span>
+      </div>
+
+      <div class="hero-stat">
+        <b data-count="30" data-suffix="+">30+</b>
+        <span>friends joining me along the route</span>
+      </div>
+
+      <div class="hero-stat">
+        <b data-count="50000" data-prefix="£">£50,000</b>
+        <span>fundraising target for MND research</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Photos ───────────────────────────────────────────── -->
+  <section class="gallery" id="gallery">
+
+    <div class="gallery-head">
+      <div>
+        <p class="eyebrow">Along the river</p>
+        <h2>Photos</h2>
+      </div>
+
+      <div class="gallery-nav">
+        <button class="btn btn-outline" id="gal-prev" type="button" aria-label="Previous photos">←</button>
+        <button class="btn btn-outline" id="gal-next" type="button" aria-label="Next photos">→</button>
+      </div>
+    </div>
+
+    <div class="gallery-track" id="gallery-track"></div>
+
+  </section>
 
   <!-- ── Fundraising ──────────────────────────────────────── -->
   <section class="raise" id="donate">
+
     <div class="raise-row">
-      <div class="raise-total"><span id="raised">£—</span><small>raised of <span id="target">£50,000</span></small></div>
+      <div class="raise-total">
+        <span id="raised">£—</span>
+        <small>raised of <span id="target">£50,000</span></small>
+      </div>
+
       <div class="raise-count" id="donor-count"></div>
     </div>
-    <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+
+    <div class="bar">
+      <div class="bar-fill" id="bar-fill" style="width:0%"></div>
+    </div>
+
     <div class="raise-actions">
       <a class="btn btn-primary" id="donate-btn" href="#" target="_blank" rel="noopener">Donate on JustGiving</a>
       <a class="btn btn-outline" href="#river">Sponsor a marathon</a>
     </div>
-    <p class="fine">Every pound goes to the My Name'5 Doddie Foundation for MND research.</p>
+
+    <p class="fine">
+      Every pound goes to the My Name'5 Doddie Foundation for MND research.
+    </p>
+
+  </section>
+
+  <!-- ── Why the Thames ───────────────────────────────────── -->
+  <section class="why" id="story">
+
+    <p class="eyebrow">Why the Thames</p>
+
+    <blockquote class="pull"></blockquote>
+
+    <div class="story-grid">
+      <div class="story-body">
+
+        <p>
+          I have a good pair of legs, so I better put them to use for a cause that desperately needs more funding. Motor Neurone Disease is a progressive disease that damages the cells carrying messages from the brain to the muscles. As muscles weaken, it becomes harder to walk, talk, eat and breathe. It is a desperately cruel disease. This is especially personal for me because my amazing mum, Elisa, was diagnosed with MND last year.
+        </p>
+
+        <p>
+          I am raising money for My Name’5 Doddie Foundation (MNDF), supporting their vital research and their mission to create a world free of MND. MNDF was set up by former Scotland rugby player and sports personality Doddie Weir after he was diagnosed with the disease. Doddie died aged 52 in 2022, almost six years after his diagnosis. His charity has so far committed over £24 million to cutting-edge research. There is no cure for MND, but research is making progress. Treatments are improving, and science is beginning to understand genetic and environmental factors behind MND.
+        </p>
+
+        <p>
+          The Thames has been my guide in the past. When I was a student, I swam in it every week, and rivers have continued to be a source of connection and grounding for me. So it feels right to follow this river for something that matters so much.
+        </p>
+
+      </div>
+    </div>
+
+    <div class="video" id="video" hidden>
+      <iframe
+        title="Tom on why he's running the Thames"
+        src="about:blank"
+        loading="lazy"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin">
+      </iframe>
+    </div>
+
   </section>
 
   <!-- ── The river ────────────────────────────────────────── -->
   <section class="journey" id="river">
+
     <div class="journey-head">
-      <p class="eyebrow live-tag"><span class="dot"></span><span id="live-label">The route</span></p>
-      <h2 id="position-headline">From a field in the Cotswolds to the Thames Barrier</h2>
-      <p class="sub" id="position-sub">Fifteen checkpoints, roughly a half-marathon apart. Times are the plan; this page comes alive at 05:00 on Saturday 10 October.</p>
+
+      <p class="eyebrow live-tag">
+        <span class="dot"></span>
+        <span id="live-label">The route</span>
+      </p>
+
+      <h2 id="position-headline">
+        From a field in the Cotswolds to the Thames Barrier
+      </h2>
+
+      <p class="sub" id="position-sub">
+        Fifteen checkpoints, roughly a half-marathon apart. Times are the plan; this page comes alive at 05:00 on Saturday 10 October.
+      </p>
+
       <div class="journey-actions">
-        <a class="btn btn-primary" id="livetrack-btn" href="#" target="_blank" rel="noopener" hidden>Where is Tiger right now</a>
-        <button class="btn btn-outline" id="jump-btn" type="button" hidden>Jump to Tiger</button>
-        <button class="btn btn-outline" id="share-btn" type="button">Share this update</button>
+        <a
+          class="btn btn-primary"
+          id="livetrack-btn"
+          href="#"
+          target="_blank"
+          rel="noopener"
+          hidden>
+          Where is Tiger right now
+        </a>
+
+        <button
+          class="btn btn-outline"
+          id="jump-btn"
+          type="button"
+          hidden>
+          Jump to Tiger
+        </button>
+
+        <button
+          class="btn btn-outline"
+          id="share-btn"
+          type="button">
+          Share this update
+        </button>
       </div>
+
       <p class="fine" id="updated"></p>
+
     </div>
 
-    <div class="komoot" id="komoot" hidden><iframe title="The route on Komoot" src="about:blank" loading="lazy" allowfullscreen></iframe></div>
+    <div class="komoot" id="komoot" hidden>
+      <iframe
+        title="The route on Komoot"
+        src="about:blank"
+        loading="lazy"
+        allowfullscreen>
+      </iframe>
+    </div>
 
-    <div class="flow-key" aria-hidden="true"><span>Sponsor a marathon</span><span>Checkpoints, times and who's running</span></div>
+    <div class="flow-key" aria-hidden="true">
+      <span>Sponsor a marathon</span>
+      <span>Checkpoints, times and who's running</span>
+    </div>
+
     <div class="river-wrap">
       <svg id="river-svg" aria-hidden="true"></svg>
       <ol class="flow" id="flow"></ol>
     </div>
+
   </section>
 
-
-  <!-- ── Photos ───────────────────────────────────────────── -->
-  <section class="gallery" id="gallery">
-    <div class="gallery-head">
-      <div><p class="eyebrow">Along the river</p><h2>Photos</h2></div>
-      <div class="gallery-nav"><button class="btn btn-outline" id="gal-prev" type="button" aria-label="Previous photos">←</button><button class="btn btn-outline" id="gal-next" type="button" aria-label="Next photos">→</button></div>
-    </div>
-    <div class="gallery-track" id="gallery-track"></div>
-  </section>
-
-  <!-- ── Notes from the towpath (Updates tab) ─────────────── -->
+  <!-- ── Updates ──────────────────────────────────────────── -->
   <section class="updates" id="updates" hidden>
+
     <p class="eyebrow">Notes from the towpath</p>
+
     <h2>Tom's updates</h2>
+
     <div class="posts" id="posts"></div>
-    <button class="btn btn-outline" id="posts-more" type="button" hidden>Earlier posts</button>
+
+    <button
+      class="btn btn-outline"
+      id="posts-more"
+      type="button"
+      hidden>
+      Earlier posts
+    </button>
+
   </section>
 
   <!-- ── After the Barrier ────────────────────────────────── -->
   <section class="after">
+
     <div class="after-grid">
+
       <div class="card small" id="follow">
+
         <p class="eyebrow">Follow along</p>
-        <p>Training updates and the odd photo, between now and October.</p>
+
+        <p>
+          Training updates and the odd photo, between now and October.
+        </p>
+
         <div class="social">
           <a class="btn btn-outline" id="insta-btn" href="#" target="_blank" rel="noopener">Instagram</a>
           <a class="btn btn-outline" id="strava-btn" href="#" target="_blank" rel="noopener">Strava</a>
         </div>
+
       </div>
 
       <div class="card small" id="press">
+
         <p class="eyebrow">Press and contact</p>
-        <p>Tom "Tiger" Spearman, 31, a parish councillor from Ford near Bath, is attempting the full 184-mile Thames Path non-stop from 5am on Saturday 10 October 2026, aiming to finish inside 40 hours, after his mum's diagnosis with motor neurone disease last year. More than £30,000 has already been raised toward his £50,000 target.</p>
-        <p>The attempt follows a run of local fundraising for MND: supporters of Lewis Moody raised £60,000 with a 24-hour run near Bath in June, and Colerne Rugby Club's skittles marathon raised £15,000 for the MND Association.</p>
-        <p class="fine">Free-to-use images: <a href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-?usp=drive_link" target="_blank" rel="noopener">download here</a>. Interviews and timings: <a id="press-mail" href="mailto:">email Tom</a> or call 07857 065324.</p>
+
+        <p>
+          Tom "Tiger" Spearman, 31, a parish councillor from Ford near Bath, is attempting the full 184-mile Thames Path non-stop from 5am on Saturday 10 October 2026, aiming to finish inside 40 hours, after his mum's diagnosis with motor neurone disease last year. More than £30,000 has already been raised toward his £50,000 target.
+        </p>
+
+        <p>
+          The attempt follows a run of local fundraising for MND: supporters of Lewis Moody raised £60,000 with a 24-hour run near Bath in June, and Colerne Rugby Club's skittles marathon raised £15,000 for the MND Association.
+        </p>
+
+        <p class="fine">
+          Free-to-use images:
+          <a
+            href="https://drive.google.com/drive/folders/1v9GuR6aqCjZzDIs29pb3e8ENfyJjXnS-?usp=drive_link"
+            target="_blank"
+            rel="noopener">
+            download here
+          </a>.
+          Interviews and timings:
+          <a id="press-mail" href="mailto:">email Tom</a>
+          or call 07857 065324.
+        </p>
+
       </div>
+
     </div>
+
   </section>
 
 </main>
 
 <footer>
   <div class="tartan" aria-hidden="true"></div>
-  <p>In aid of the My Name'5 Doddie Foundation, registered charity SC047871. To sponsor a marathon, <a id="sponsor-mail" href="mailto:">email Tom</a> with the leg number. <a href="#top">Back to top</a></p>
+
+  <p>
+    In aid of the My Name'5 Doddie Foundation, registered charity SC047871.
+    To sponsor a marathon,
+    <a id="sponsor-mail" href="mailto:">email Tom</a>
+    with the leg number.
+    <a href="#top">Back to top</a>
+  </p>
 </footer>
 
 <script src="config.js"></script>
 <script src="app.js"></script>
+
 </body>
 </html>
