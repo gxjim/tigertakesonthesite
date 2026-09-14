@@ -1,6 +1,5 @@
 /* ─── Tiger Takes on the Thames · v3 ─────────────────────────────────────────
-   Navy-led (My Name'5 Doddie Foundation Pantone 280 / 2935), paper background,
-   yellow used sparingly for Tiger and live-state details.                     */
+   Navy-led with yellow accents, paper background and a thin tartan strip.      */
 
 :root {
   --paper: #f6f4ef;
@@ -66,7 +65,7 @@ h3 {
   font-family: var(--serif);
   font-weight: 600;
   line-height: 1.08;
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
   text-wrap: balance;
   letter-spacing: -0.012em;
   color: var(--navy);
@@ -85,7 +84,7 @@ h3 {
 }
 
 p {
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
 }
 
 .eyebrow {
@@ -94,7 +93,7 @@ p {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
-  margin: 0 0 10px 0;
+  margin: 0 0 10px;
 }
 
 .sub {
@@ -117,13 +116,8 @@ p {
   padding: 20px;
 }
 
-code {
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  font-size: 0.9em;
-}
 
-
-/* ── Tartan strip ─────────────────────────────────────────────────────────── */
+/* ── Tartan ───────────────────────────────────────────────────────────────── */
 
 .tartan {
   height: 6px;
@@ -201,8 +195,10 @@ code {
   position: sticky;
   top: 0;
   z-index: 10;
+
   background: rgba(246, 244, 239, 0.94);
   backdrop-filter: blur(8px);
+
   border-bottom: 1px solid var(--line);
 
   display: flex;
@@ -211,6 +207,7 @@ code {
   gap: 6px;
 
   padding: 10px 16px 8px;
+
   text-align: center;
 }
 
@@ -243,6 +240,7 @@ code {
 }
 
 @media (max-width: 420px) {
+
   .top nav {
     gap: 12px;
     font-size: 13px;
@@ -251,10 +249,11 @@ code {
   .brand {
     font-size: 18px;
   }
+
 }
 
 
-/* ── Main page layout ─────────────────────────────────────────────────────── */
+/* ── Main layout ──────────────────────────────────────────────────────────── */
 
 main {
   max-width: var(--max);
@@ -304,8 +303,19 @@ section {
 }
 
 .hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   padding: 11px 4px 15px;
+
   border-bottom: 1px solid var(--line);
+
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+
+  animation: rise 0.7s cubic-bezier(.2, .7, .2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 140ms);
 }
 
 .hero-stat:last-child {
@@ -314,20 +324,45 @@ section {
 
 .hero-stat b {
   display: block;
+
   font-family: var(--serif);
   font-weight: 600;
   font-size: clamp(29px, 3.6vw, 43px);
   line-height: 1;
+
   color: var(--navy);
+
   font-variant-numeric: tabular-nums;
 }
 
 .hero-stat span {
   display: block;
-  margin-top: 5px;
+  margin-top: 6px;
+
   font-size: 13px;
   line-height: 1.35;
-  color: var(--muted);
+  font-weight: 500;
+
+  color: var(--gold-text);
+}
+
+@keyframes rise {
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .hero-stat {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
 }
 
 
@@ -345,12 +380,12 @@ section {
   .hero-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
+
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
 
   .hero-stat {
-    border-bottom: 1px solid var(--line);
     padding: 15px 10px;
   }
 
@@ -372,7 +407,7 @@ section {
 /* ── Gallery ──────────────────────────────────────────────────────────────── */
 
 .gallery {
-  margin-top: 52px;
+  margin-top: 50px;
 }
 
 .gallery-head {
@@ -396,10 +431,14 @@ section {
 .gallery-track {
   display: flex;
   gap: 12px;
+
   overflow-x: auto;
+
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+
   scrollbar-width: none;
+
   padding-bottom: 4px;
 }
 
@@ -409,13 +448,20 @@ section {
 
 .slide {
   flex: 0 0 min(78%, 420px);
+
   scroll-snap-align: start;
+
   margin: 0;
+
   border-radius: var(--radius);
   overflow: hidden;
+
   background: #e9e4da;
+
   aspect-ratio: 4 / 5;
+
   position: relative;
+
   display: none;
 }
 
@@ -434,10 +480,17 @@ section {
   left: 0;
   right: 0;
   bottom: 0;
+
   padding: 10px 12px;
+
   font-size: 13px;
   color: #fff;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+
+  background:
+    linear-gradient(
+      transparent,
+      rgba(0, 0, 0, 0.6)
+    );
 }
 
 .gallery[hidden] {
@@ -449,12 +502,15 @@ section {
 
 .raise {
   width: 85%;
+
   margin-left: auto;
   margin-right: auto;
 
   background: var(--navy);
   color: #fff;
+
   border-radius: var(--radius);
+
   padding: 26px;
 
   display: flex;
@@ -466,6 +522,7 @@ section {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+
   gap: 16px;
   flex-wrap: wrap;
 }
@@ -479,8 +536,11 @@ section {
 .raise-total > span {
   font-family: var(--serif);
   font-weight: 600;
+
   font-size: clamp(38px, 5.5vw, 56px);
+
   font-variant-numeric: tabular-nums;
+
   line-height: 1;
 }
 
@@ -496,20 +556,27 @@ section {
 
 .bar {
   height: 10px;
+
   border-radius: 5px;
+
   background: rgba(255, 255, 255, 0.15);
+
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
   background: var(--gold);
+
   transition: width 0.8s ease;
 }
 
 .raise-actions {
   display: flex;
+  justify-content: center;
+
   gap: 10px;
+
   flex-wrap: wrap;
 }
 
@@ -537,15 +604,19 @@ section {
 }
 
 @media (min-width: 720px) {
+
   .raise-actions .btn {
     min-width: 240px;
   }
+
 }
 
 @media (max-width: 700px) {
+
   .raise {
     width: 100%;
   }
+
 }
 
 
@@ -558,20 +629,26 @@ section {
 .pull {
   font-family: var(--serif);
   font-style: italic;
+
   font-size: clamp(22px, 3vw, 30px);
+
   line-height: 1.3;
+
   margin: 0 0 20px;
+
   max-width: 32ch;
+
   color: var(--navy);
 }
 
 .story-grid {
   display: block;
+  width: 100%;
 }
 
 .story-body {
   width: 100%;
-  max-width: 85ch;
+  max-width: none;
 }
 
 .story-body p {
@@ -580,19 +657,28 @@ section {
 
 .video {
   position: relative;
+
   aspect-ratio: 16 / 9;
+
+  width: 100%;
   max-width: 100%;
+
   border-radius: var(--radius);
+
   overflow: hidden;
+
   background: #000;
+
   margin: 30px 0 24px;
 }
 
 .video iframe {
   position: absolute;
   inset: 0;
+
   width: 100%;
   height: 100%;
+
   border: 0;
 }
 
@@ -601,7 +687,7 @@ section {
 }
 
 
-/* ── The river ────────────────────────────────────────────────────────────── */
+/* ── Route / journey ─────────────────────────────────────────────────────── */
 
 .journey-head {
   margin-bottom: 28px;
@@ -610,11 +696,16 @@ section {
 
 .live-tag .dot {
   display: none;
+
   width: 9px;
   height: 9px;
+
   border-radius: 50%;
+
   background: var(--gold);
+
   margin-right: 8px;
+
   vertical-align: middle;
 }
 
@@ -628,6 +719,7 @@ body[data-state="live"] .live-tag .dot {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
@@ -635,17 +727,6 @@ body[data-state="live"] .live-tag .dot {
 
   50% {
     opacity: 0.3;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  .live-tag .dot {
-    animation: none;
-  }
-
-  html {
-    scroll-behavior: auto;
   }
 
 }
@@ -661,6 +742,18 @@ body[data-state="live"] .live-tag .dot {
   margin-top: 10px;
 }
 
+@media (prefers-reduced-motion: reduce) {
+
+  .live-tag .dot {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+}
+
 
 /* ── Komoot ──────────────────────────────────────────────────────────────── */
 
@@ -670,20 +763,29 @@ body[data-state="live"] .live-tag .dot {
 
 .komoot {
   position: relative;
+
   width: 100%;
+
   height: min(65vh, 600px);
+
   border-radius: var(--radius);
+
   overflow: hidden;
+
   border: 1px solid var(--line);
+
   margin: 0 0 28px;
+
   background: var(--card);
 }
 
 .komoot iframe {
   position: absolute;
   inset: 0;
+
   width: 100%;
   height: 100%;
+
   border: 0;
 }
 
@@ -692,9 +794,11 @@ body[data-state="live"] .live-tag .dot {
 }
 
 @media (max-width: 820px) {
+
   .komoot {
     height: 480px;
   }
+
 }
 
 
@@ -706,22 +810,32 @@ body[data-state="live"] .live-tag .dot {
 
 #river-svg {
   position: absolute;
+
   left: 0;
   top: 0;
+
   width: 100%;
   height: 100%;
+
   overflow: visible;
+
   pointer-events: none;
 }
 
 .flow {
   list-style: none;
+
   margin: 0;
   padding: 0;
+
   position: relative;
 
   display: grid;
-  grid-template-columns: var(--rail) minmax(0, 1fr);
+
+  grid-template-columns:
+    var(--rail)
+    minmax(0, 1fr);
+
   column-gap: 0;
 }
 
@@ -734,17 +848,23 @@ body[data-state="live"] .live-tag .dot {
 }
 
 
-/* Checkpoint node */
+/* Checkpoint nodes */
 
 .node {
   grid-column: 2;
+
   position: relative;
 
   padding: 8px 0 8px 10px;
+
   min-height: 56px;
 
   display: grid;
-  grid-template-columns: 1fr auto;
+
+  grid-template-columns:
+    1fr
+    auto;
+
   gap: 4px 14px;
 
   align-items: baseline;
@@ -753,6 +873,7 @@ body[data-state="live"] .live-tag .dot {
 
 .node .mark {
   position: absolute;
+
   left: calc(var(--mx, 44px) - var(--rail));
   top: 26px;
 
@@ -762,7 +883,9 @@ body[data-state="live"] .live-tag .dot {
   margin: -8px 0 0 -8px;
 
   border-radius: 50%;
+
   background: var(--paper);
+
   border: 3px solid var(--blue-soft);
 
   z-index: 2;
@@ -779,34 +902,50 @@ body[data-state="live"] .live-tag .dot {
 
 .node .name {
   font-family: var(--serif);
+
   font-size: 20px;
   font-weight: 600;
+
   color: var(--navy);
+
   line-height: 1.2;
 }
 
 .node .name small {
   font-family: var(--sans);
+
   font-weight: 500;
+
   font-size: 12px;
+
   color: var(--muted);
+
   margin-left: 8px;
+
   letter-spacing: 0.04em;
+
   white-space: nowrap;
 }
 
 .node .times {
   text-align: right;
+
   font-variant-numeric: tabular-nums;
+
   font-size: 14px;
+
   color: var(--muted);
+
   white-space: nowrap;
 }
 
 .node .times b {
   display: block;
+
   font-weight: 600;
+
   color: var(--ink);
+
   font-size: 15px;
 }
 
@@ -831,16 +970,22 @@ body[data-state="live"] .live-tag .dot {
 
 .node .runners {
   grid-column: 1 / -1;
+
   font-size: 13.5px;
+
   color: var(--ink);
 }
 
 .node .cp-note,
 .node .note {
   grid-column: 1 / -1;
+
   font-size: 14px;
+
   color: var(--ink);
+
   max-width: 56ch;
+
   margin: 2px 0 0;
 }
 
@@ -850,19 +995,23 @@ body[data-state="live"] .live-tag .dot {
 }
 
 
-/* Images within route legs */
+/* Route leg images */
 
 .leg-photo {
   grid-column: 1 / -1;
 
   margin: 6px 0 4px;
+
   position: relative;
 
   border-radius: var(--radius);
+
   overflow: hidden;
+
   background: #e9e4da;
 
   aspect-ratio: 16 / 9;
+
   max-width: 520px;
 
   display: none;
@@ -880,12 +1029,15 @@ body[data-state="live"] .live-tag .dot {
 
 .leg-photo figcaption.cap {
   position: absolute;
+
   left: 0;
   right: 0;
   bottom: 0;
 
   padding: 8px 12px;
+
   font-size: 12px;
+
   color: #fff;
 
   background:
@@ -896,25 +1048,33 @@ body[data-state="live"] .live-tag .dot {
 }
 
 
-/* Marathon sponsorship blocks */
+/* Marathon blocks */
 
 .leg {
   grid-column: 2;
+
   position: relative;
+
   margin: 8px 0 4px 10px;
+
   grid-row: var(--mrow);
 }
 
 .leg-inner {
   display: flex;
+
   flex-wrap: wrap;
+
   align-items: center;
+
   gap: 6px 12px;
 
   padding: 10px 12px;
 
   border: 1px solid var(--line);
+
   border-radius: var(--radius);
+
   background: var(--card);
 
   font-size: 13px;
@@ -927,9 +1087,13 @@ body[data-state="live"] .live-tag .dot {
 
 .leg .n {
   font-weight: 600;
+
   letter-spacing: 0.06em;
+
   text-transform: uppercase;
+
   font-size: 12px;
+
   color: var(--navy);
 }
 
@@ -952,9 +1116,13 @@ body[data-state="live"] .live-tag .dot {
 
 .btn-ghost {
   min-height: 32px;
+
   padding: 0 10px;
+
   font-size: 12.5px;
+
   background: var(--navy);
+
   color: #fff;
 }
 
@@ -985,9 +1153,13 @@ body[data-state="live"] .live-tag .dot {
   .tiger .label {
     left: 50%;
     top: 30px;
+
     transform: translateX(-50%);
+
     font-size: 11px;
+
     padding: 2px 6px;
+
     white-space: nowrap;
   }
 
@@ -1024,21 +1196,28 @@ body[data-state="live"] .live-tag .dot {
 
   .leg {
     grid-column: 1;
+
     grid-row: var(--r1) / var(--r2);
+
     margin: 0;
+
     padding: 6px 28px 6px 0;
 
     display: flex;
+
     align-items: center;
   }
 
   .leg-inner {
     flex-direction: column;
     align-items: flex-start;
+
     gap: 4px;
 
     padding: 16px 18px;
+
     width: 100%;
+
     font-size: 14px;
   }
 
@@ -1056,11 +1235,14 @@ body[data-state="live"] .live-tag .dot {
 
   .leg .arrow {
     display: block;
+
     position: absolute;
+
     right: 10px;
     top: 26px;
 
     width: 2px;
+
     height: calc(100% - 52px);
 
     background: var(--blue-soft);
@@ -1069,7 +1251,9 @@ body[data-state="live"] .live-tag .dot {
   .leg .arrow::before,
   .leg .arrow::after {
     content: "";
+
     position: absolute;
+
     left: -4px;
 
     width: 0;
@@ -1091,15 +1275,20 @@ body[data-state="live"] .live-tag .dot {
 
   .flow-key {
     display: grid;
+
     grid-template-columns:
       minmax(0, 1fr)
       var(--rail)
       minmax(0, 1.4fr);
 
     font-size: 11px;
+
     letter-spacing: 0.08em;
+
     text-transform: uppercase;
+
     color: var(--muted);
+
     font-weight: 600;
 
     margin-bottom: 8px;
@@ -1117,6 +1306,7 @@ body[data-state="live"] .live-tag .dot {
 
 .tiger {
   position: absolute;
+
   z-index: 3;
 
   width: 30px;
@@ -1125,34 +1315,42 @@ body[data-state="live"] .live-tag .dot {
   margin: -15px 0 0 -15px;
 
   border-radius: 50%;
+
   background: var(--gold);
+
   border: 3px solid #fff;
 
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
 
   display: none;
+
   align-items: center;
   justify-content: center;
 
   font-weight: 700;
+
   font-size: 12px;
+
   color: var(--ink);
 }
 
 .tiger .label {
   position: absolute;
+
   left: 38px;
   top: 50%;
 
   transform: translateY(-50%);
 
   background: var(--gold);
+
   color: var(--ink);
 
   font-size: 12px;
   font-weight: 600;
 
   padding: 4px 8px;
+
   border-radius: 4px;
 
   white-space: nowrap;
@@ -1168,14 +1366,17 @@ body[data-state="finished"] .tiger .label {
 }
 
 
-/* ── Finish card ──────────────────────────────────────────────────────────── */
+/* ── Finish ───────────────────────────────────────────────────────────────── */
 
 .finish-card {
   grid-column: 1 / -1;
+
   margin: 24px 0 0;
 
   background: var(--gold-soft);
+
   border: 1px solid #f1dc8c;
+
   border-radius: var(--radius);
 
   padding: 20px;
@@ -1192,27 +1393,28 @@ body[data-state="finished"] .tiger .label {
   display: none;
 }
 
-/*
-  Updates are deliberately a little wider than the normal page column.
-*/
 .updates {
-  width: min(1160px, calc(100vw - 40px));
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
 }
 
 .posts {
   display: flex;
   flex-direction: column;
+
   gap: 24px;
+
   margin: 14px 0 16px;
 }
 
 .post {
+  width: 100%;
+
   background: var(--card);
+
   border: 1px solid var(--line);
+
   border-radius: var(--radius);
+
   overflow: hidden;
 
   display: flex;
@@ -1223,15 +1425,18 @@ body[data-state="finished"] .tiger .label {
   display: none;
 }
 
-/*
-  The image sits above the text regardless of whether app.js inserts
-  the image before or after the post body.
-*/
+
+/* Always put update image above the text */
+
 .post-photo {
   order: -1;
-  margin: 0;
-  background: #e9e4da;
+
   width: 100%;
+
+  margin: 0;
+
+  background: #e9e4da;
+
   aspect-ratio: 16 / 7;
 }
 
@@ -1241,10 +1446,14 @@ body[data-state="finished"] .tiger .label {
   object-fit: cover;
 }
 
+
+/* Text now fills the width of the update card */
+
 .post-body {
-  padding: 26px 30px;
   width: 100%;
-  max-width: 82ch;
+  max-width: none;
+
+  padding: 26px 30px;
 }
 
 .post-body h3 {
@@ -1252,16 +1461,13 @@ body[data-state="finished"] .tiger .label {
 }
 
 .post-body p {
+  width: 100%;
+  max-width: none;
+
   font-size: 15.5px;
 }
 
 @media (max-width: 820px) {
-
-  .updates {
-    width: 100%;
-    position: static;
-    transform: none;
-  }
 
   .post-photo {
     aspect-ratio: 16 / 9;
@@ -1278,7 +1484,11 @@ body[data-state="finished"] .tiger .label {
 
 .after-grid {
   display: grid;
-  grid-template-columns: 1fr 1.6fr;
+
+  grid-template-columns:
+    1fr
+    1.6fr;
+
   gap: 16px;
 }
 
@@ -1306,9 +1516,11 @@ body[data-state="finished"] .tiger .label {
 }
 
 @media (max-width: 820px) {
+
   .after-grid {
     grid-template-columns: 1fr;
   }
+
 }
 
 
@@ -1316,18 +1528,22 @@ body[data-state="finished"] .tiger .label {
 
 footer {
   border-top: 1px solid var(--line);
+
   text-align: center;
+
   font-size: 13px;
+
   color: var(--muted);
 }
 
 footer p {
   padding: 18px 20px 26px;
+
   margin: 0;
 }
 
 
-/* ── Wider river rail ─────────────────────────────────────────────────────── */
+/* ── Larger river rail ────────────────────────────────────────────────────── */
 
 @media (min-width: 720px) {
 
@@ -1383,16 +1599,21 @@ body[data-rehearsal="yes"] .journey-head::before {
 
   font-size: 12px;
   font-weight: 600;
+
   letter-spacing: 0.06em;
+
   text-transform: uppercase;
 
   color: var(--ink);
 
   background: var(--gold-soft);
+
   border: 1px solid #f1dc8c;
+
   border-radius: 4px;
 
   padding: 4px 8px;
+
   margin-bottom: 12px;
 }
 
