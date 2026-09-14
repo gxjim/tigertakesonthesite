@@ -47,6 +47,17 @@ const fmtDay = (d) => d ? d.toLocaleDateString("en-GB", { weekday:"short", timeZ
 const minutes = (ms) => Math.round(ms / 60000);
 const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 
+// A photo reference only counts if a browser could load it: a web address, or a file in img/.
+// Phone filenames (IMG_1234.HEIC) and HEIC generally are ignored rather than left as empty boxes.
+function usablePhoto(v) {
+  const s = String(v || "").trim();
+  if (!s) return "";
+  if (/\.heic(\?|$)/i.test(s)) return "";
+  if (/^https?:\/\//i.test(s)) return s;
+  if (/^img\//i.test(s) && /\.(jpe?g|png|webp|gif|avif)$/i.test(s)) return s;
+  return "";
+}
+
 function driveImageUrl(url) {
   if (!url) return "";
 
@@ -112,6 +123,16 @@ const raceStart = new Date(C.race.start);
     if (cell.length || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
+  // A tab name that doesn't exist makes Google return the workbook's first sheet instead of
+  // an error, so every read is checked for the columns it must have.
+  function expect(rows, required, tab) {
+    if (!rows.length) return rows;
+    const have = Object.keys(rows[0]);
+    const ok = required.every(r => have.some(h => h === r || h.includes(r)));
+    if (!ok) { console.warn(`Tiger: "${tab}" doesn't look right (columns: ${have.join(", ")}) — ignoring it`); return []; }
+    return rows;
+  }
+
   async function sheetTab(tab) {
     // `_` changes only every 30s: fresh enough for the day, but lets the CDN serve most polls.
     const bucket = Math.floor(Date.now() / 30000);
@@ -205,7 +226,7 @@ async function loadSheet() {
       status: (s.status || "available").toLowerCase(),
       sponsor: s.sponsor,
       logo: s.logo_url || s.logo || "",
-      photo: driveImageUrl(s.photo_url || s.photo || ""),
+      photo: usablePhoto(driveImageUrl(s.photo_url || s.photo || "")),
       caption: s.caption || "",
       note: s.note || ""
     })),
@@ -215,7 +236,7 @@ async function loadSheet() {
         date: u.date || "",
         title: u.title || "",
         body: u.body || u.text || "",
-        photo: driveImageUrl(u.photo_url || u.photo || ""),
+        photo: usablePhoto(driveImageUrl(u.photo_url || u.photo || "")),
         link:
           u.link ||
           u[Object.keys(u).find(k => /^link/.test(k)) || "link"] ||
@@ -225,7 +246,7 @@ async function loadSheet() {
 
     photos: photos
       .map(p => ({
-        url: driveImageUrl(p.url || p.photo_url || ""),
+        url: usablePhoto(driveImageUrl(p.url || p.photo_url || "")),
         caption: p.caption || ""
       }))
       .filter(p => p.url),
@@ -384,7 +405,7 @@ async function loadSheet() {
         const price = s.price ? (/^\d+(\.\d+)?$/.test(String(s.price).trim()) ? "£" + Number(s.price).toLocaleString("en-GB") : s.price) : "";
         const status = taken
           ? `<span class="sponsor">Sponsored by ${esc(s.sponsor || "a friend of Tom's")}</span>`
-          : `<span class="open">Unsponsored${price ? ` · ${price}` : ""}</span><a class="btn btn-small btn-ghost" href="mailto:${C.contactEmail}?subject=Sponsor%20marathon%20${n}">Sponsor this marathon</a>`;
+          : `<span class="open">Unsponsored${price ? ` · ${price}` : ""}</span><a class="btn btn-small btn-ghost" href="sponsor.html">Sponsor this marathon</a>`;
         html.push(`<li class="leg ${taken ? "taken" : "open"}" data-leg="${n}" style="--r1:${rowOf(i)};--r2:${rowOf(bi) + 1};--mrow:${rowOf(i) - 1}">
           <span class="arrow" aria-hidden="true"></span>
           <div class="leg-inner">
@@ -473,8 +494,8 @@ async function loadSheet() {
       s.textContent = `${lastCp.miles} miles, ${model.cps.length} checkpoints. A dress rehearsal for the tracker, the crew and the legs. Starts ${fmtDay(model.start)} ${fmtTime(model.start)}.`;
     } else if (state === "before") {
       l.textContent = "The route";
-      h.textContent = "From a field in the Cotswolds to the Thames Barrier";
-      s.textContent = "Fifteen checkpoints, roughly a half-marathon apart. Times are the plan; this page comes alive at 05:00 on Saturday 10 October.";
+      h.textContent = "From the source in the Cotswolds to London";
+      s.textContent = "I will have a checkpoint roughly every 13 miles, where I will meet support crew. The path is mostly trail, running along the river course as it grows from a muddy field to the biggest river in England.";
     } else if (state === "finished") {
       const fin = model.cps[model.cps.length - 1];
       l.textContent = reh ? "Test run · finished" : "Finished";
@@ -523,6 +544,7 @@ async function loadSheet() {
   function renderGallery(photos) {
     if (galleryBuilt) return; galleryBuilt = true;
     const track = $("#gallery-track"), sec = $("#gallery");
+    photos = (photos || []).filter(p => p && p.url);
     let list = photos && photos.length ? photos : [
       { url: "img/hero.jpg", caption: "" }, { url: "img/towpath.jpg", caption: "" }, { url: "img/story.jpg", caption: "" }, { url: "img/stretching.jpg", caption: "" },
       ...Array.from({ length: 24 }, (_, i) => ({ url: `img/photo-${i + 1}.jpg`, caption: "" }))
@@ -665,7 +687,7 @@ async function loadSheet() {
 
   // Count the hero numbers up once, when they come into view.
   function animateStats() {
-    const els = document.querySelectorAll(".stat b[data-count]");
+    const els = document.querySelectorAll("[data-count]");
     if (!els.length) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const run = (el) => {
@@ -675,7 +697,7 @@ async function loadSheet() {
     };
     const io = new IntersectionObserver((entries) => entries.forEach(en => { if (en.isIntersecting) { run(en.target); io.unobserve(en.target); } }), { threshold: 0.4 });
     els.forEach(el => io.observe(el));
-    document.querySelectorAll(".stat").forEach((el, i) => { el.style.setProperty("--i", i); });
+    document.querySelectorAll(".stat, .hero-stat").forEach((el, i) => { el.style.setProperty("--i", i); });
   }
 
   window.__refresh = refresh;

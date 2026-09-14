@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sponsor a marathon · Tiger Takes on the Thames</title>
+<meta name="description" content="Seven marathons, back to back, along the length of the Thames. Put your name or your business on one, and fund MND research through the My Name'5 Doddie Foundation.">
+<meta property="og:title" content="Sponsor a marathon · Tiger Takes on the Thames">
+<meta property="og:description" content="Seven marathons, back to back, along the length of the Thames. Put your name on one.">
+<meta property="og:image" content="img/og.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#002169">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,400&family=Work+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="tartan" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="index.html">Tiger Takes on the Thames</a>
+  <nav>
+    <a href="index.html#updates">Updates</a>
+    <a href="index.html#river">The route</a>
+    <a class="btn btn-small" id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <section class="page-head">
+    <a class="back" href="index.html">← Back to the run</a>
+    <p class="eyebrow">Sponsor a marathon</p>
+    <h1>Seven marathons.<br>Put your name on one.</h1>
+    <p class="lede">184 miles of the Thames Path, run in one go, is a little over seven consecutive marathons. Each one is a named stretch of river with its own character — and each one can carry the name of a business, a family or a friend who made it possible.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">What it means</p>
+    <h2>Where your name goes</h2>
+    <div class="what">
+      <div>
+        <h3>On the river</h3>
+        <p>Your name sits beside your stretch on the live tracker, from now until long after the run. Thousands of people will follow that page over race weekend.</p>
+      </div>
+      <div>
+        <h3>In the updates</h3>
+        <p>When Tom passes through your stretch, you're named in the update from that part of the river — on the site and in whatever gets shared from it.</p>
+      </div>
+      <div>
+        <h3>In the press</h3>
+        <p>Sponsors are credited in the media release and in any local coverage that follows. Bath, Wiltshire and Thames-side press have already been in touch.</p>
+      </div>
+      <div>
+        <h3>Where it actually goes</h3>
+        <p>Every pound goes to the My Name'5 Doddie Foundation, which has committed more than £24 million to research into a disease that still has no cure.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">The seven</p>
+    <h2>Choose your stretch</h2>
+    <p class="sub">Prices reflect the character of each leg — the later marathons are the hard ones, through the night and into London. Availability updates live.</p>
+    <div class="marathons" id="marathons"></div>
+    <p class="fine" id="m-note"></p>
+  </section>
+
+  <section class="cta-card">
+    <h2>Interested?</h2>
+    <p>Email Tom with the marathon number and he'll come back to you the same day. Businesses can be invoiced, and he's happy to talk through anything you'd want in return — a logo, a mention, a photo from your stretch of river.</p>
+    <p><a class="btn" id="sponsor-mail" href="mailto:">Email Tom about sponsoring</a></p>
+    <p class="fine" style="color:rgba(255,255,255,0.7)">Or call 07857 065324. In aid of the My Name'5 Doddie Foundation, registered charity SC047871.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="tartan" aria-hidden="true"></div>
+  <p>In aid of the My Name'5 Doddie Foundation, registered charity SC047871. <a href="index.html">Back to the run</a></p>
+</footer>
+
+<script src="config.js"></script>
+<script>
+(() => {
+  const C = window.TIGER_CONFIG || {};
+  const $ = (s) => document.querySelector(s);
+  const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+  const mail = `mailto:${C.contactEmail || ""}`;
+  $("#nav-donate").href = (C.justGiving && C.justGiving.pageUrl) || "#";
+  $("#sponsor-mail").href = `${mail}?subject=Sponsoring%20a%20marathon%20-%20Tiger%20Takes%20on%20the%20Thames`;
+
+  // Same fallback list as the main page, replaced by the sheet when it answers.
+  const FALLBACK = [
+    { leg:1, from:"Source", to:"Lechlade", miles:24, price:"250" },
+    { leg:2, from:"Lechlade", to:"Oxford", miles:31, price:"500" },
+    { leg:3, from:"Oxford", to:"Wallingford", miles:23, price:"750" },
+    { leg:4, from:"Wallingford", to:"Reading", miles:21, price:"1000" },
+    { leg:5, from:"Reading", to:"Marlow", miles:19, price:"1500" },
+    { leg:6, from:"Marlow", to:"Shepperton", miles:29, price:"2500" },
+    { leg:7, from:"Shepperton", to:"Thames Barrier", miles:37, price:"5000" }
+  ];
+  const FLAVOUR = {
+    1: "The quiet start. A field in the Cotswolds, first light, and the river barely wide enough to notice.",
+    2: "Meadows and locks down to Oxford, where Tom swam every week as a student.",
+    3: "Through Abingdon and the Wittenhams as the first day's heat builds.",
+    4: "Goring Gap and into Reading — the last stretch before dark.",
+    5: "The night leg. Henley and Marlow in the small hours, head torch on.",
+    6: "Dawn through Windsor and Shepperton, on the second day with no sleep.",
+    7: "Richmond, Westminster, the Thames Barrier. The hardest miles, and the ones everybody sees."
+  };
+
+  const fmtPrice = (p) => !p ? "" : (/^\d+(\.\d+)?$/.test(String(p).trim()) ? "£" + Number(p).toLocaleString("en-GB") : String(p));
+
+  function render(legs, live) {
+    $("#marathons").innerHTML = legs.map(s => {
+      const taken = /taken|sponsored/i.test(s.status || "");
+      const price = fmtPrice(s.price);
+      return `<div class="m-card ${taken ? "taken" : ""}">
+        <span class="n">Marathon ${s.leg}</span>
+        <span class="route">${esc(s.from)} → ${esc(s.to)}</span>
+        <span class="miles">${s.miles ? s.miles + " miles · " : ""}two checkpoints</span>
+        <p class="fine" style="margin:6px 0 0">${esc(FLAVOUR[s.leg] || "")}</p>
+        ${price ? `<span class="price">${price}</span>` : ""}
+        <span class="state">${taken ? `Sponsored by ${esc(s.sponsor || "a friend of Tom's")}` : "Available"}</span>
+        <a class="btn btn-primary" href="${mail}?subject=${encodeURIComponent(`Sponsoring marathon ${s.leg}: ${s.from} to ${s.to}`)}">Sponsor this marathon</a>
+      </div>`;
+    }).join("");
+    $("#m-note").textContent = live ? "" : "Prices shown are the published ones; email to confirm availability.";
+  }
+
+  render(FALLBACK, false);
+
+  // Live prices and availability, straight from the same sheet the tracker uses.
+  (async () => {
+    if (!C.sheetId) return;
+    try {
+      const get = async (tab) => {
+        const r = await fetch(`/.netlify/functions/sheet?sheetId=${encodeURIComponent(C.sheetId)}&tab=${encodeURIComponent(tab)}&_=${Math.floor(Date.now() / 30000)}`);
+        if (!r.ok) throw new Error(r.status);
+        const rows = []; let row = [], cell = "", q = false; const text = await r.text();
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          if (q) { if (ch === '"') { if (text[i+1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+          else if (ch === '"') q = true;
+          else if (ch === ",") { row.push(cell); cell = ""; }
+          else if (ch === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+          else if (ch !== "\r") cell += ch;
+        }
+        if (cell.length || row.length) { row.push(cell); rows.push(row); }
+        const head = rows.shift().map(h => h.trim().toLowerCase().replace(/\s+/g, "_"));
+        return rows.filter(r2 => r2.some(c => c && c.trim())).map(r2 => Object.fromEntries(head.map((h, i) => [h, (r2[i] || "").trim()])));
+      };
+      const [sponsors, cps] = await Promise.all([get(C.tabs?.sponsors || "Sponsors"), get(C.tabs?.checkpoints || "Checkpoints").catch(() => [])]);
+      if (!sponsors.length || !("leg" in sponsors[0])) return;        // wrong tab: keep the fallback
+      const milesOf = (name) => { const c = cps.find(x => (x.name || "").toLowerCase() === String(name).toLowerCase()); return c ? +c.miles : null; };
+      const legs = sponsors.map(s => {
+        const from = s.from || "", to = s.to || "";
+        const a = milesOf(from), b = milesOf(to);
+        return { leg: +s.leg, from, to, price: s.price, status: s.status, sponsor: s.sponsor, miles: (a != null && b != null) ? Math.round(b - a) : (FALLBACK.find(f => f.leg === +s.leg) || {}).miles };
+      }).filter(s => s.leg);
+      if (legs.length) render(legs, true);
+    } catch (e) { console.warn("Sponsor list: using published prices", e); }
+  })();
+})();
+</script>
+</body>
+</html>

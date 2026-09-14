@@ -8,7 +8,9 @@ export default async (req) => {
   const tab = url.searchParams.get("tab");
   if (!sheetId || !tab) return new Response("missing sheetId or tab", { status: 400 });
   try {
-    const gviz = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(sheetId)}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+    // headers=1 is essential: without it Google guesses how many rows are header rows, and a
+    // sparse key/value tab gets its first several rows glued into one cell.
+    const gviz = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(sheetId)}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`;
     const r = await fetch(gviz, { headers: { "User-Agent": "Mozilla/5.0" } });
     if (!r.ok) return new Response(`sheet fetch ${r.status}`, { status: 502 });
     const text = await r.text();
