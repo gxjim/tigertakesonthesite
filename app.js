@@ -78,22 +78,34 @@ function driveImageUrl(url) {
 
 const raceStart = new Date(C.race.start);
 
-  // Parse "2026-10-10 12:58" (London time) or "12:58" (day inferred from a reference time).
+  // Parse a time from the sheet. Accepts "2026-10-10 12:58", "12:58", and the
+  // format Tom actually types: "2:41 PM Sat" / "5:00 AM Sat". A trailing day name
+  // is ignored — the day is worked out from `ref`, the previous checkpoint's time,
+  // which is what carries the run over midnight into Sunday.
   function parseLondon(str, ref) {
     if (!str) return null;
     str = String(str).trim();
+
     let m = str.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})/);
     if (m) return londonDate(+m[1], +m[2], +m[3], +m[4], +m[5]);
-    m = str.match(/^(\d{1,2}):(\d{2})/);
+
+    // 5:00, 5:00:30, 2:41 PM, 2:41 PM Sat — seconds and day name optional.
+    m = str.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(am|pm)?/i);
     if (m && ref) {
+      let hh = +m[1];
+      const mer = (m[3] || "").toLowerCase();
+      if (mer === "pm" && hh < 12) hh += 12;
+      if (mer === "am" && hh === 12) hh = 0;
+      if (hh > 23) return null;
       // Try the ref day and its neighbours; pick the one closest to ref.
-      const cands = [-1,0,1].map(off => {
-        const d = new Date(ref.getTime() + off*86400000);
+      const cands = [-1, 0, 1].map(off => {
+        const d = new Date(ref.getTime() + off * 86400000);
         const p = londonParts(d);
-        return londonDate(p.y, p.mo, p.d, +m[1], +m[2]);
+        return londonDate(p.y, p.mo, p.d, hh, +m[2]);
       });
-      return cands.sort((a,b) => Math.abs(a-ref) - Math.abs(b-ref))[0];
+      return cands.sort((a, b) => Math.abs(a - ref) - Math.abs(b - ref))[0];
     }
+
     const d = new Date(str);
     return isNaN(d) ? null : d;
   }
@@ -212,7 +224,11 @@ async function loadSheet() {
       eta: r.eta || r.tom_eta || "",
       pace: r.pace || r.current_pace || ""
     };
-  });
+  })
+  // A checkpoint needs a number in `id`, a name and a mileage. Anything else in
+  // the tab — a second table pasted underneath, a stray note — is ignored rather
+  // than turned into a phantom checkpoint.
+  .filter(cp => Number.isFinite(cp.id) && cp.name && Number.isFinite(cp.miles));
 
   return {
     config,
@@ -433,13 +449,7 @@ async function loadSheet() {
     let tiger = $(".tiger");
     if (!tiger) { tiger = document.createElement("div"); tiger.className = "tiger"; tiger.innerHTML = `T<span class="label"></span>`; $(".river-wrap").appendChild(tiger); }
     const narrow = window.innerWidth < 900;
-    // Config → `last_update` is Tom's own status line; it rides along with the marker.
-    const status = (latest.config && latest.config.last_update || "").trim();
-    tiger.querySelector(".label").textContent = model.lastDone && model.position.next
-      ? (narrow
-          ? `mile ${model.position.miles.toFixed(0)}`
-          : `Tiger · mile ${model.position.miles.toFixed(0)} · ${delayText(model.delayMin)}${status ? ` · ${status}` : ""}`)
-      : "";
+    tiger.querySelector(".label").textContent = model.lastDone && model.position.next ? (narrow ? `mile ${model.position.miles.toFixed(0)}` : `Tiger · mile ${model.position.miles.toFixed(0)} · ${delayText(model.delayMin)}`) : "";
 
     drawRiver(model, state);
   }
@@ -697,6 +707,7 @@ async function loadSheet() {
 
   // ── Main ──────────────────────────────────────────────────────────────────
   let latest = { model: null, state: "before", jg: null, config: {} };
+  let scrolledToTiger = false;
   function deriveState(config, model) {
     if (config.state && ["before","live","finished"].includes(config.state.toLowerCase())) return config.state.toLowerCase();
     const now = new Date();
@@ -724,7 +735,14 @@ async function loadSheet() {
       const demo = new URLSearchParams(location.search).get("demo") || window.__DEMO || "";
       if (demo === "live" || demo === "finished") {
         const upto = demo === "live" ? 8 : data.checkpoints.length;
-        data.checkpoints.forEach((cp, i) => { if (i < upto) cp.actual = i === 0 ? cp.target : (() => { const t = parseLondon(cp.target, raceStart); const p = londonParts(new Date(t.getTime() + i * 4 * 60000)); return `${p.y}-${String(p.mo).padStart(2,"0")}-${String(p.d).padStart(2,"0")} ${String(p.h).padStart(2,"0")}:${String(p.mi).padStart(2,"0")}`; })(); });
+        let ref = raceStart;
+        data.checkpoints.forEach((cp, i) => {
+          const t = parseLondon(cp.target, ref);
+          if (t) ref = t;
+          if (i >= upto || !t) return;
+          const p = londonParts(new Date(t.getTime() + i * 4 * 60000));
+          cp.actual = `${p.y}-${String(p.mo).padStart(2, "0")}-${String(p.d).padStart(2, "0")} ${String(p.h).padStart(2, "0")}:${String(p.mi).padStart(2, "0")}`;
+        });
         data.config.state = demo;
         if (!data.updates.length) data.updates = [
           { date: "3 Oct", title: "Last long one done", body: "38 miles from Lechlade to Oxford this morning with Ed and Sam. Legs fine, feet less so.\nThe towpath past Newbridge is going to be beautiful at dawn.", photo: "img/towpath.jpg", link: "" },
@@ -738,6 +756,7 @@ async function loadSheet() {
       document.body.dataset.state = state;
       const jg = loadJustGiving(data.config);
       latest = { model, state, jg, config: data.config };
+      if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) { scrolledToTiger = true; setTimeout(scrollToTiger, 600); }
       renderHead(model, state, data.config);
       renderRaise(jg);
       renderJourney(model, state, data.config, data.sponsors);

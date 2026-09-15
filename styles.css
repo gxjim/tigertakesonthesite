@@ -261,6 +261,12 @@ p {
   font: inherit;
 }
 
+/* More specific than the rule above, which was turning the Donate button's
+   text grey on navy. */
+.top nav a.btn {
+  color: #fff;
+}
+
 .top nav a:hover {
   color: var(--navy);
 }
@@ -303,33 +309,21 @@ section {
   margin: 64px 0;
 }
 
-/* Once the run starts, the tracker is the reason anyone is here — so it goes to
-   the top and everything else falls in behind it. Same again once he finishes,
-   so "Finished!" is the first thing on the page. */
-body[data-state="live"] main,
+/* Finished: "Finished!" is the first thing on the page. While he is running the
+   page keeps its normal order and scrolls itself to the marker instead. */
 body[data-state="finished"] main {
   display: flex;
   flex-direction: column;
 }
 
-body[data-state="live"] main > section,
 body[data-state="finished"] main > section {
   margin: 30px 0;
 }
 
-body[data-state="live"] #tabs,
 body[data-state="finished"] #tabs    { order: 1; margin-top: 30px; }
-
-body[data-state="live"] #donate,
 body[data-state="finished"] #donate  { order: 2; }
-
-body[data-state="live"] .hero,
 body[data-state="finished"] .hero    { order: 3; }
-
-body[data-state="live"] #gallery,
 body[data-state="finished"] #gallery { order: 4; }
-
-body[data-state="live"] .after,
 body[data-state="finished"] .after   { order: 5; }
 
 /* Written in the future tense — it reads wrong once he has finished. */
@@ -892,7 +886,7 @@ body[data-state="live"] .live-tag .dot {
 .tracker-intro p:not(.eyebrow) {
   font-size: 15px;
   color: var(--ink);
-  max-width: 70ch;
+  max-width: none;
 }
 
 .tracker-intro[hidden],
@@ -1529,11 +1523,7 @@ body[data-state="live"] .live-tag .dot {
 
   border-radius: 4px;
 
-  /* Tom's status rides here, so it has to be allowed to wrap rather than run
-     off the side of the page. */
-  white-space: normal;
-  max-width: min(46ch, 52vw);
-  line-height: 1.35;
+  white-space: nowrap;
 }
 
 body[data-state="live"] .tiger,
