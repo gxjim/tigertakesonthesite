@@ -375,7 +375,8 @@ async function loadSheet() {
         times = `<b>${fmtDay(cp.targetAt)} ${fmtTime(cp.targetAt)}</b><span>plan</span>`;
       } else {
         const d = minutes(cp.forecastAt - cp.targetAt);
-        times = `<b>${fmtTime(cp.forecastAt)}${d ? `<span class="delta ${d > 0 ? "late" : "early"}">${d > 0 ? "+" : "−"}${Math.abs(d)}m</span>` : ""}</b><span>${cp.manual === "eta" ? "Tom's estimate" : cp.manual === "pace" ? "at Tom's pace" : "forecast"} · plan ${fmtTime(cp.targetAt)}</span>`;
+        const kind = cp.manual === "eta" ? "Tom's estimate" : cp.manual === "pace" ? "at Tom's pace" : "forecast";
+        times = `<b><em class="kind">${kind}</em> ${fmtTime(cp.forecastAt)}${d ? `<span class="delta ${d > 0 ? "late" : "early"}">${d > 0 ? "+" : "−"}${Math.abs(d)}m</span>` : ""}</b><span>plan ${fmtTime(cp.targetAt)}</span>`;
       }
       const runners = cp.runners ? `<div class="runners">Main support runner is ${esc(cp.runners)}</div>` : "";
       const crew = cp.crew ? `<div class="runners">Support crew is ${esc(cp.crew)}</div>` : "";
@@ -424,9 +425,7 @@ async function loadSheet() {
     });
 
     if (state === "finished") {
-      const fin = cps[cps.length - 1];
-      const elapsed = fin.actualAt ? (fin.actualAt - model.start) / 3600000 : null;
-      html.push(`<li class="finish-card" style="grid-row:${rowOf(cps.length - 1) + 1}"><h3>He did it.</h3><p>${elapsed ? `${cps[cps.length - 1].miles} miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes.` : `${cps[cps.length - 1].miles} miles, one go.`} The fundraising page stays open — if the run moved you, the button at the top is the way to say so.</p></li>`);
+      html.push(`<li class="finish-card" style="grid-row:${rowOf(cps.length - 1) + 1}"><h3>Finished!</h3><p>${esc(finishedText(model))}</p><a class="btn btn-primary" href="${esc(C.justGiving.pageUrl || "#")}" target="_blank" rel="noopener">Donate</a></li>`);
     }
     flow.innerHTML = html.join("");
 
@@ -434,7 +433,13 @@ async function loadSheet() {
     let tiger = $(".tiger");
     if (!tiger) { tiger = document.createElement("div"); tiger.className = "tiger"; tiger.innerHTML = `T<span class="label"></span>`; $(".river-wrap").appendChild(tiger); }
     const narrow = window.innerWidth < 900;
-    tiger.querySelector(".label").textContent = model.lastDone && model.position.next ? (narrow ? `mile ${model.position.miles.toFixed(0)}` : `Tiger · mile ${model.position.miles.toFixed(0)} · ${delayText(model.delayMin)}`) : "";
+    // Config → `last_update` is Tom's own status line; it rides along with the marker.
+    const status = (latest.config && latest.config.last_update || "").trim();
+    tiger.querySelector(".label").textContent = model.lastDone && model.position.next
+      ? (narrow
+          ? `mile ${model.position.miles.toFixed(0)}`
+          : `Tiger · mile ${model.position.miles.toFixed(0)} · ${delayText(model.delayMin)}${status ? ` · ${status}` : ""}`)
+      : "";
 
     drawRiver(model, state);
   }
@@ -489,6 +494,19 @@ async function loadSheet() {
   }
 
   // ── Render: headline, buttons, fundraising ────────────────────────────────
+  // "I arrived at the end of the Thames Path at 18:02, after 37 hours of continuous running."
+  function finishedText(model) {
+    const fin = model.cps[model.cps.length - 1];
+    const elapsed = fin.actualAt ? (fin.actualAt - model.start) / 3600000 : null;
+    const when = fin.actualAt ? ` at ${fmtTime(fin.actualAt)}` : "";
+    const hrs = elapsed ? Math.floor(elapsed) : 0;
+    const mins = elapsed ? Math.round((elapsed % 1) * 60) : 0;
+    const how = elapsed
+      ? `, after ${hrs} hours${mins ? ` and ${mins} minutes` : ""} of continuous running`
+      : "";
+    return `I arrived at the end of the Thames Path${when}${how}. Please show your support by contributing to the fundraiser. Every donation helps move us towards a cure for MND.`;
+  }
+
   function renderHead(model, state, config) {
     const h = $("#position-headline"), s = $("#position-sub"), l = $("#live-label");
     const reh = (config.rehearsal || "").toLowerCase() === "yes";
@@ -505,9 +523,8 @@ async function loadSheet() {
     } else if (state === "finished") {
       const fin = model.cps[model.cps.length - 1];
       l.textContent = reh ? "Test run · finished" : "Finished";
-      h.textContent = fin.actualAt ? `He did it. ${fin.name} at ${fmtTime(fin.actualAt)} on ${fmtDay(fin.actualAt)}.` : "He did it.";
-      const elapsed = fin.actualAt ? (fin.actualAt - model.start) / 3600000 : null;
-      s.textContent = elapsed ? `${model.cps[model.cps.length - 1].miles} miles in ${Math.floor(elapsed)} hours ${Math.round((elapsed % 1) * 60)} minutes. The fundraising page stays open.` : "The fundraising page stays open.";
+      h.textContent = "Finished!";
+      s.textContent = finishedText(model);
     } else {
       l.textContent = `${reh ? "Test run · live" : "Live"} · ${fmtDay(new Date())} ${fmtTime(new Date())}`;
       if (!model.lastDone) { h.textContent = `At ${first.name}, waiting for ${fmtTime(model.start)}`; s.textContent = `The first checkpoint is ${model.cps[1].name}, ${model.cps[1].miles} miles in.`; }
@@ -517,10 +534,26 @@ async function loadSheet() {
         s.textContent = `${model.position.miles.toFixed(0)} miles in · ${delayText(model.delayMin)} · ${model.position.next.name} ${model.position.next.manual === "eta" ? "expected (Tom's estimate)" : model.position.next.manual === "pace" ? "at Tom's current pace" : "forecast"} ${fmtTime(model.position.next.forecastAt)}${config.pace_note ? " · " + config.pace_note : ""}`;
       }
     }
+    const live = state === "live";
     const lt = $("#livetrack-btn");
-    if (state === "live" && config.livetrack_url) { lt.href = config.livetrack_url; lt.hidden = false; } else lt.hidden = true;
-    $("#jump-btn").hidden = !(state === "live" && model.lastDone && model.position.next);
-    $("#updated").textContent = config.last_update ? `Sheet updated ${config.last_update}` : "";
+    if (live && config.livetrack_url) { lt.href = config.livetrack_url; lt.hidden = false; } else lt.hidden = true;
+
+    // Same link again, down beside the tracker itself, where people are actually looking.
+    const li = $("#livetrack-inline"), lw = $("#tracker-live");
+    if (li && lw) {
+      if (live && config.livetrack_url) { li.href = config.livetrack_url; li.hidden = false; } else li.hidden = true;
+      lw.hidden = !live;
+    }
+
+    // The "what this is and when it starts" note is only useful before the off.
+    const ti = $("#tracker-intro");
+    if (ti) ti.hidden = state !== "before";
+
+    $("#jump-btn").hidden = !(live && model.lastDone && model.position.next);
+    const fd = $("#finish-donate");
+    if (fd) { fd.href = C.justGiving.pageUrl || "#"; fd.hidden = state !== "finished"; }
+    // Tom's own words, verbatim — no "Sheet updated" bolted on the front.
+    $("#updated").textContent = (config.last_update || "").trim();
   }
 
   // ── Render: updates (Tom's posts from the Updates tab) ────────────────────
@@ -663,8 +696,7 @@ async function loadSheet() {
   }
 
   // ── Main ──────────────────────────────────────────────────────────────────
-  let latest = { model: null, state: "before", jg: null };
-  let scrolledToTiger = false;
+  let latest = { model: null, state: "before", jg: null, config: {} };
   function deriveState(config, model) {
     if (config.state && ["before","live","finished"].includes(config.state.toLowerCase())) return config.state.toLowerCase();
     const now = new Date();
@@ -705,7 +737,7 @@ async function loadSheet() {
       const state = deriveState(data.config, model);
       document.body.dataset.state = state;
       const jg = loadJustGiving(data.config);
-      latest = { model, state, jg };
+      latest = { model, state, jg, config: data.config };
       renderHead(model, state, data.config);
       renderRaise(jg);
       renderJourney(model, state, data.config, data.sponsors);
@@ -716,9 +748,8 @@ async function loadSheet() {
       renderEmbeds(data.config);
       // Images load later and change layout — redraw the river when they do.
       $("#flow").querySelectorAll("img").forEach(img => { if (!img.complete) img.addEventListener("load", () => drawRiver(model, state), { once: true }); });
-      if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) { scrolledToTiger = true; setTimeout(scrollToTiger, 600); }
       if (data.source === "sample") console.info("Tiger: rendering sample data — set sheetId in config.js");
-      $("#updated").textContent = data.source === "fallback" ? "Live data temporarily unavailable — showing the plan." : ($("#updated").textContent || "");
+      if (data.source === "fallback") $("#updated").textContent = "Live data temporarily unavailable — showing the plan.";
     } catch (e) { console.error("Tiger refresh failed", e); }
   }
 

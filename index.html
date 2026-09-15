@@ -46,7 +46,7 @@
   <nav>
     <a href="#updates">Updates</a>
     <a href="sponsor.html">Sponsor a marathon</a>
-    <a id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
+    <a class="btn btn-small" id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
   </nav>
 </header>
 
@@ -163,11 +163,11 @@
         The Thames Path runs for 184 miles from the river’s source in the Cotswolds to the Thames Barrier in London. I’m aiming to run at around 6:30 min/km, with a short walking break every 30 minutes, and to finish in under 40 hours — before sunset on Sunday.
       </p>
 
-      <p class="sub">
+      <p class="sub plan-copy">
         There will be a checkpoint roughly every 13 miles, where my crew will help with food, water and kit, while friends and support runners will join me for different sections along the way. The plan is simple: keep the stops short, keep moving through the night, and no stopping until the end.
       </p>
 
-      <p class="sub">
+      <p class="sub plan-copy">
         You’ll be able to follow my progress live on the tracker, and anyone who would like to come out and support — or even join me for part of the route — is very welcome.
       </p>
       <div class="hero-stats route-stats" aria-label="The route in numbers">
@@ -192,7 +192,18 @@
           target="_blank"
           rel="noopener"
           hidden>
-          Where is Tiger right now
+          Click here for live location
+        </a>
+
+        <!-- Finished state: the one thing left to ask for. -->
+        <a
+          class="btn btn-primary"
+          id="finish-donate"
+          href="#"
+          target="_blank"
+          rel="noopener"
+          hidden>
+          Donate
         </a>
 
         <button
@@ -213,8 +224,6 @@
         </button>
       </div>
 
-      <p class="fine" id="updated"></p>
-
     </div>
 
     <div class="komoot" id="komoot" hidden>
@@ -224,6 +233,22 @@
         loading="lazy"
         allowfullscreen>
       </iframe>
+    </div>
+
+    <!-- What the tracker is and when it starts. Hidden once the run is under way. -->
+    <div class="tracker-intro" id="tracker-intro">
+      <p class="eyebrow">The tracker</p>
+      <p>
+        This map is the plan. The tracker below goes live at <strong>05:00 on Saturday 10 October</strong>, when I set off from the source.
+        From then on each checkpoint shows the time I actually arrived, and the ones ahead show an estimated time that is updated as I run.
+        A link to my live location will appear here on the day.
+      </p>
+    </div>
+
+    <!-- Live-only: the quickest way to see where he is this minute. -->
+    <div class="tracker-live" id="tracker-live" hidden>
+      <a class="btn btn-primary" id="livetrack-inline" href="#" target="_blank" rel="noopener">Click here for live location</a>
+      <p class="fine" id="updated"></p>
     </div>
 
     <div class="flow-key" aria-hidden="true">

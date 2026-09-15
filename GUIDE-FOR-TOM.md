@@ -24,7 +24,7 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 | `pace_note` | Optional short line shown under the live headline, e.g. `Tom: legs fine, walking the hills` or `10 min stop at Goring for food`. |
 | `state` | Leave blank — the site works out before / live / finished by itself. Only type `live` or `finished` to force it. |
 | `rehearsal` | `yes` makes the site use the Rehearsal tab instead of Checkpoints (for a practice run). Set back to `no` afterwards. |
-| `last_update` | Optional free text, e.g. `Sat 13:12`, shown under the route. |
+| `last_update` | Your own short status line, in your words — it appears beside the tracker and on the moving Tiger marker on the river, exactly as you type it (e.g. `Rain easing, moving well`). Leave blank for nothing. |
 | `komoot_embed` | Paste the whole Komoot embed code here (Komoot → Share → Embed → copy), or just its web address. The map appears above the river. **Do this here, not in config.js** — the sheet doesn't mind the quote marks in the code; a code file does. |
 | `youtube_id` | Optional: a YouTube link or ID for the video in the "Why" section. |
 | `instagram_embed` | Optional: paste the web address of one Instagram post (`https://www.instagram.com/p/XXXXXXX/`). The post itself then appears on the page under "Follow along". You can put two or three addresses in this one cell, separated by commas or line breaks, or use the extra keys below. |

@@ -208,10 +208,10 @@ p {
   background: rgba(246, 244, 239, 0.95);
   backdrop-filter: blur(8px);
 
-  border-bottom: 2px solid var(--yellow);
+  border-bottom: 1px solid var(--line);
 
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   gap: 10px 20px;
 
@@ -248,7 +248,7 @@ p {
 /* Menu sits at the far end of the row. */
 .top nav {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   gap: 20px;
 
@@ -265,16 +265,11 @@ p {
   color: var(--navy);
 }
 
-.top nav #nav-donate {
-  color: var(--navy);
-}
-
-.top nav #nav-donate::after {
-  content: "";
-  display: block;
-  height: 2px;
-  margin-top: 3px;
-  background: var(--yellow);
+.top nav .btn-small {
+  min-height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 
 @media (max-width: 700px) {
@@ -308,6 +303,41 @@ section {
   margin: 64px 0;
 }
 
+/* Once the run starts, the tracker is the reason anyone is here — so it goes to
+   the top and everything else falls in behind it. Same again once he finishes,
+   so "Finished!" is the first thing on the page. */
+body[data-state="live"] main,
+body[data-state="finished"] main {
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-state="live"] main > section,
+body[data-state="finished"] main > section {
+  margin: 30px 0;
+}
+
+body[data-state="live"] #tabs,
+body[data-state="finished"] #tabs    { order: 1; margin-top: 30px; }
+
+body[data-state="live"] #donate,
+body[data-state="finished"] #donate  { order: 2; }
+
+body[data-state="live"] .hero,
+body[data-state="finished"] .hero    { order: 3; }
+
+body[data-state="live"] #gallery,
+body[data-state="finished"] #gallery { order: 4; }
+
+body[data-state="live"] .after,
+body[data-state="finished"] .after   { order: 5; }
+
+/* Written in the future tense — it reads wrong once he has finished. */
+body[data-state="finished"] .plan-copy,
+body[data-state="finished"] .route-stats {
+  display: none;
+}
+
 
 /* ── Hero title ───────────────────────────────────────────────────────────── */
 
@@ -317,16 +347,6 @@ section {
   font-size: clamp(31px, 4.1vw, 46px);
   line-height: 1.1;
   margin: 0 0 22px;
-}
-
-.hero h1::after {
-  content: "";
-  display: block;
-  width: 84px;
-  height: 4px;
-  margin: 18px 0 0;
-  background: var(--yellow);
-  border-radius: 3px;
 }
 
 
@@ -853,6 +873,44 @@ body[data-state="live"] .live-tag .dot {
 
 /* ── Komoot ──────────────────────────────────────────────────────────────── */
 
+/* What the tracker is, and when it starts. Before-state only. */
+.tracker-intro,
+.tracker-live {
+  margin: 0 0 34px;
+  padding: 18px 20px;
+
+  background: var(--blue-faint);
+  border: 1px solid var(--blue-soft);
+  border-radius: var(--radius);
+}
+
+.tracker-intro p:last-child,
+.tracker-live p:last-child {
+  margin: 0;
+}
+
+.tracker-intro p:not(.eyebrow) {
+  font-size: 15px;
+  color: var(--ink);
+  max-width: 70ch;
+}
+
+.tracker-intro[hidden],
+.tracker-live[hidden] {
+  display: none;
+}
+
+.tracker-live {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.tracker-live .fine {
+  margin: 0;
+}
+
 .flow-key {
   display: none;
 }
@@ -870,7 +928,7 @@ body[data-state="live"] .live-tag .dot {
 
   border: 1px solid var(--line);
 
-  margin: 0 0 28px;
+  margin: 0 0 40px;
 
   background: var(--card);
 }
@@ -1050,6 +1108,16 @@ body[data-state="live"] .live-tag .dot {
   color: var(--navy);
 }
 
+.node .times .kind {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 6px;
+}
+
 .node .delta {
   font-size: 12px;
   font-weight: 600;
@@ -1064,12 +1132,15 @@ body[data-state="live"] .live-tag .dot {
   color: var(--early);
 }
 
+/* Right-aligned so it clears the moving Tiger marker on the river. */
 .node .runners {
   grid-column: 1 / -1;
 
   font-size: 13.5px;
 
   color: var(--ink);
+
+  text-align: right;
 }
 
 .node .cp-note,
@@ -1458,7 +1529,11 @@ body[data-state="live"] .live-tag .dot {
 
   border-radius: 4px;
 
-  white-space: nowrap;
+  /* Tom's status rides here, so it has to be allowed to wrap rather than run
+     off the side of the page. */
+  white-space: normal;
+  max-width: min(46ch, 52vw);
+  line-height: 1.35;
 }
 
 body[data-state="live"] .tiger,
@@ -1489,6 +1564,15 @@ body[data-state="finished"] .tiger .label {
 
 .finish-card h3 {
   color: var(--navy);
+  font-size: 26px;
+}
+
+.finish-card p {
+  max-width: 62ch;
+}
+
+.finish-card .btn {
+  margin-top: 4px;
 }
 
 
