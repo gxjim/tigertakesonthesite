@@ -198,134 +198,99 @@ p {
 
 /* ── Header ───────────────────────────────────────────────────────────────── */
 
+/* One quiet row. Everything in it is the same small uppercase label: the name
+   carries a touch more weight and colour, nothing else competes. */
 .top {
   position: sticky;
   top: 0;
   z-index: 10;
 
-  background: rgba(246, 244, 239, 0.94);
+  background: rgba(246, 244, 239, 0.95);
   backdrop-filter: blur(8px);
 
-  /* The yellow rule under the whole header. */
-  border-bottom: 3px solid var(--yellow);
+  border-bottom: 2px solid var(--yellow);
 
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-
-  padding: 0 0 8px;
-
-  text-align: center;
-}
-
-/* Brand on the left, dates on the right, on one line. */
-.top-main {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 10px 20px;
 
-  width: min(100%, var(--max));
-  margin: 0 auto;
-  padding: 12px 16px 2px;
+  width: 100%;
+  padding: 12px 20px;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.top > * {
+  flex: none;
 }
 
 .brand {
-  font-family: var(--serif);
-  font-weight: 600;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   color: var(--navy);
   text-decoration: none;
-  font-size: clamp(22px, 3.4vw, 34px);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
 }
 
-.top-date {
-  margin: 0;
+.top-meta {
   color: var(--yellow-text);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
 }
 
-/* Once you are past the intro the header collapses to a slim bar, so it isn't
-   following you down the whole page on a phone. */
-body.scrolled .ticker,
-body.scrolled .top-date {
+.top-meta:empty {
   display: none;
 }
-body.scrolled .top-main {
-  padding: 8px 16px 0;
-}
-body.scrolled .brand {
-  font-size: 19px;
-}
-body.scrolled .top nav {
-  gap: 14px;
-  font-size: 13px;
-}
 
+/* Menu sits at the far end of the row. */
 .top nav {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 18px;
-  font-size: 14px;
+  align-items: baseline;
   flex-wrap: wrap;
+  gap: 20px;
 
-  /* Same gutter as the brand row above it, so the two line up. */
-  width: min(100%, var(--max));
-  margin: 0 auto;
-  padding: 0 16px;
+  margin-left: auto;
 }
 
-.top nav a:not(.btn) {
-  color: var(--ink);
+.top nav a {
+  color: var(--muted);
   text-decoration: none;
-  font-weight: 500;
+  font: inherit;
 }
 
-.top nav .btn-small {
-  min-height: 34px;
+.top nav a:hover {
+  color: var(--navy);
 }
 
-/* Narrow: the date drops under the title rather than squeezing it to three lines. */
-@media (max-width: 640px) {
+.top nav #nav-donate {
+  color: var(--navy);
+}
 
-  .top-main {
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    padding: 10px 16px 4px;
-  }
+.top nav #nav-donate::after {
+  content: "";
+  display: block;
+  height: 2px;
+  margin-top: 3px;
+  background: var(--yellow);
+}
 
-  .top-date {
-    font-size: 11.5px;
-  }
+@media (max-width: 700px) {
 
-  .brand {
-    font-size: 24px;
+  .top {
+    gap: 6px 14px;
+    padding: 10px 16px;
+    justify-content: center;
     text-align: center;
   }
 
   .top nav {
+    margin-left: 0;
+    width: 100%;
     justify-content: center;
-  }
-
-}
-
-@media (max-width: 420px) {
-
-  .top nav {
-    gap: 12px;
-    font-size: 13px;
-    justify-content: center;
-  }
-
-  .brand {
-    font-size: 21px;
+    gap: 16px;
   }
 
 }
@@ -362,65 +327,6 @@ section {
   margin: 18px 0 0;
   background: var(--yellow);
   border-radius: 3px;
-}
-
-
-/* ── Moving banner ────────────────────────────────────────────────────────── */
-
-/* Lives inside the sticky header now, so it is already full width. */
-.ticker {
-  background: var(--navy);
-  border-bottom: 2px solid var(--yellow);
-
-  overflow: hidden;
-}
-
-.ticker-track {
-  display: flex;
-  width: max-content;
-
-  animation: ticker 38s linear infinite;
-}
-
-.ticker-run {
-  display: flex;
-  align-items: center;
-
-  padding: 7px 0;
-  white-space: nowrap;
-}
-
-.ticker-run span {
-  color: #fff;
-
-  font-family: var(--serif);
-  font-size: clamp(14px, 1.5vw, 17px);
-  font-weight: 600;
-
-  padding: 0 22px;
-}
-
-.ticker-run i {
-  color: var(--yellow);
-  font-style: normal;
-  font-size: 15px;
-}
-
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-.ticker:hover .ticker-track {
-  animation-play-state: paused;
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  .ticker-track {
-    animation: none;
-  }
-
 }
 
 
@@ -1295,6 +1201,13 @@ body[data-state="live"] .live-tag .dot {
   color: var(--muted);
 }
 
+.leg-note {
+  margin: 4px 0 2px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .leg .sponsor {
   color: var(--navy);
   font-weight: 600;
@@ -1774,7 +1687,7 @@ body[data-state="finished"] .tiger .label {
 
 #press p {
   font-size: 15px;
-  max-width: 78ch;
+  max-width: none;
 }
 
 
@@ -1970,7 +1883,6 @@ body[data-state="before"] .journey-head .live-tag {
 
 .page-head {
   margin: 40px 0 28px;
-  max-width: 62ch;
 }
 
 .back {
@@ -2047,35 +1959,18 @@ body[data-state="before"] .journey-head .live-tag {
   display: none;
 }
 
-.what {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 22px;
-  margin: 8px 0 36px;
-}
-
-.what h3 {
-  font-size: 17px;
-  margin-bottom: 6px;
-}
-
-.what p {
-  font-size: 15px;
-  color: var(--muted);
-  margin: 0;
-}
-
 /* Sponsor page headline sits a little smaller than a normal page title. */
 .page-title {
   font-size: clamp(28px, 3.6vw, 40px);
 }
 
-.contact-plain {
-  margin: 8px 0 48px;
+/* Plain running copy under the title — no boxes, one readable column. */
+.page-copy {
+  max-width: 66ch;
 }
 
-.contact-plain p {
+.page-copy p {
   font-size: 17px;
-  max-width: 62ch;
-  margin: 0;
+  line-height: 1.6;
+  margin: 0 0 16px;
 }

@@ -51,6 +51,7 @@ Headers across row 1: `url`, `caption`. **One row per photo, and every row needs
 - `photo_url` — optional, a photo for that stretch of river (see photos below). If blank, the site looks for a file called `img/leg-1.jpg` (for marathon 1) etc. on GitHub.
 - `caption` — optional caption on that photo.
 - `note` — optional sentence under the photo: who is running that stretch, or what it means to you.
+- `section_note` — a sentence or two describing that stretch of river. It appears on the marathon card in **two places**: the sponsor page and the river on the main page. If you leave it blank, a written-in default is used instead, so the cards never look empty.
 
 The marathons are: 1 Source→Lechlade · 2 Lechlade→Oxford · 3 Oxford→Wallingford · 4 Wallingford→Reading · 5 Reading→Marlow · 6 Marlow→Shepperton · 7 Shepperton→Thames Barrier.
 

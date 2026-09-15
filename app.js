@@ -37,7 +37,7 @@
     ["16","Thames Barrier","184","2026-10-11 17:00","","",""]
   ].map(r => ({ id:+r[0], name:r[1], miles:+r[2], target:r[3], actual:r[4], runners:r[5], note:r[6] }));
 
-  const SAMPLE_SPONSORS = [1,2,3,4,5,6,7].map(n => ({ leg:n, from:"", to:"", price:"", status:"available", sponsor:"", logo:"", photo:"", caption:"", note:"" }));
+  const SAMPLE_SPONSORS = [1,2,3,4,5,6,7].map(n => ({ leg:n, from:"", to:"", price:"", status:"available", sponsor:"", logo:"", photo:"", caption:"", note:"", section_note:"" }));
   const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"", instagram_embed:"", instagram_embed_2:"", instagram_embed_3:"" };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -229,7 +229,8 @@ async function loadSheet() {
       logo: s.logo_url || s.logo || "",
       photo: usablePhoto(driveImageUrl(s.photo_url || s.photo || "")),
       caption: s.caption || "",
-      note: s.note || ""
+      note: s.note || "",
+      section_note: s.section_note || ""
     })),
 
     updates: updates
@@ -405,6 +406,8 @@ async function loadSheet() {
         const miles = a && b ? b.miles - a.miles : 0;
         const taken = s.status === "taken" || s.status === "sponsored";
         const price = s.price ? (/^\d+(\.\d+)?$/.test(String(s.price).trim()) ? "£" + Number(s.price).toLocaleString("en-GB") : s.price) : "";
+        // Section blurb from the sheet (Sponsors → section_note), same text as the sponsor page.
+        const sectionNote = s.section_note ? `<p class="leg-note">${esc(s.section_note)}</p>` : "";
         const status = taken
           ? `<span class="sponsor">Sponsored by ${esc(s.sponsor || "a friend of Tom's")}</span>`
           : `<span class="open">Unsponsored${price ? ` · ${price}` : ""}</span><a class="btn btn-small btn-ghost" href="sponsor.html">Sponsor this marathon</a>`;
@@ -413,7 +416,8 @@ async function loadSheet() {
           <div class="leg-inner">
             <span class="n">Marathon ${n}</span>
             <span class="route">${esc(a.name)} → ${esc(b.name)}</span>
-            <span class="miles">${miles.toFixed(0)} miles · two checkpoints</span>
+            <span class="miles">${miles.toFixed(0)} miles</span>
+            ${sectionNote}
             ${status}
           </div></li>`);
       }
@@ -650,34 +654,12 @@ async function loadSheet() {
 
   // ── Countdown ─────────────────────────────────────────────────────────────
   // Banner: "£x raised so far" alternating with "x days to go", scrolling slowly.
-  function renderTicker(jg, state) {
-    const track = $("#ticker-track"); if (!track) return;
-    const ms = raceStart - new Date();
-    const days = Math.max(0, Math.ceil(ms / 86400000));
-    const raised = jg && jg.raised != null ? fmtGBP(jg.raised) : null;
-    const bits = [];
-    if (raised) bits.push(`${raised} raised so far`);
-    // The second message follows the state of the run, not the calendar, so a
-    // rehearsal or a demo preview doesn't sit there counting down to October.
-    if (state === "finished") bits.push("He did it — 184 miles");
-    else if (state === "live") bits.push("Running now");
-    else if (ms > 0) bits.push(days === 1 ? "1 day to go" : `${days} days to go`);
-    else bits.push("Running now");
-    if (!bits.length) return;
-    const key = bits.join("|");
-    if (track.dataset.key === key) return;
-    track.dataset.key = key;
-    // Repeated so the strip is always wider than the screen and the loop is seamless.
-    const run = bits.concat(bits, bits, bits).map(b => `<span>${esc(b)}</span>`).join('<i aria-hidden="true">•</i>');
-    track.innerHTML = `<div class="ticker-run">${run}</div><div class="ticker-run" aria-hidden="true">${run}</div>`;
-  }
-
   function tickCountdown() {
     const el = $("#countdown"); if (!el) return;
     const ms = raceStart - new Date();
     if (ms <= 0) { el.textContent = ""; return; }
     const d = Math.floor(ms / 86400000), h = Math.floor(ms % 86400000 / 3600000);
-    el.textContent = " · " + (d > 0 ? `${d} day${d === 1 ? "" : "s"} to go` : `${h}h ${Math.floor(ms % 3600000 / 60000)}m to go`);
+    el.textContent = d > 0 ? `${d} day${d === 1 ? "" : "s"} to go` : `${h}h ${Math.floor(ms % 3600000 / 60000)}m to go`;
   }
 
   // ── Main ──────────────────────────────────────────────────────────────────
@@ -726,7 +708,6 @@ async function loadSheet() {
       latest = { model, state, jg };
       renderHead(model, state, data.config);
       renderRaise(jg);
-      renderTicker(jg, state);
       renderJourney(model, state, data.config, data.sponsors);
       renderUpdates(data.updates);
       renderGallery(data.photos);
@@ -739,15 +720,6 @@ async function loadSheet() {
       if (data.source === "sample") console.info("Tiger: rendering sample data — set sheetId in config.js");
       $("#updated").textContent = data.source === "fallback" ? "Live data temporarily unavailable — showing the plan." : ($("#updated").textContent || "");
     } catch (e) { console.error("Tiger refresh failed", e); }
-  }
-
-  // The header carries the banner, the title and the dates at the top of the page,
-  // then collapses to a slim bar once you have scrolled past the intro — otherwise
-  // it would follow you down the whole page and eat a third of a phone screen.
-  function wireHeader() {
-    const mark = () => document.body.classList.toggle("scrolled", window.scrollY > 220);
-    mark();
-    window.addEventListener("scroll", mark, { passive: true });
   }
 
   function wireStatic() {
@@ -815,7 +787,6 @@ async function loadSheet() {
 
   window.__refresh = refresh;
   wireStatic();
-  wireHeader();
   wireTabs();
   renderKomoot();
   renderVideo();

@@ -19,12 +19,16 @@
 <body>
 <div class="tartan" aria-hidden="true"></div>
 
-<header class="top">
+<!-- Same header as the main page. -->
+<header class="top" id="top-bar">
   <a class="brand" href="index.html">Tiger Takes on the Thames</a>
+  <span class="top-meta">Sat 10 – Sun 11 Oct 2026</span>
+  <span class="top-meta" id="countdown"></span>
+
   <nav>
     <a href="index.html#updates">Updates</a>
     <a href="index.html#river">The route</a>
-    <a class="btn btn-small" id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
+    <a id="nav-donate" href="#" target="_blank" rel="noopener">Donate</a>
   </nav>
 </header>
 
@@ -32,44 +36,22 @@
 
   <section class="page-head">
     <a class="back" href="index.html">← Back to the run</a>
-    <p class="eyebrow">Sponsor a marathon</p>
-    <h1 class="page-title">Put your name on one of the marathons</h1>
-    <p class="lede">I am inviting local businesses to sponsor a marathon. The length of the River Thames is over 7 marathons long, and they will become progressively harder!</p>
-  </section>
+    <h1 class="page-title">Sponsor a marathon</h1>
 
-  <section>
-    <p class="eyebrow">What it means</p>
-    <h2>Where your name goes</h2>
-    <div class="what">
-      <div>
-        <h3>On the river</h3>
-        <p>Your name sits beside your stretch on the tracker, before and after the run.</p>
-      </div>
-      <div>
-        <h3>On the shirt</h3>
-        <p>Your logo can be printed on the shirt I wear for your marathon — I have to change shirts every marathon anyway.</p>
-      </div>
-      <div>
-        <h3>In the updates</h3>
-        <p>You get a mention in the update from your part of the river, and in anything shared from it.</p>
-      </div>
-      <div>
-        <h3>Where it goes</h3>
-        <p>Every pound goes to the My Name'5 Doddie Foundation, for MND research.</p>
-      </div>
+    <div class="page-copy">
+      <p>I am inviting local businesses to sponsor a marathon. The length of the River Thames is over 7 marathons long, and they will become progressively harder!</p>
+
+      <p>In recognition of your support I will add your logo &amp; name on the website, you will receive social-media recognition, inclusion in challenge updates and promote association with your section of the route. Your business name and logo will sit beside your stretch of the run tracker and I will wear a charity t-shirt with your logo for the duration of your section. I need to change shirts anyway so I will be grateful for something fresh to wear! I would be very happy to discuss other ways to acknowledge your support.</p>
+
+      <p>The amounts are suggested sponsorship levels. We would be very grateful for any support.</p>
+
+      <p>I am best reached through my email <a id="sponsor-mail" href="mailto:tom.spearman@pm.me">tom.spearman@pm.me</a> or mobile 07857 065324</p>
     </div>
   </section>
 
   <section>
-    <p class="eyebrow">The seven</p>
-    <h2>Choose your stretch</h2>
-    <p class="sub">The later marathons are the harder ones, through the night and into London.</p>
     <div class="marathons" id="marathons"></div>
     <p class="fine" id="m-note"></p>
-  </section>
-
-  <section class="contact-plain">
-    <p>If you would like to sponsor one, email Tom at <a id="sponsor-mail" href="mailto:tom.spearman@pm.me">tom.spearman@pm.me</a> or call 07857 065324. Happy to talk through what would work for you.</p>
   </section>
 
 </main>
@@ -88,6 +70,17 @@
   const mail = `mailto:${C.contactEmail || ""}`;
   $("#nav-donate").href = (C.justGiving && C.justGiving.pageUrl) || "#";
   const sm = $("#sponsor-mail"); if (sm) sm.href = `${mail}?subject=Sponsoring%20a%20marathon%20-%20Tiger%20Takes%20on%20the%20Thames`;
+
+  // Countdown in the header, same as the main page.
+  (function tick() {
+    const el = $("#countdown"); if (!el || !C.race || !C.race.start) return;
+    const ms = new Date(C.race.start) - new Date();
+    if (ms > 0) {
+      const d = Math.floor(ms / 86400000), h = Math.floor(ms % 86400000 / 3600000);
+      el.textContent = d > 0 ? `${d} day${d === 1 ? "" : "s"} to go` : `${h}h to go`;
+    } else el.textContent = "";
+    setTimeout(tick, 60000);
+  })();
 
   // Same fallback list as the main page, replaced by the sheet when it answers.
   const FALLBACK = [
@@ -115,11 +108,14 @@
     $("#marathons").innerHTML = legs.map(s => {
       const taken = /taken|sponsored/i.test(s.status || "");
       const price = fmtPrice(s.price);
+      // Section blurb comes from the sheet (Sponsors → section_note); the written-in
+      // version below is only a stand-in until that column is filled.
+      const note = (s.section_note || "").trim() || FLAVOUR[s.leg] || "";
       return `<div class="m-card ${taken ? "taken" : ""}">
         <span class="n">Marathon ${s.leg}</span>
         <span class="route">${esc(s.from)} → ${esc(s.to)}</span>
-        <span class="miles">${s.miles ? s.miles + " miles · " : ""}two checkpoints</span>
-        <p class="fine" style="margin:6px 0 0">${esc(FLAVOUR[s.leg] || "")}</p>
+        ${s.miles ? `<span class="miles">${s.miles} miles</span>` : ""}
+        <p class="fine" style="margin:6px 0 0">${esc(note)}</p>
         ${price ? `<span class="price">${price}</span>` : ""}
         <span class="state">${taken ? `Sponsored by ${esc(s.sponsor || "a friend of Tom's")}` : "Available"}</span>
       </div>`;
@@ -155,7 +151,7 @@
       const legs = sponsors.map(s => {
         const from = s.from || "", to = s.to || "";
         const a = milesOf(from), b = milesOf(to);
-        return { leg: +s.leg, from, to, price: s.price, status: s.status, sponsor: s.sponsor, miles: (a != null && b != null) ? Math.round(b - a) : (FALLBACK.find(f => f.leg === +s.leg) || {}).miles };
+        return { leg: +s.leg, from, to, price: s.price, status: s.status, sponsor: s.sponsor, section_note: s.section_note, miles: (a != null && b != null) ? Math.round(b - a) : (FALLBACK.find(f => f.leg === +s.leg) || {}).miles };
       }).filter(s => s.leg);
       if (legs.length) render(legs, true);
     } catch (e) { console.warn("Sponsor list: using published prices", e); }
