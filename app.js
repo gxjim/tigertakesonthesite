@@ -242,9 +242,14 @@ async function loadSheet() {
       price: s.price,
       status: (s.status || "available").toLowerCase(),
       sponsor: s.sponsor,
-      logo: s.logo_url || s.logo || "",
-      photo: usablePhoto(driveImageUrl(s.photo_url || s.photo || "")),
-      caption: s.caption || "",
+      // The sponsor's logo. `logo_url` is the proper column; `photo_url` is
+      // accepted too, because that is where it was first typed.
+      logo: usablePhoto(driveImageUrl(s.logo_url || s.logo || s.photo_url || "")),
+      // A sentence or two about the sponsor. `caption` is the older name for it.
+      sponsorNote: (s.sponsor_note || s.caption || "").trim(),
+      // Optional scenery photo for that stretch of river, shown beside the checkpoint.
+      photo: usablePhoto(driveImageUrl(s.stretch_photo || "")),
+      caption: s.stretch_caption || "",
       note: s.note || "",
       section_note: s.section_note || ""
     })),
@@ -299,7 +304,7 @@ async function loadSheet() {
   // ── Forecast model ────────────────────────────────────────────────────────
   // Returns checkpoints enriched with Date objects, forecast Dates and status.
   function computeForecast(cps, now, config = {}) {
-    const configPace = parsePace(config.current_pace);
+    const overridePace = parsePace(config.current_pace);   // minutes per mile, entered as min/km
     const start = (cps[0] && parseLondon(cps[0].target, raceStart)) || raceStart;
     let prevRef = start;
     cps.forEach(cp => {
@@ -310,14 +315,39 @@ async function loadSheet() {
     const done = cps.filter(cp => cp.actualAt);
     const lastDone = done[done.length - 1] || null;
 
-    // Pace ratio = actual elapsed / planned elapsed over the last N completed legs (clamped).
-    let ratio = 1;
-    if (done.length >= 2) {
+    // ── The forecast ─────────────────────────────────────────────────────────
+    // The target times in the sheet are not a constant-speed schedule: they are a
+    // 37-hour profile that already slows down through the run. So the model never
+    // replaces those planned leg durations — it scales all of them by one ratio,
+    // which keeps the deterioration shape intact.
+    //
+    // The ratio comes from how the completed legs actually went, weighted towards
+    // the most recent, and is then pulled back towards 1 by a confidence factor.
+    // Early on a checkpoint that is ten minutes out says more about where the
+    // checkpoint is than about how Tom is running, so the correction is small;
+    // as the miles add up it is trusted more. It never reaches full trust —
+    // the published profile always keeps some say.
+    const clampRatio = (r) => Math.min(C.forecast.maxRatio, Math.max(C.forecast.minRatio, r));
+    let observed = 1, confidence = 0, ratio = 1;
+
+    if (done.length >= 2 && lastDone) {
       const n = Math.min(C.forecast.legsToAverage, done.length - 1);
-      const a = done[done.length - 1 - n], b = done[done.length - 1];
-      const plannedMs = b.targetAt - a.targetAt, actualMs = b.actualAt - a.actualAt;
-      if (plannedMs > 0 && actualMs > 0) ratio = Math.min(C.forecast.maxRatio, Math.max(C.forecast.minRatio, actualMs / plannedMs));
+      let wSum = 0, rSum = 0;
+      for (let k = 0; k < n; k++) {
+        const b = done[done.length - 1 - k], a = done[done.length - 2 - k];
+        const planned = b.targetAt - a.targetAt, actual = b.actualAt - a.actualAt;
+        if (planned > 0 && actual > 0) {
+          const w = Math.pow(C.forecast.recencyWeight, k);   // newest leg counts most
+          rSum += (actual / planned) * w;
+          wSum += w;
+        }
+      }
+      if (wSum) observed = rSum / wSum;
+      // 0 at the start, rising with miles completed, approaching but never reaching 1.
+      confidence = lastDone.miles / (lastDone.miles + C.forecast.confidenceMiles);
+      ratio = clampRatio(1 + (observed - 1) * confidence);
     }
+
     let cursor = lastDone ? lastDone.actualAt : null;
     cps.forEach((cp, i) => {
       if (cp.actualAt) { cp.status = "done"; cp.forecastAt = cp.actualAt; cursor = cp.actualAt; return; }
@@ -326,15 +356,23 @@ async function loadSheet() {
       const plannedLeg = cp.targetAt - prev.targetAt;
       // Tom's own estimate (sheet column `eta`) beats the model, and re-anchors the pace for the legs after it.
       const etaAt = cp.eta ? parseLondon(cp.eta, cp.targetAt) : null;
-      const legPace = parsePace(cp.pace) || configPace;   // minutes per mile, from the sheet
+      const legPace = parsePace(cp.pace) || overridePace;   // minutes per mile, from the sheet
       if (etaAt && etaAt > cursor) {
+        // Tom's own estimate for one checkpoint wins outright, and re-scales the
+        // profile for the legs after it.
         cp.forecastAt = etaAt; cp.manual = "eta";
-        if (plannedLeg > 0) ratio = Math.min(C.forecast.maxRatio, Math.max(C.forecast.minRatio, (etaAt - cursor) / plannedLeg));
+        if (plannedLeg > 0) ratio = clampRatio((etaAt - cursor) / plannedLeg);
       } else if (legPace) {
-        cp.forecastAt = new Date(cursor.getTime() + (cp.miles - prev.miles) * legPace * 60000); cp.manual = "pace";
+        // Manual override. From the last known point onwards the 37-hour profile is
+        // set aside entirely and every remaining checkpoint is timed at this one
+        // pace over the distance still to run. Used when the profile has stopped
+        // being realistic — injury, walking, a long stop.
+        cp.forecastAt = new Date(cursor.getTime() + (cp.miles - prev.miles) * legPace * 60000);
+        cp.manual = "pace";
         if (now > cp.forecastAt && prev.actualAt) cp.forecastAt = new Date(now.getTime() + 5 * 60000);
-        if (plannedLeg > 0) ratio = Math.min(C.forecast.maxRatio, Math.max(C.forecast.minRatio, (cp.forecastAt - cursor) / plannedLeg));
       } else {
+        // Normal mode: this leg's own planned duration — which already carries the
+        // deterioration — scaled by the one damped ratio.
         cp.forecastAt = new Date(cursor.getTime() + plannedLeg * ratio);
         // If he's already later than the forecast, forecast = now + a little (he hasn't arrived).
         if (now > cp.forecastAt && prev.actualAt) cp.forecastAt = new Date(now.getTime() + 5 * 60000);
@@ -350,7 +388,7 @@ async function loadSheet() {
       position.fraction = f;
       position.miles = lastDone.miles + f * (position.next.miles - lastDone.miles);
     } else if (lastDone && !position.next) { position.miles = lastDone.miles; position.fraction = 1; }
-    return { cps, ratio, lastDone, position, start, delayMin: lastDone ? minutes(lastDone.actualAt - lastDone.targetAt) : 0 };
+    return { cps, ratio, observed, confidence, override: !!overridePace, lastDone, position, start, delayMin: lastDone ? minutes(lastDone.actualAt - lastDone.targetAt) : 0 };
   }
 
   // ── Render: the river (vertical flow of checkpoints and legs) ─────────────
@@ -421,12 +459,16 @@ async function loadSheet() {
         const [a, b] = legBounds(n, cps, legCount);
         const bi = cps.indexOf(b);
         const miles = a && b ? b.miles - a.miles : 0;
-        const taken = s.status === "taken" || s.status === "sponsored";
+        // A name in `sponsor` is what makes a stretch sponsored — `status` is a
+        // convenience, not a gate, so a forgotten "taken" doesn't hide a sponsor.
+        const taken = !!(s.sponsor || "").trim() || s.status === "taken" || s.status === "sponsored";
         const price = s.price ? (/^\d+(\.\d+)?$/.test(String(s.price).trim()) ? "£" + Number(s.price).toLocaleString("en-GB") : s.price) : "";
         // Section blurb from the sheet (Sponsors → section_note), same text as the sponsor page.
         const sectionNote = s.section_note ? `<p class="leg-note">${esc(s.section_note)}</p>` : "";
+        const logo = taken && s.logo ? `<img class="leg-logo" src="${esc(s.logo)}" alt="${esc(s.sponsor || "Sponsor")}" onerror="this.remove()">` : "";
+        const blurb = taken && s.sponsorNote ? `<p class="sponsor-note">${esc(s.sponsorNote)}</p>` : "";
         const status = taken
-          ? `<span class="sponsor">Sponsored by ${esc(s.sponsor || "a friend of Tom's")}</span>`
+          ? `${logo}<span class="sponsor">Sponsored by ${esc(s.sponsor || "a friend of Tom's")}</span>${blurb}`
           : `<span class="open">Unsponsored${price ? ` · ${price}` : ""}</span><a class="btn btn-small btn-ghost" href="sponsor.html">Sponsor this marathon</a>`;
         html.push(`<li class="leg ${taken ? "taken" : "open"}" data-leg="${n}" style="--r1:${rowOf(i)};--r2:${rowOf(bi)};--mrow:${rowOf(i) - 1}">
           <span class="arrow" aria-hidden="true"></span>
@@ -500,6 +542,8 @@ async function loadSheet() {
     if (tiger) {
       const p = base.getPointAtLength(tigerLen);
       tiger.style.left = p.x + "px"; tiger.style.top = p.y + "px";
+      // The marker has just moved; if we are still in the pinning window, follow it.
+      if (Date.now() < pinUntil) pinToTiger();
     }
   }
 
@@ -715,9 +759,30 @@ async function loadSheet() {
     return now >= model.start ? "live" : "before";
   }
 
-  function scrollToTiger() {
+  // Landing on the marker in live mode is fiddly: the river is redrawn as photos
+  // load, and the browser restores the last scroll position on reload, so a single
+  // scroll gets undone a moment later. So: take over scroll restoration, jump
+  // rather than glide, and re-pin after each redraw for a few seconds — unless the
+  // reader has already scrolled for themselves, in which case leave them alone.
+  let pinUntil = 0, userScrolled = false;
+  window.addEventListener("wheel", () => { userScrolled = true; }, { passive: true });
+  window.addEventListener("touchmove", () => { userScrolled = true; }, { passive: true });
+  window.addEventListener("keydown", (e) => { if (/^(Arrow|Page|Home|End| )/.test(e.key)) userScrolled = true; });
+
+  function scrollToTiger(smooth) {
     const t = $(".tiger"); if (!t) return;
-    t.scrollIntoView({ behavior: "smooth", block: "center" });
+    t.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+  }
+
+  function pinToTiger() {
+    if (userScrolled) return;
+    scrollToTiger(false);
+  }
+
+  function startPin() {
+    if (userScrolled) return;
+    pinUntil = Date.now() + 9000;   // long enough for sponsor logos and photos to land
+    pinToTiger();
   }
 
   async function refresh() {
@@ -748,7 +813,9 @@ async function loadSheet() {
           { date: "3 Oct", title: "Last long one done", body: "38 miles from Lechlade to Oxford this morning with Ed and Sam. Legs fine, feet less so.\nThe towpath past Newbridge is going to be beautiful at dawn.", photo: "img/towpath.jpg", link: "" },
           { date: "6 Oct", title: "Four days", body: "Kit list is done, crew rota is done, and Mum has told me to stop fussing. Thank you to everyone who has donated this week — past £31,000 now.", photo: "", link: "" }
         ];
-        if (demo === "live") { data.config.current_pace = data.config.current_pace || "8:15"; data.config.pace_note = data.config.pace_note || "Tom: legs OK, walking the hills"; }
+        // The preview shows the normal forecast, which is what race day will use;
+        // to preview the manual override, put a pace in Config → current_pace.
+        if (demo === "live") data.config.pace_note = data.config.pace_note || "Tom: legs OK, walking the hills";
         if (demo === "live") { const last = parseLondon(data.checkpoints[upto - 1].actual, raceStart); now = new Date(last.getTime() + 55 * 60000); }
       }
       const model = computeForecast(data.checkpoints, now, data.config);
@@ -756,7 +823,12 @@ async function loadSheet() {
       document.body.dataset.state = state;
       const jg = loadJustGiving(data.config);
       latest = { model, state, jg, config: data.config };
-      if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) { scrolledToTiger = true; setTimeout(scrollToTiger, 600); }
+      if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) {
+        scrolledToTiger = true;
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+        requestAnimationFrame(startPin);
+        setTimeout(startPin, 400);
+      }
       renderHead(model, state, data.config);
       renderRaise(jg);
       renderJourney(model, state, data.config, data.sponsors);
@@ -836,6 +908,7 @@ async function loadSheet() {
   }
 
   window.__refresh = refresh;
+  window.__forecast = computeForecast;   // exposed so the forecast can be tested directly
   wireStatic();
   wireTabs();
   renderKomoot();

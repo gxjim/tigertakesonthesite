@@ -20,7 +20,7 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 | `total_override` | The current JustGiving total, e.g. `31338` or `£31,338.31`. **This is the only place the fundraising total comes from** — the site does not talk to JustGiving. Update it whenever you like. |
 | `donor_count` | Optional. Number of supporters, shown next to the total. |
 | `livetrack_url` | On race morning, paste your Garmin LiveTrack link here. A "Where is Tiger right now" button appears. If the session restarts, paste the new link. |
-| `current_pace` | On the day: your current pace in **minutes per km**, e.g. `6:30`. Every remaining checkpoint is forecast at that pace from your last confirmed checkpoint. Change it as you speed up or slow down. Leave blank and the site forecasts automatically from your last two legs. (If someone thinks in miles, write `9:45 /mi`.) |
+| `current_pace` | **The manual override. Normally leave this blank.** Blank means the site forecasts for you: it takes your published 37-hour schedule — which already slows down through the run — and stretches or shrinks it based on how your completed checkpoints actually went. Early on it only nudges the times, because a few minutes either way might just be the checkpoint being in a slightly different place than planned; the further you get, the more it trusts what it is seeing. Put a number in here only when that schedule has stopped being realistic — injury, walking, a long stop. Then type your expected pace in **minutes per km**, e.g. `8:30`, and from your last confirmed checkpoint onwards every remaining time is worked out at that flat pace over the distance left, ignoring the original curve. Clear the cell to hand it back to the automatic forecast. (If someone thinks in miles, write `9:45 /mi`.) |
 | `pace_note` | Optional short line shown under the live headline, e.g. `Tom: legs fine, walking the hills` or `10 min stop at Goring for food`. |
 | `state` | Leave blank — the site works out before / live / finished by itself. Only type `live` or `finished` to force it. |
 | `rehearsal` | `yes` makes the site use the Rehearsal tab instead of Checkpoints (for a practice run). Set back to `no` afterwards. |
@@ -35,23 +35,36 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 
 ### Checkpoints tab (one row per checkpoint, Source to Thames Barrier)
 - `actual` — **the one thing the crew must do on the day.** When you reach a checkpoint, type the time in that row, e.g. `12:58` (the site works out which day). This turns that checkpoint navy on the river and moves the yellow Tiger marker.
-- `runners` (the "Principal Support runners" column) — shows as **"Main support runner is …"** under the checkpoint name.
-- `crew` — optional new column. Add a column with `crew` in the header and it shows as **"Support crew is …"** on the same checkpoint.
+- `Principal Support runners` — shows as **"Main support runner is …"** under the checkpoint name. Any column with "runner" in the header works.
+- `crew` — you have this column; it shows as **"Support crew is …"** on the same checkpoint. It is only filled in for some checkpoints at the moment.
 - `eta` — optional. If you want to say "I'll be in Henley about 02:40" for one specific checkpoint, type `02:40` here. It overrides the forecast for that checkpoint only. Usually `current_pace` in Config is easier.
 - `pace` — optional, per checkpoint, same format as `current_pace`, if one stretch will be slower than the rest.
-- Don't change `id`, `name`, `miles` or `target` — the route is fixed.
+- `target` — your planned arrival. `2:41 PM Sat` is fine, so is `14:41`. This is the 37-hour schedule the forecast works from, so only change it if the plan really changes.
+- Don't change `id`, `name` or `miles`.
+- **Don't leave anything else in this tab.** A second table pasted below the checkpoints gets read as extra checkpoints. There is one there now — worth deleting.
 
 ### Photos tab — the photo carousel
 Headers across row 1: `url`, `caption`. **One row per photo, and every row needs something in `url`** — a row with only a caption shows nothing, because there's no photo to show. `url` can be a normal Google Drive share link pasted straight in (`https://drive.google.com/file/d/FILE_ID/view?usp=drive_link` — the site converts it for you), a photo on GitHub (`img/photo-3.jpg`), or any web address ending .jpg/.png. Drive photos must be shared as **Anyone with the link can view**, or they'll show as gaps. If you'd rather not use the tab at all, just upload photos to the `img` folder on GitHub named `photo-1.jpg`, `photo-2.jpg`, … and they appear automatically.
 
 ### Sponsors tab (one row per marathon, 1–7)
-- `price` — a number (`250` shows as £250).
-- `status` — `available` or `taken`.
-- `sponsor` — the name to show once taken, e.g. `The Salutation Inn`.
-- `photo_url` — optional, a photo for that stretch of river (see photos below). If blank, the site looks for a file called `img/leg-1.jpg` (for marathon 1) etc. on GitHub.
-- `caption` — optional caption on that photo.
-- `note` — optional sentence under the photo: who is running that stretch, or what it means to you.
-- `section_note` — a sentence or two describing that stretch of river. It appears on the marathon card in **two places**: the sponsor page and the river on the main page. If you leave it blank, a written-in default is used instead, so the cards never look empty.
+
+Your tab has these columns across row 1: `leg`, `from`, `to`, `price`, `status`, `sponsor`, `caption`, `photo_url`, `section_note`. Here is what each one actually does.
+
+- `leg` — 1 to 7. Don't change it.
+- `from`, `to` — the two ends of that marathon. Don't change these either.
+- `price` — a number (`2500` shows as £2,500). It disappears from the card once the stretch is sponsored.
+- `status` — `available` or `taken`. **This no longer decides anything.** Putting a name in `sponsor` is what marks a stretch as sponsored, so you can't lock yourself out by forgetting to change this word.
+- `sponsor` — **the switch.** Type the sponsor's name here (e.g. `ExCel London`) and that marathon turns into a sponsored card, on the main page and the sponsor page, with the name, the logo and the write-up below.
+- `section_note` — a sentence or two about **that stretch of river**, in your voice. Shows on every card, sponsored or not.
+
+For the sponsor's own logo and write-up, the site reads:
+
+- **The logo** — `logo_url` if you add that column, otherwise `photo_url`, which is where you put it. Either works, so you don't need to re-type anything. Paste the normal Google Drive share link (`https://drive.google.com/file/d/FILE_ID/view?usp=drive_link`) and the site converts it. **The file has to be shared as "Anyone with the link can view"** or it shows as a gap. It is sized to fit a small box — about 150px wide, 55px tall — so any shape of logo works, and a version with a white or transparent background looks best.
+- **The write-up** — `sponsor_note` if you add that column, otherwise `caption`, which is where you put it. One or two sentences about the sponsor, shown under their name.
+
+So with your sheet as it stands, ExCel London's logo and write-up will appear as soon as this update goes live — you don't need to move anything.
+
+If you ever want a **scenery photo** for a stretch (a picture of the river, not a logo), add a `stretch_photo` column and put the Drive link there. That keeps it separate from the logo.
 
 The marathons are: 1 Source→Lechlade · 2 Lechlade→Oxford · 3 Oxford→Wallingford · 4 Wallingford→Reading · 5 Reading→Marlow · 6 Marlow→Shepperton · 7 Shepperton→Thames Barrier.
 

@@ -104,9 +104,19 @@
 
   const fmtPrice = (p) => !p ? "" : (/^\d+(\.\d+)?$/.test(String(p).trim()) ? "£" + Number(p).toLocaleString("en-GB") : String(p));
 
+  // Google Drive share links have to be turned into something an <img> can load.
+  const driveImageUrl = (url) => {
+    const t = String(url || "").trim();
+    const f = t.match(/drive\.google\.com\/file\/d\/([^/]+)/) || t.match(/drive\.google\.com\/open\?id=([^&]+)/);
+    return f ? `https://drive.google.com/thumbnail?id=${f[1]}&sz=w1600` : t;
+  };
+
   function render(legs, live) {
     $("#marathons").innerHTML = legs.map(s => {
-      const taken = /taken|sponsored/i.test(s.status || "");
+      // A name in `sponsor` is what makes a stretch sponsored.
+      const taken = !!(s.sponsor || "").trim() || /taken|sponsored/i.test(s.status || "");
+      const logo = taken ? driveImageUrl(s.logo_url || s.photo_url || "") : "";
+      const sponsorNote = taken ? (s.sponsor_note || s.caption || "").trim() : "";
       const price = fmtPrice(s.price);
       // Section blurb comes from the sheet (Sponsors → section_note); the written-in
       // version below is only a stand-in until that column is filled.
@@ -116,8 +126,10 @@
         <span class="route">${esc(s.from)} → ${esc(s.to)}</span>
         ${s.miles ? `<span class="miles">${s.miles} miles</span>` : ""}
         <p class="fine" style="margin:6px 0 0">${esc(note)}</p>
-        ${price ? `<span class="price">${price}</span>` : ""}
+        ${price && !taken ? `<span class="price">${price}</span>` : ""}
+        ${logo ? `<img class="leg-logo" src="${esc(logo)}" alt="${esc(s.sponsor || "Sponsor")}" onerror="this.remove()">` : ""}
         <span class="state">${taken ? `Sponsored by ${esc(s.sponsor || "a friend of Tom's")}` : "Available"}</span>
+        ${sponsorNote ? `<p class="sponsor-note">${esc(sponsorNote)}</p>` : ""}
       </div>`;
     }).join("");
     $("#m-note").textContent = live ? "" : "Prices shown are the published ones; email to confirm availability.";
@@ -151,7 +163,7 @@
       const legs = sponsors.map(s => {
         const from = s.from || "", to = s.to || "";
         const a = milesOf(from), b = milesOf(to);
-        return { leg: +s.leg, from, to, price: s.price, status: s.status, sponsor: s.sponsor, section_note: s.section_note, miles: (a != null && b != null) ? Math.round(b - a) : (FALLBACK.find(f => f.leg === +s.leg) || {}).miles };
+        return { leg: +s.leg, from, to, price: s.price, status: s.status, sponsor: s.sponsor, section_note: s.section_note, logo_url: s.logo_url, photo_url: s.photo_url, sponsor_note: s.sponsor_note, caption: s.caption, miles: (a != null && b != null) ? Math.round(b - a) : (FALLBACK.find(f => f.leg === +s.leg) || {}).miles };
       }).filter(s => s.leg);
       if (legs.length) render(legs, true);
     } catch (e) { console.warn("Sponsor list: using published prices", e); }
