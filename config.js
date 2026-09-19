@@ -41,5 +41,11 @@ window.TIGER_CONFIG = {
   // Behaviour
   refreshSeconds: 60,        // while he's running
   idleRefreshSeconds: 300,   // before and after — keeps Netlify credit use down
-  forecast: { minRatio: 0.85, maxRatio: 1.6, legsToAverage: 2 }
+  // Forecast tuning. The Checkpoints targets are a 37-hour profile that already
+  // slows through the run; the model only scales them, never replaces the shape.
+  //   legsToAverage   how many completed legs feed the observed pace
+  //   recencyWeight   each older leg counts this much of the one after it
+  //   confidenceMiles how many miles before the correction is half-trusted
+  //   minRatio/maxRatio  hard limits on the scaling, so one odd time can't wreck it
+  forecast: { minRatio: 0.85, maxRatio: 1.6, legsToAverage: 3, recencyWeight: 0.6, confidenceMiles: 30 }
 };
