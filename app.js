@@ -759,24 +759,45 @@ async function loadSheet() {
     return now >= model.start ? "live" : "before";
   }
 
-  // Landing on the marker in live mode is fiddly: the river is redrawn as photos
-  // load, and the browser restores the last scroll position on reload, so a single
-  // scroll gets undone a moment later. So: take over scroll restoration, jump
-  // rather than glide, and re-pin after each redraw for a few seconds — unless the
-  // reader has already scrolled for themselves, in which case leave them alone.
+  // Landing on the marker in live mode, and staying there.
+  //
+  // Two things made this misbehave. First, `behavior: "auto"` does NOT mean
+  // "jump" — it means "use the CSS value", and the stylesheet sets
+  // `scroll-behavior: smooth` on <html>, so every pin was a half-second glide.
+  // Second, the river is re-measured as photos and logos load, which moves the
+  // marker; a pin fired during a glide re-targets from wherever the animation
+  // has got to, so the page visibly slides down, then back. Hence: pin with
+  // `instant`, with smooth scrolling switched off outright while pinning, and
+  // only re-pin when the marker has actually drifted out of the middle of the
+  // screen rather than on every redraw.
+  // Stop the browser dropping us back at the last scroll position on reload.
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
   let pinUntil = 0, userScrolled = false;
-  window.addEventListener("wheel", () => { userScrolled = true; }, { passive: true });
-  window.addEventListener("touchmove", () => { userScrolled = true; }, { passive: true });
-  window.addEventListener("keydown", (e) => { if (/^(Arrow|Page|Home|End| )/.test(e.key)) userScrolled = true; });
+  const markUser = () => { userScrolled = true; };
+  window.addEventListener("wheel", markUser, { passive: true });
+  window.addEventListener("touchmove", markUser, { passive: true });
+  window.addEventListener("keydown", (e) => { if (/^(Arrow|Page|Home|End| )/.test(e.key)) markUser(); });
 
   function scrollToTiger(smooth) {
     const t = $(".tiger"); if (!t) return;
-    t.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+    t.scrollIntoView({ behavior: smooth ? "smooth" : "instant", block: "center" });
+  }
+
+  // True when the marker is already sitting comfortably in the middle third.
+  function tigerIsPlaced() {
+    const t = $(".tiger"); if (!t) return false;
+    const r = t.getBoundingClientRect(), h = window.innerHeight;
+    return r.top > h * 0.28 && r.bottom < h * 0.72;
   }
 
   function pinToTiger() {
-    if (userScrolled) return;
+    if (userScrolled || tigerIsPlaced()) return;
+    const root = document.documentElement;
+    const had = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";     // beat the stylesheet's `smooth`
     scrollToTiger(false);
+    root.style.scrollBehavior = had;
   }
 
   function startPin() {
@@ -825,7 +846,6 @@ async function loadSheet() {
       latest = { model, state, jg, config: data.config };
       if (state === "live" && model.lastDone && model.position.next && !scrolledToTiger && !location.hash) {
         scrolledToTiger = true;
-        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
         requestAnimationFrame(startPin);
         setTimeout(startPin, 400);
       }
