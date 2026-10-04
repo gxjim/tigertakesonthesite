@@ -45,6 +45,11 @@ const fmtGBP = (n) => "£" + Math.round(n).toLocaleString("en-GB");
 const fmtTime = (d) => d ? d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", timeZone: LONDON }) : "—";
 const fmtDay = (d) => d ? d.toLocaleDateString("en-GB", { weekday:"short", timeZone: LONDON }) : "";
 const minutes = (ms) => Math.round(ms / 60000);
+// "12.26 mi", "12.26", " 12.26 miles" — take the number and ignore the rest.
+const parseMiles = (v) => {
+  const m = String(v == null ? "" : v).replace(/,/g, "").match(/-?\d+(\.\d+)?/);
+  return m ? parseFloat(m[0]) : NaN;
+};
 const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 
 // A photo reference only counts if a browser could load it: a web address, or a file in img/.
@@ -85,6 +90,10 @@ const raceStart = new Date(C.race.start);
   function parseLondon(str, ref) {
     if (!str) return null;
     str = String(str).trim();
+    // A leading day name ("Sat 07:14", "Sunday, 14:47") is only a label — the
+    // actual day comes from `ref`, the previous checkpoint, which is what
+    // carries the run over midnight.
+    str = str.replace(/^(mon|tue|tues|wed|weds|thu|thur|thurs|fri|sat|sun)[a-z]*\.?,?\s*/i, "").trim();
 
     let m = str.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})/);
     if (m) return londonDate(+m[1], +m[2], +m[3], +m[4], +m[5]);
@@ -216,13 +225,14 @@ async function loadSheet() {
     const rawId = String(r.id == null ? "" : r.id).trim();
     // Section 2 is London: any id that starts with L, or an explicit `section`
     // column saying so. Everything else is section 1.
-    const london = /^l/i.test(rawId) || /london|2/.test(String(r.section || "").toLowerCase());
+    const sec = String(r.section == null ? "" : r.section).trim().toLowerCase();
+    const london = sec === "2" || sec.includes("london") || (!sec && /^l/i.test(rawId));
     return {
       id: rawId,
       num: Number.isFinite(+rawId) && rawId !== "" ? +rawId : null,
       london,
       name: r.name,
-      miles: +r.miles,
+      miles: parseMiles(r.miles),
       target: r.target,
       actual: r.actual,
       runners: (rk ? r[rk] : "") || "",

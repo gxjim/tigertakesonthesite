@@ -41,8 +41,10 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 - `eta` — optional. If you want to say "I'll be in Henley about 02:40" for one specific checkpoint, type `02:40` here. It overrides the forecast for that checkpoint only. Usually `current_pace` in Config is easier.
 - `pace` — optional, per checkpoint, same format as `current_pace`, if one stretch will be slower than the rest.
 - `target` — your planned arrival. `2:41 PM Sat` is fine, so is `14:41`. This is the 37-hour schedule the forecast works from, so only change it if the plan really changes.
-- `id` — any label you like, as long as it isn't blank: `1`–`13` for the first section, `L1`–`L8` for London. **An id beginning with `L` marks that row as Section 2**, which draws it in lighter blue under a "Section 2 · London" divider. (If you'd rather not use the L prefix, add a `section` column and type `London` in it instead.)
-- `name` and `miles` — the place and its distance from the source. Both must be filled in or the row is ignored.
+- `id` — a number, 1 upwards, in route order. Any label works as long as it isn't blank.
+- `section` — `1` for the first stretch, `2` for London. Section 2 is drawn in lighter blue under a "Section 2 · London" divider. Leave the column out entirely and everything is treated as one section.
+- `name` and `miles` — the place and its distance from the source. Both must be filled in or the row is ignored. `miles` can be written however you like — `12.26`, `12.26 mi`, `12.26 miles` all work.
+- `target` — your planned arrival. `Sat 07:14`, `7:14 AM Sat`, `07:14` and `2026-10-10 07:14` all work. The day name is only a label; the site works out the real day from the checkpoint before it, which is what carries the run past midnight into Sunday.
 - **Adding or removing checkpoints is safe.** The seven marathon blocks are matched to checkpoints by name, using the `from` and `to` in the Sponsors tab, so putting eight new points between Shepperton and the Thames Barrier doesn't move any marathon boundary.
 - **Don't leave anything else in this tab.** A second table pasted below the checkpoints gets read as extra checkpoints. There is one there now — worth deleting.
 
