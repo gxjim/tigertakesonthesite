@@ -38,7 +38,7 @@
   ].map(r => ({ id:+r[0], name:r[1], miles:+r[2], target:r[3], actual:r[4], runners:r[5], note:r[6] }));
 
   const SAMPLE_SPONSORS = [1,2,3,4,5,6,7].map(n => ({ leg:n, from:"", to:"", price:"", status:"available", sponsor:"", logo:"", photo:"", caption:"", note:"", section_note:"" }));
-  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"", instagram_embed:"", instagram_embed_2:"", instagram_embed_3:"" };
+  const SAMPLE_CONFIG = { state:"", livetrack_url:"", total_override:"", donor_count:"", rehearsal:"no", last_update:"", pace_note:"", current_pace:"", instagram_embed:"", instagram_embed_2:"", instagram_embed_3:"", stories_embed:"" };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 const fmtGBP = (n) => "£" + Math.round(n).toLocaleString("en-GB");
@@ -213,8 +213,14 @@ async function loadSheet() {
     const rk = Object.keys(r).find(k => /runner/.test(k));
       const ck = Object.keys(r).find(k => /crew/.test(k));
 
+    const rawId = String(r.id == null ? "" : r.id).trim();
+    // Section 2 is London: any id that starts with L, or an explicit `section`
+    // column saying so. Everything else is section 1.
+    const london = /^l/i.test(rawId) || /london|2/.test(String(r.section || "").toLowerCase());
     return {
-      id: +r.id,
+      id: rawId,
+      num: Number.isFinite(+rawId) && rawId !== "" ? +rawId : null,
+      london,
       name: r.name,
       miles: +r.miles,
       target: r.target,
@@ -225,10 +231,10 @@ async function loadSheet() {
       pace: r.pace || r.current_pace || ""
     };
   })
-  // A checkpoint needs a number in `id`, a name and a mileage. Anything else in
-  // the tab — a second table pasted underneath, a stray note — is ignored rather
-  // than turned into a phantom checkpoint.
-  .filter(cp => Number.isFinite(cp.id) && cp.name && Number.isFinite(cp.miles));
+  // A checkpoint needs an id of some sort, a name and a mileage. That admits
+  // `1`–`13` and the London points `L1`–`L8` alike, while still ignoring the
+  // stray rows people paste underneath (those have no id, or no real mileage).
+  .filter(cp => cp.id !== "" && cp.name && Number.isFinite(cp.miles));
 
   return {
     config,
@@ -393,23 +399,12 @@ async function loadSheet() {
 
   // ── Render: the river (vertical flow of checkpoints and legs) ─────────────
   // Leg n spans checkpoints (2n-1) → (2n+1); the last leg runs to the final checkpoint.
-  function legBounds(n, cps, legCount) {
-    const a = cps[(n - 1) * 2];
-    const b = n === legCount ? cps[cps.length - 1] : cps[Math.min(cps.length - 1, n * 2)];
-    return [a, b];
-  }
-  function legForIndex(i, legCount) { // which leg starts at checkpoint index i (0-based)? null if none
-    if (i % 2 !== 0) return null;
-    const n = i / 2 + 1;
-    return n <= legCount ? n : null;
-  }
   const delayText = (min) => min === 0 ? "on schedule" : (min > 0 ? `${min} min behind plan` : `${Math.abs(min)} min ahead of plan`);
 
   function renderJourney(model, state, config, sponsors) {
     const flow = $("#flow");
     const cps = model.cps;
     const legs = sponsors.length ? sponsors : SAMPLE_SPONSORS;
-    const legCount = legs.length;
     const html = [];
     const meander = (i) => 0.5 + 0.42 * Math.sin(i * 1.15); // 0.08–0.92 across the rail
     // Grid rows: checkpoint i sits on row 2i+1; the row after it (2i+2) is a spacer whose
@@ -417,6 +412,22 @@ async function loadSheet() {
     // first checkpoint's row to their last checkpoint's row.
     // Three rows per checkpoint: (3i+1) marathon strip on phones, (3i+2) the checkpoint, (3i+3) spacer.
     const rowOf = (i) => 3 * i + 2;
+
+    // Which checkpoints does each marathon span? Matched by name from the Sponsors
+    // tab's `from`/`to`, so adding checkpoints in between — the eight London join
+    // points, say — doesn't shift the marathon boundaries. Falls back to the old
+    // "two checkpoints per marathon" arithmetic only if the names don't match.
+    const findCp = (nm) => cps.findIndex(c => (c.name || "").trim().toLowerCase() === String(nm || "").trim().toLowerCase());
+    const span = new Map();     // checkpoint index where a marathon starts -> { n, endIdx }
+    legs.forEach((lg, k) => {
+      const n = +lg.leg || k + 1;
+      let a = findCp(lg.from), b = findCp(lg.to);
+      if (a < 0 || b < 0 || b <= a) {
+        a = (n - 1) * 2;
+        b = n === legs.length ? cps.length - 1 : Math.min(cps.length - 1, n * 2);
+      }
+      if (a >= 0 && b > a && !span.has(a)) span.set(a, { n, endIdx: b });
+    });
 
     cps.forEach((cp, i) => {
       const first = i === 0, last = i === cps.length - 1;
@@ -437,7 +448,8 @@ async function loadSheet() {
       const cpNote = cp.note ? `<p class="cp-note">${esc(cp.note)}</p>` : "";
 
       // Marathon that starts at this checkpoint (if any): its photo + note sit on the right, under the checkpoint.
-      const n = legForIndex(i, legCount);
+      const sp0 = span.get(i);
+      const n = sp0 ? sp0.n : null;
       let stretch = "";
       if (n && !last && (config.rehearsal || "").toLowerCase() !== "yes") {
         const sp = legs.find(l => l.leg === n) || {};
@@ -447,7 +459,12 @@ async function loadSheet() {
         stretch = `<figure class="leg-photo"><img src="${esc(photo)}" alt="" loading="lazy" onload="this.parentNode.classList.add('loaded')">${cap}</figure>${note}`;
       }
       const nextMiles = last ? 0 : cps[i + 1].miles - cp.miles;
-      html.push(`<li class="node ${cp.status || ""} ${first ? "first" : ""} ${last ? "last" : ""}" data-i="${i}" style="--mx:${mx};grid-row:${rowOf(i)}">
+      // One divider at the top of section 2.
+      if (cp.london && i > 0 && !cps[i - 1].london) {
+        html.push(`<li class="section-mark" style="grid-row:${rowOf(i) - 1}"><span>Section 2 · London</span></li>`);
+      }
+
+      html.push(`<li class="node ${cp.status || ""} ${first ? "first" : ""} ${last ? "last" : ""} ${cp.london ? "london" : ""}" data-i="${i}" style="--mx:${mx};grid-row:${rowOf(i)}">
         <span class="mark"></span>
         <div class="name">${esc(cp.name)}<small>mile ${cp.miles}</small></div>
         <div class="times">${times}</div>${runners}${crew}${cpNote}${stretch}</li>`);
@@ -455,9 +472,8 @@ async function loadSheet() {
 
       // Marathon block (left column), spanning its two half-marathons. Not during a rehearsal — the legs don't map.
       if (n && !last && (config.rehearsal || "").toLowerCase() !== "yes") {
-        const s = legs.find(l => l.leg === n) || { leg: n, status: "available" };
-        const [a, b] = legBounds(n, cps, legCount);
-        const bi = cps.indexOf(b);
+        const s = legs.find(l => +l.leg === n) || { leg: n, status: "available" };
+        const bi = sp0.endIdx, a = cp, b = cps[bi];
         const miles = a && b ? b.miles - a.miles : 0;
         // A name in `sponsor` is what makes a stretch sponsored — `status` is a
         // convenience, not a gate, so a forgotten "taken" doesn't hide a sponsor.
@@ -515,6 +531,7 @@ async function loadSheet() {
       d += ` C ${x0} ${y0 + cy}, ${x1} ${y1 - cy}, ${x1} ${y1}`;
     }
     svg.innerHTML = `<path id="river-base" d="${d}" fill="none" stroke="#c9d8ee" stroke-width="10" stroke-linecap="round"/>
+                     <path id="river-london" d="${d}" fill="none" stroke="#9fc0e8" stroke-width="10" stroke-linecap="round"/>
                      <path id="river-done" d="${d}" fill="none" stroke="#002169" stroke-width="10" stroke-linecap="round"/>`;
     const base = svg.querySelector("#river-base"), done = svg.querySelector("#river-done");
     const L = base.getTotalLength();
@@ -538,6 +555,14 @@ async function loadSheet() {
     }
     done.setAttribute("stroke-dasharray", `${tigerLen} ${L}`);
 
+    // Section 2 drawn a shade lighter, from the first London checkpoint onwards.
+    const lon = svg.querySelector("#river-london");
+    if (lon) {
+      const li = model.cps.findIndex(c => c.london);
+      if (li > 0 && li < nodeLen.length) lon.setAttribute("stroke-dasharray", `0 ${nodeLen[li]} ${L}`);
+      else lon.setAttribute("stroke-dasharray", `0 ${L}`);
+    }
+
     const tiger = $(".tiger");
     if (tiger) {
       const p = base.getPointAtLength(tigerLen);
@@ -559,6 +584,42 @@ async function loadSheet() {
       ? `, after ${hrs} hours${mins ? ` and ${mins} minutes` : ""} of continuous running`
       : "";
     return `I arrived at the end of the Thames Path${when}${how}. Please show your support by contributing to the fundraiser. Every donation helps move us towards a cure for MND.`;
+  }
+
+  // "92 miles in · 28 min behind plan · Reading forecast 23:16"
+  function liveDetail(model) {
+    const n = model.position.next;
+    if (!n) return "";
+    const kind = n.manual === "eta" ? "expected (Tom's estimate)" : n.manual === "pace" ? "at Tom's current pace" : "forecast";
+    return `${model.position.miles.toFixed(0)} miles in · ${delayText(model.delayMin)} · ${n.name} ${kind} ${fmtTime(n.forecastAt)}`;
+  }
+
+  function liveWhere(model) {
+    if (!model.lastDone) return "";
+    if (!model.position.next) return `Tiger has reached ${model.cps[model.cps.length - 1].name}`;
+    return `Tiger is between ${model.lastDone.name} and ${model.position.next.name}`;
+  }
+
+  // The strip under the header: where he is, the next checkpoint, and the two actions.
+  // The header's height changes with the viewport, so measure it rather than
+  // guessing, and park the live strip exactly underneath.
+  function sizeLivebar() {
+    const top = $("#top-bar");
+    if (top) document.documentElement.style.setProperty("--top-h", Math.round(top.getBoundingClientRect().height) + "px");
+  }
+
+  function renderLivebar(model, state, config) {
+    const bar = $("#livebar"); if (!bar) return;
+    sizeLivebar();
+    const on = state === "live" && model.lastDone && model.position.next;
+    bar.hidden = !on;
+    document.body.classList.toggle("has-livebar", !!on);
+    if (!on) return;
+    $("#livebar-where").textContent = liveWhere(model);
+    const n = model.position.next;
+    $("#livebar-next").textContent = `${n.name} forecast ${fmtTime(n.forecastAt)}`;
+    const t = $("#livebar-track");
+    if (config.livetrack_url) { t.href = config.livetrack_url; t.hidden = false; } else t.hidden = true;
   }
 
   function renderHead(model, state, config) {
@@ -585,7 +646,7 @@ async function loadSheet() {
       else if (!model.position.next) { h.textContent = `Tom has reached ${lastCp.name}`; s.textContent = ""; }
       else {
         h.textContent = `Tiger is between ${model.lastDone.name} and ${model.position.next.name}`;
-        s.textContent = `${model.position.miles.toFixed(0)} miles in · ${delayText(model.delayMin)} · ${model.position.next.name} ${model.position.next.manual === "eta" ? "expected (Tom's estimate)" : model.position.next.manual === "pace" ? "at Tom's current pace" : "forecast"} ${fmtTime(model.position.next.forecastAt)}${config.pace_note ? " · " + config.pace_note : ""}`;
+        s.textContent = liveDetail(model);
       }
     }
     const live = state === "live";
@@ -597,6 +658,9 @@ async function loadSheet() {
     if (li && lw) {
       if (live && config.livetrack_url) { li.href = config.livetrack_url; li.hidden = false; } else li.hidden = true;
       lw.hidden = !live;
+      const w = $("#tracker-where"), d = $("#tracker-detail");
+      if (w) w.textContent = live ? liveWhere(model) : "";
+      if (d) d.textContent = live ? liveDetail(model) : "";
     }
 
     // The "what this is and when it starts" note is only useful before the off.
@@ -606,8 +670,9 @@ async function loadSheet() {
     $("#jump-btn").hidden = !(live && model.lastDone && model.position.next);
     const fd = $("#finish-donate");
     if (fd) { fd.href = C.justGiving.pageUrl || "#"; fd.hidden = state !== "finished"; }
-    // Tom's own words, verbatim — no "Sheet updated" bolted on the front.
-    $("#updated").textContent = (config.last_update || "").trim();
+    // No hand-typed status any more: one less thing to keep current at 3am.
+    // The element stays only so the "live data unavailable" notice has somewhere to go.
+    $("#updated").textContent = "";
   }
 
   // ── Render: updates (Tom's posts from the Updates tab) ────────────────────
@@ -681,6 +746,27 @@ async function loadSheet() {
   // Instagram posts, driven from the sheet: paste post links into Config `instagram_embed`
   // (one cell can hold several, separated by commas or new lines) or `instagram_embed_2` /
   // `instagram_embed_3`. Only instagram.com addresses are accepted; nothing shows without one.
+  // Optional: paste an Instagram-stories widget's embed code into Config →
+  // `stories_embed` and it appears above the follow line. Nothing breaks without it.
+  function renderStories(config = {}) {
+    const wrap = $("#stories"); if (!wrap) return;
+    const code = String(config.stories_embed || "").trim();
+    if (wrap.dataset.key === code) return;
+    wrap.dataset.key = code;
+    wrap.innerHTML = "";
+    if (!code) return;
+    // Scripts inserted via innerHTML never run, so re-create them.
+    const holder = document.createElement("div");
+    holder.innerHTML = code;
+    holder.querySelectorAll("script").forEach(old => {
+      const sc = document.createElement("script");
+      for (const a of old.attributes) sc.setAttribute(a.name, a.value);
+      sc.textContent = old.textContent;
+      old.replaceWith(sc);
+    });
+    wrap.append(...holder.childNodes);
+  }
+
   let instaLoaded = false;
   function renderEmbeds(config = {}) {
     const wrap = $("#insta-embeds"), follow = $("#follow");
@@ -834,9 +920,6 @@ async function loadSheet() {
           { date: "3 Oct", title: "Last long one done", body: "38 miles from Lechlade to Oxford this morning with Ed and Sam. Legs fine, feet less so.\nThe towpath past Newbridge is going to be beautiful at dawn.", photo: "img/towpath.jpg", link: "" },
           { date: "6 Oct", title: "Four days", body: "Kit list is done, crew rota is done, and Mum has told me to stop fussing. Thank you to everyone who has donated this week — past £31,000 now.", photo: "", link: "" }
         ];
-        // The preview shows the normal forecast, which is what race day will use;
-        // to preview the manual override, put a pace in Config → current_pace.
-        if (demo === "live") data.config.pace_note = data.config.pace_note || "Tom: legs OK, walking the hills";
         if (demo === "live") { const last = parseLondon(data.checkpoints[upto - 1].actual, raceStart); now = new Date(last.getTime() + 55 * 60000); }
       }
       const model = computeForecast(data.checkpoints, now, data.config);
@@ -850,6 +933,7 @@ async function loadSheet() {
         setTimeout(startPin, 400);
       }
       renderHead(model, state, data.config);
+      renderLivebar(model, state, data.config);
       renderRaise(jg);
       renderJourney(model, state, data.config, data.sponsors);
       renderUpdates(data.updates);
@@ -857,6 +941,7 @@ async function loadSheet() {
       renderKomoot(data.config);
       renderVideo(data.config);
       renderEmbeds(data.config);
+      renderStories(data.config);
       // Images load later and change layout — redraw the river when they do.
       $("#flow").querySelectorAll("img").forEach(img => { if (!img.complete) img.addEventListener("load", () => drawRiver(model, state), { once: true }); });
       if (data.source === "sample") console.info("Tiger: rendering sample data — set sheetId in config.js");
@@ -868,12 +953,15 @@ async function loadSheet() {
     const jgUrl = C.justGiving.pageUrl;
     ["#donate-btn", "#nav-donate"].forEach(s => { $(s).href = jgUrl; });
     ["#sponsor-mail", "#press-mail"].forEach(s => { $(s).href = `mailto:${C.contactEmail}?subject=Tiger%20Takes%20on%20the%20Thames`; });
-    $("#jump-btn").addEventListener("click", scrollToTiger);
+    ["#jump-btn", "#jump-btn-2", "#livebar-jump"].forEach(sel => {
+      const el = $(sel); if (el) el.addEventListener("click", () => scrollToTiger(true));
+    });
     $("#share-btn").addEventListener("click", async () => {
       const text = shareText(latest.model || computeForecast(SAMPLE_CHECKPOINTS, new Date()), latest.state, latest.jg);
       if (navigator.share) { try { await navigator.share({ text }); return; } catch (e) { /* cancelled */ } }
       try { await navigator.clipboard.writeText(text); $("#share-btn").textContent = "Copied — paste it anywhere"; setTimeout(() => $("#share-btn").textContent = "Share this update", 2500); } catch (e) { prompt("Copy this:", text); }
     });
+    window.addEventListener("resize", sizeLivebar, { passive: true });
     let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => latest.model && drawRiver(latest.model, latest.state), 120); });
     document.fonts && document.fonts.ready.then(() => latest.model && drawRiver(latest.model, latest.state));
   }

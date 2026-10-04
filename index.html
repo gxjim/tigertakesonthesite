@@ -50,6 +50,15 @@
   </nav>
 </header>
 
+<!-- Live only: the four things anyone arriving mid-run wants, pinned under the header. -->
+<div class="livebar" id="livebar" hidden>
+  <span class="livebar-dot" aria-hidden="true"></span>
+  <span class="livebar-where" id="livebar-where"></span>
+  <span class="livebar-next" id="livebar-next"></span>
+  <a class="livebar-link" id="livebar-track" href="#" target="_blank" rel="noopener">Click here for live location</a>
+  <button class="livebar-link" id="livebar-jump" type="button">Jump to Tiger</button>
+</div>
+
 <main id="top">
 
   <!-- ── Hero ─────────────────────────────────────────────── -->
@@ -251,7 +260,12 @@
 
     <!-- Live-only: the quickest way to see where he is this minute. -->
     <div class="tracker-live" id="tracker-live" hidden>
-      <a class="btn btn-primary" id="livetrack-inline" href="#" target="_blank" rel="noopener">Click here for live location</a>
+      <p class="tracker-where" id="tracker-where"></p>
+      <p class="tracker-detail" id="tracker-detail"></p>
+      <div class="tracker-actions">
+        <a class="btn btn-primary" id="livetrack-inline" href="#" target="_blank" rel="noopener">Click here for live location</a>
+        <button class="btn btn-outline" id="jump-btn-2" type="button">Jump to Tiger</button>
+      </div>
       <p class="fine" id="updated"></p>
     </div>
 
@@ -333,6 +347,12 @@
 
     <div class="card small" id="follow">
       <p class="eyebrow">Follow along</p>
+      <p class="follow-line">
+        For live updates from the Thames, follow
+        <a href="https://www.instagram.com/tigerspearman_/" target="_blank" rel="noopener">@tigerspearman_</a>
+        on Instagram.
+      </p>
+      <div class="stories" id="stories"></div>
       <div class="embeds" id="insta-embeds"></div>
     </div>
 

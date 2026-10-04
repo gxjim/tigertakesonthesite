@@ -21,15 +21,16 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 | `donor_count` | Optional. Number of supporters, shown next to the total. |
 | `livetrack_url` | On race morning, paste your Garmin LiveTrack link here. A "Where is Tiger right now" button appears. If the session restarts, paste the new link. |
 | `current_pace` | **The manual override. Normally leave this blank.** Blank means the site forecasts for you: it takes your published 37-hour schedule — which already slows down through the run — and stretches or shrinks it based on how your completed checkpoints actually went. Early on it only nudges the times, because a few minutes either way might just be the checkpoint being in a slightly different place than planned; the further you get, the more it trusts what it is seeing. Put a number in here only when that schedule has stopped being realistic — injury, walking, a long stop. Then type your expected pace in **minutes per km**, e.g. `8:30`, and from your last confirmed checkpoint onwards every remaining time is worked out at that flat pace over the distance left, ignoring the original curve. Clear the cell to hand it back to the automatic forecast. (If someone thinks in miles, write `9:45 /mi`.) |
-| `pace_note` | Optional short line shown under the live headline, e.g. `Tom: legs fine, walking the hills` or `10 min stop at Goring for food`. |
+| `pace_note` | No longer used. Removed for the same reason: one less thing to keep current at 3am. |
 | `state` | Leave blank — the site works out before / live / finished by itself. Only type `live` or `finished` to force it. |
 | `rehearsal` | `yes` makes the site use the Rehearsal tab instead of Checkpoints (for a practice run). Set back to `no` afterwards. |
-| `last_update` | Your own short status line, in your words — it appears beside the tracker and on the moving Tiger marker on the river, exactly as you type it (e.g. `Rain easing, moving well`). Leave blank for nothing. |
+| `last_update` | No longer used. The site no longer shows a hand-typed status line. |
 | `komoot_embed` | Paste the whole Komoot embed code here (Komoot → Share → Embed → copy), or just its web address. The map appears above the river. **Do this here, not in config.js** — the sheet doesn't mind the quote marks in the code; a code file does. |
 | `youtube_id` | Optional: a YouTube link or ID for the video in the "Why" section. |
 | `instagram_embed` | Optional: paste the web address of one Instagram post (`https://www.instagram.com/p/XXXXXXX/`). The post itself then appears on the page under "Follow along". You can put two or three addresses in this one cell, separated by commas or line breaks, or use the extra keys below. |
 | `instagram_embed_2` | Optional: a second Instagram post. |
 | `instagram_embed_3` | Optional: a third Instagram post. Three is the maximum the page shows. |
+| `stories_embed` | Optional. If you set up an Instagram-stories widget (EmbedSocial or similar), paste its embed code here and it appears in "Follow along". Leave blank and nothing shows; the "follow @tigerspearman_" line is always there either way. |
 
 **The Config tab is one key per row**: `key` in A1 and `value` in B1, then `state` in A2, `livetrack_url` in A3, and so on down column A, each with its value in column B of the same row. Leaving values blank is fine.
 
@@ -40,7 +41,9 @@ Open the sheet from your Google Drive (the one Jamie set up; it has tabs called 
 - `eta` — optional. If you want to say "I'll be in Henley about 02:40" for one specific checkpoint, type `02:40` here. It overrides the forecast for that checkpoint only. Usually `current_pace` in Config is easier.
 - `pace` — optional, per checkpoint, same format as `current_pace`, if one stretch will be slower than the rest.
 - `target` — your planned arrival. `2:41 PM Sat` is fine, so is `14:41`. This is the 37-hour schedule the forecast works from, so only change it if the plan really changes.
-- Don't change `id`, `name` or `miles`.
+- `id` — any label you like, as long as it isn't blank: `1`–`13` for the first section, `L1`–`L8` for London. **An id beginning with `L` marks that row as Section 2**, which draws it in lighter blue under a "Section 2 · London" divider. (If you'd rather not use the L prefix, add a `section` column and type `London` in it instead.)
+- `name` and `miles` — the place and its distance from the source. Both must be filled in or the row is ignored.
+- **Adding or removing checkpoints is safe.** The seven marathon blocks are matched to checkpoints by name, using the `from` and `to` in the Sponsors tab, so putting eight new points between Shepperton and the Thames Barrier doesn't move any marathon boundary.
 - **Don't leave anything else in this tab.** A second table pasted below the checkpoints gets read as extra checkpoints. There is one there now — worth deleting.
 
 ### Photos tab — the photo carousel
@@ -139,7 +142,7 @@ Commit as above.
 
 1. Saturday ~04:50: paste the Garmin LiveTrack link into Config → `livetrack_url`.
 2. At every checkpoint: type the arrival time into Checkpoints → `actual` for that row.
-3. When Tom's pace changes noticeably: update Config → `current_pace` (minutes per km). Optional one-liner in `pace_note`.
+3. Only if the plan has gone out of the window (injury, walking, a long stop): put an expected pace in Config → `current_pace` (minutes per km). Otherwise leave it blank and the site forecasts on its own.
 4. Every hour or two: glance at the JustGiving page and update Config → `total_override`.
 5. If the LiveTrack session dies and restarts, paste the new link into `livetrack_url`.
 6. When Tom reaches the Thames Barrier, type the time into the last row's `actual` — the site switches to its finished state by itself.

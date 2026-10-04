@@ -297,6 +297,101 @@ p {
 }
 
 
+/* ── Live strip ───────────────────────────────────────────────────────────── */
+
+/* Sits directly under the sticky header while he is running, and sticks with it,
+   so the four things that matter are never more than a glance away. */
+.livebar {
+  position: sticky;
+  top: var(--top-h, 57px);
+  z-index: 9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+
+  padding: 9px 20px;
+
+  background: var(--yellow);
+  border-bottom: 1px solid #d6ab00;
+
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #231c00;
+
+  text-align: center;
+}
+
+.livebar[hidden] {
+  display: none;
+}
+
+.livebar-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #b3410f;
+  flex: none;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.livebar-where {
+  font-weight: 700;
+}
+
+.livebar-next {
+  font-variant-numeric: tabular-nums;
+}
+
+.livebar-link {
+  color: var(--navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.livebar-link:hover {
+  color: #001a52;
+}
+
+.livebar-link[hidden] {
+  display: none;
+}
+
+@media (max-width: 700px) {
+
+  .livebar {
+    gap: 4px 14px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+  }
+
+}
+
+
+/* ── Follow along ─────────────────────────────────────────────────────────── */
+
+.follow-line {
+  margin: 0;
+  font-size: 15px;
+}
+
+.stories:empty {
+  display: none;
+}
+
+.stories {
+  margin-top: 14px;
+}
+
+
 /* ── Main layout ──────────────────────────────────────────────────────────── */
 
 main {
@@ -513,6 +608,45 @@ body[data-state="finished"] .route-stats {
     font-size: clamp(28px, 9vw, 38px);
   }
 
+}
+
+
+/* ── Section 2: London ────────────────────────────────────────────────────── */
+
+/* Bikes rather than crew from here, and more places to join, so it reads as a
+   different phase of the run without shouting about it. */
+.section-mark {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin: 18px 0 2px;
+}
+
+.section-mark::before,
+.section-mark::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--blue-soft);
+}
+
+.section-mark span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.node.london .name {
+  color: var(--blue);
+}
+
+.node.london .mark {
+  border-color: var(--blue);
 }
 
 
@@ -848,6 +982,10 @@ body[data-state="live"] .live-tag .dot {
   margin-top: 14px;
 }
 
+body[data-state="live"] .journey-actions {
+  justify-content: center;
+}
+
 #updated {
   margin-top: 10px;
 }
@@ -895,10 +1033,35 @@ body[data-state="live"] .live-tag .dot {
 }
 
 .tracker-live {
+  display: block;
+  text-align: center;
+}
+
+.tracker-where {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.6vw, 27px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--navy);
+}
+
+.tracker-detail {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.tracker-detail:empty {
+  display: none;
+}
+
+.tracker-actions {
   display: flex;
-  align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 10px 18px;
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .tracker-live .fine {
@@ -914,7 +1077,7 @@ body[data-state="live"] .live-tag .dot {
 
   width: 100%;
 
-  height: min(65vh, 600px);
+  height: min(85vh, 1020px);
 
   border-radius: var(--radius);
 
@@ -944,7 +1107,7 @@ body[data-state="live"] .live-tag .dot {
 @media (max-width: 820px) {
 
   .komoot {
-    height: 480px;
+    height: min(80vh, 816px);
   }
 
 }
