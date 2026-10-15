@@ -1,0 +1,39 @@
+FIX: restore the homepage and put the book in the right place
+==============================================================
+
+WHAT WENT WRONG
+  The book's index.html was uploaded to the repository root, so it
+  overwrote the homepage. tigertakesonthethames.com now shows the book.
+
+WHAT THIS FOLDER CONTAINS
+  index.html   the real homepage (15 KB) — the version from the
+               4 October scaffold, i.e. what was live before.
+  book/        the book, correctly placed: book/index.html + book/img/
+
+THE FIX — ONE COMMIT, 15 CREDITS
+  1. github.com/gxjim/tigertakesonthesite
+  2. Add file → Upload files
+  3. Drag in BOTH of these together:
+       - the index.html file from this folder
+       - the book FOLDER (the folder itself, not what is inside it)
+  4. Check the file list before committing. You should see:
+       index.html
+       book/index.html
+       book/img/... (33 files)
+     If you see loose .jpg files with no book/img/ prefix, remove them
+     and drag the book folder again.
+  5. Commit to main.
+
+  That single commit restores the homepage and publishes the book at
+  tigertakesonthethames.com/book at the same time.
+
+AFTERWARDS — TIDYING (optional, costs another deploy)
+  Your mistaken upload left files at the repository root that nothing
+  uses: an img/ folder with 33 photos, and README-DEPLOY.txt. They are
+  harmless — nothing links to them and they do not affect the site — but
+  if you want them gone, delete them in the GitHub UI (open each file →
+  bin icon → commit). Do it in one batch, not file by file.
+
+CHECK WHEN IT IS DONE
+  tigertakesonthethames.com        → the tracker homepage, as before
+  tigertakesonthethames.com/book   → the book

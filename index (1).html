@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tiger Took On The Thames</title>
+<meta name="description" content="A picture book of the weekend of 10–11 October 2026: 130 miles, a knee, and the friends who carried the shirt the rest of the way.">
+<!-- Still a surprise: keep out of search engines. Remove this line when the book goes public. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f6f4ef">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,400;1,500&family=Work+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* One spread at a time. A photograph holds the middle; the messages arrive
+   around it from off the edges, so turning a page feels like being surrounded
+   again. The book goes dark when the night does. */
+:root {
+  --paper: #f6f4ef; --card: #ffffff; --card-ink: #14181f; --card-muted: #5f6673;
+  --ink: #14181f; --muted: #5f6673; --line: #e3ded4;
+  --navy: #002169; --blue: #0055b8; --blue-soft: #c9d8ee; --blue-faint: #edf2f9;
+  --yellow: #f5c400; --yellow-text: #a87c00; --late: #b3410f;
+  --shadow: 0 2px 10px rgba(0, 33, 105, 0.08);
+  --serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --sans: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius: 6px;
+  --tartan: repeating-linear-gradient(90deg,
+    #002169 0 26px, #ffffff 26px 30px, #002169 30px 44px,
+    #f0b400 44px 58px, #111 58px 61px, #f0b400 61px 72px, #002169 72px 96px);
+  --tartan-v: repeating-linear-gradient(180deg,
+    #002169 0 26px, #ffffff 26px 30px, #002169 30px 44px,
+    #f0b400 44px 58px, #111 58px 61px, #f0b400 61px 72px, #002169 72px 96px);
+}
+/* Night: the three pages after dark. Paper cards on a navy page. */
+html[data-mood="night"] {
+  --paper: #0c1b3f; --ink: #f6f4ef; --muted: #b7c0d6; --line: #26365f;
+  --navy: #ffffff; --blue-soft: #2d4275; --yellow-text: #f5c400; --late: #ffb37a;
+  --shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+}
+html[data-mood="night"] .msg.tom { background: #e3e9f5; }
+
+* { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 700ms ease, color 700ms ease;
+}
+h1, h2 {
+  font-family: var(--serif); font-weight: 600; color: var(--navy);
+  line-height: 1.1; letter-spacing: -0.012em; text-wrap: balance; margin: 0;
+}
+p { margin: 0; }
+a { color: var(--blue); }
+
+/* The tartan: a spine down the left on wide screens, a band across the top on phones. */
+.tartan { height: 6px; background: var(--tartan); }
+@media (min-width: 900px) {
+  .tartan { position: fixed; left: 0; top: 0; bottom: 0; width: 14px; height: auto; background: var(--tartan-v); z-index: 6; }
+  .book { padding-left: 38px; }
+}
+
+.book { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 0 20px; }
+@media (max-width: 600px) { .book { padding-inline: 16px; } }
+
+/* ── The river: where we are on the 184 miles ─────────────────────── */
+.river { position: relative; height: 48px; margin-top: 22px; }
+.river .track { position: absolute; left: 0; right: 0; top: 14px; height: 2px; background: var(--line); }
+.river .tick { position: absolute; top: 11px; width: 1px; height: 8px; background: var(--line); }
+.river .dot {
+  position: absolute; top: 9px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%;
+  background: var(--navy); border: 2px solid var(--paper); box-shadow: 0 0 0 1.5px var(--navy);
+}
+.river .dot.shirt { background: var(--yellow); box-shadow: 0 0 0 1.5px var(--yellow-text); }
+.river .stopped { position: absolute; top: 9px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; border: 1.5px solid var(--late); }
+.river .lbl {
+  position: absolute; top: 24px; transform: translateX(-50%); white-space: nowrap;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.river .lbl.l { transform: none; } .river .lbl.r { transform: translateX(-100%); }
+.river .end { position: absolute; top: 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); opacity: .7; }
+
+/* ── One spread ─────────────────────────────────────────────────── */
+.spread { padding-block: 10px 10px; }
+.chapter {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--yellow-text);
+}
+.spread h2 { margin-top: 8px; font-size: clamp(27px, 5.2vw, 46px); }
+.meta {
+  margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px 16px;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.meta .behind { color: var(--late); }
+.spread .blurb { margin-top: 14px; max-width: 62ch; color: var(--muted); font-size: 16.5px; }
+
+.stage {
+  display: grid; grid-template-columns: 1fr minmax(0, 1.2fr) 1fr;
+  align-items: center; gap: 18px; margin-top: 24px;
+}
+.stage.nopic { grid-template-columns: 1fr 1fr; }
+figure.plate { margin: 0; }
+.plate img {
+  display: block; width: 100%; height: auto; max-width: 100%;
+  border-radius: var(--radius); box-shadow: var(--shadow); background: var(--blue-soft);
+}
+.plate figcaption { margin-top: 8px; font-size: 12px; color: var(--muted); text-align: center; }
+.side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* ── A message ──────────────────────────────────────────────────── */
+.msg {
+  position: relative; background: var(--card); color: var(--card-ink);
+  border: 1px solid var(--line); border-left: 3px solid var(--yellow);
+  border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); min-width: 0;
+  transform: rotate(var(--r, 0deg));
+  animation: rush 640ms cubic-bezier(.17,.84,.34,1) both; animation-delay: var(--d, 0ms);
+}
+@keyframes rush {
+  from { opacity: 0; transform: translate(var(--dx,0px), var(--dy,14px)) rotate(calc(var(--r,0deg) * 2.4)) scale(.94); }
+  to   { opacity: 1; transform: translate(0,0) rotate(var(--r,0deg)) scale(1); }
+}
+.msg q { display: block; font-family: var(--serif); font-size: 16px; line-height: 1.45; quotes: "\201C" "\201D"; }
+.msg.short q { font-size: 19px; }
+.msg .by { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 9px; margin-top: 9px; font-size: 12px; color: var(--card-muted); }
+.msg .by b { color: var(--card-ink); font-weight: 600; }
+.msg .by .t {
+  font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: 0.04em;
+  padding: 1px 6px; border-radius: 3px; background: var(--paper); color: var(--card-muted); font-size: 11px;
+}
+html[data-mood="night"] .msg .by .t { background: #e8e5dd; }
+.msg.tom { border-left-color: var(--navy); background: var(--blue-faint); }
+html[data-mood="night"] .msg.tom { border-left-color: #002169; }
+.msg.tom q { font-size: 18px; }
+.msg.crew { border-left-color: var(--blue); }
+.msg.lead { max-width: 62ch; margin-top: 18px; }
+
+/* A reply sits tucked under the card it answers, joined by a short line. */
+.thread { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.thread .msg + .msg { margin-left: 22px; margin-top: -4px; }
+.thread .msg + .msg::before {
+  content: ""; position: absolute; left: -17px; top: -14px; width: 13px; height: 30px;
+  border-left: 2px solid var(--yellow-text); border-bottom: 2px solid var(--yellow-text);
+  border-bottom-left-radius: 8px;
+}
+.thread .msg + .msg.crew::before, .thread .msg + .msg.tom::before { border-color: var(--blue); }
+
+/* ── Cover ──────────────────────────────────────────────────────── */
+.cover { text-align: center; padding-block: 34px 16px; }
+.cover h1 { font-size: clamp(36px, 7.6vw, 70px); line-height: 1.04; letter-spacing: -0.015em; }
+.cover .dates { margin-top: 16px; font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--yellow-text); }
+.cover .lede { margin-top: 22px; margin-inline: auto; max-width: 56ch; font-size: 18px; }
+.cover .plate { margin-top: 26px; max-width: 540px; margin-inline: auto; }
+.numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 28px; background: var(--yellow); border-radius: var(--radius); overflow: hidden; }
+.numbers div { background: #002169; padding: 18px 12px; }
+.numbers b { display: block; font-family: var(--serif); font-size: clamp(21px, 4vw, 32px); font-weight: 600; color: #fff; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.numbers span { display: block; margin-top: 7px; font-size: 11.5px; font-weight: 600; color: var(--yellow); }
+@media (max-width: 460px) { .numbers { grid-template-columns: 1fr; } }
+
+/* ── Lists: the crew chain, the relay, who ran each stretch ─────── */
+.relay { margin-top: 22px; border-top: 1px solid var(--line); }
+.leg { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.leg .where { font-family: var(--serif); font-weight: 600; color: var(--navy); }
+.leg .who { color: var(--ink); text-align: right; }
+.legs { margin-top: 22px; border-top: 1px solid var(--line); }
+.legs .leg { display: grid; grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.6fr); gap: 6px 16px; align-items: baseline; }
+.legs .mi { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.legs .who { text-align: left; }
+.legs .who i { font-style: normal; color: var(--muted); }
+.legs .leg.relay-leg .where { color: var(--yellow-text); }
+.legs .tbc { font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--late); vertical-align: 2px; margin-left: 4px; }
+@media (max-width: 600px) { .legs .leg { grid-template-columns: 1fr auto; } .legs .who { grid-column: 1 / -1; } }
+.legnote { margin-top: 14px; font-size: 12.5px; color: var(--muted); max-width: 70ch; }
+
+/* ── Gallery: the relay runners ──────────────────────────────── */
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 22px; }
+.tile { margin: 0; background: var(--card); color: var(--card-ink); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  animation: rush 640ms cubic-bezier(.17,.84,.34,1) both; animation-delay: var(--d, 0ms); transform: rotate(var(--r, 0deg)); }
+.tile img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; background: var(--blue-soft); }
+.tile figcaption { padding: 9px 11px 11px; font-size: 12px; line-height: 1.4; color: var(--card-muted); }
+.tile figcaption q { display: block; font-family: var(--serif); font-size: 14.5px; color: var(--card-ink); margin-bottom: 4px; quotes: "\201C" "\201D"; }
+.tile figcaption b { color: var(--card-ink); font-weight: 600; }
+.tile figcaption .t { font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: .04em; padding: 1px 6px; border-radius: 3px; background: var(--paper); font-size: 11px; margin-left: 4px; }
+html[data-mood="night"] .tile figcaption .t { background: #e8e5dd; }
+.tile figcaption .n { display: block; margin-top: 3px; color: var(--yellow-text); font-weight: 600; font-size: 11px; letter-spacing: .04em; }
+@media (max-width: 700px) { .tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+
+/* ── Closing ────────────────────────────────────────────────────── */
+.finale { text-align: center; padding-block: 24px 10px; }
+.finale .total { font-family: var(--serif); font-size: clamp(44px, 10vw, 86px); font-weight: 600; color: var(--navy); line-height: 1; font-variant-numeric: tabular-nums; }
+.finale .of { margin-top: 10px; font-size: 14px; color: var(--muted); }
+.finale p.body { margin-top: 18px; margin-inline: auto; max-width: 52ch; }
+.again { font: inherit; font-size: 14px; font-weight: 600; margin-top: 24px; padding: 13px 22px; min-height: 44px; border-radius: 40px; border: 1.5px solid var(--navy); background: transparent; color: var(--navy); cursor: pointer; }
+.again:hover { background: var(--navy); color: var(--paper); }
+
+/* ── Guest book ─────────────────────────────────────────────────── */
+.guests { columns: 2; column-gap: 16px; margin-top: 22px; }
+.guests .msg { break-inside: avoid; margin-bottom: 16px; display: inline-block; width: 100%; }
+.msg.guest q { white-space: pre-line; font-size: 16.5px; }
+.msg.guest .by { margin-top: 10px; font-size: 13px; }
+.msg.guest .did { margin-top: 6px; font-size: 12.5px; line-height: 1.45; color: var(--card-muted); }
+.msg.guest .did .k { display: inline-block; min-width: 46px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--yellow-text); }
+h2.quiet { font-size: clamp(22px, 4vw, 32px); color: var(--muted); font-weight: 500; }
+@media (max-width: 700px) { .guests { columns: 1; } }
+
+/* ── Index ──────────────────────────────────────────────────────── */
+.index-grid { columns: 2; column-gap: 14px; margin-top: 20px; }
+.index-grid .msg { break-inside: avoid; margin-bottom: 14px; animation-delay: 0ms; }
+@media (max-width: 620px) { .index-grid { columns: 1; } }
+
+/* ── Turning the page ───────────────────────────────────────────────
+   The leaving page is a sheet with two faces: the front is the page you were
+   reading, the back is blank paper. It lifts at its right edge, turns over
+   the spine, and the page beneath takes a sweep of shadow as it goes. */
+#stage { position: relative; perspective: 1900px; perspective-origin: 0% 38%; }
+.leaf { background: var(--paper); transition: background-color 700ms ease; }
+.leaf.flying {
+  position: absolute; left: 0; top: 0; width: 100%; z-index: 3;
+  transform-style: preserve-3d; will-change: transform, opacity; pointer-events: none;
+  box-shadow: -8px 0 24px rgba(0,0,0,.18);
+}
+/* the back of the sheet */
+.leaf.flying::before {
+  content: ""; position: absolute; inset: 0; z-index: 4; border-radius: 4px;
+  background: var(--paper);
+  background-image: linear-gradient(90deg, rgba(0,0,0,.16), rgba(0,0,0,0) 22%), var(--tartan);
+  background-size: 100% 100%, 100% 6px; background-repeat: no-repeat;
+  transform: rotateY(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+/* the fold shadow that runs across the front as it lifts */
+.leaf.flying::after {
+  content: ""; position: absolute; inset: 0; z-index: 5; border-radius: 4px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(0,0,0,.34), rgba(0,0,0,.06) 35%, rgba(0,0,0,0) 60%);
+  animation: shade var(--flip, 760ms) ease-in-out both; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.leaf.out { transform-origin: left center; animation: turnout var(--flip, 760ms) cubic-bezier(.42,.0,.3,1) both; }
+.leaf.in  { transform-origin: left center; animation: turnin  var(--flip, 760ms) cubic-bezier(.42,.0,.3,1) both; }
+@keyframes turnout {
+  0%   { transform: rotateY(0deg); opacity: 1; }
+  45%  { transform: rotateY(-88deg) translateZ(28px); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: rotateY(-178deg); opacity: 0; }
+}
+@keyframes turnin {
+  0%   { transform: rotateY(-178deg); opacity: 0; }
+  20%  { opacity: 1; }
+  55%  { transform: rotateY(-88deg) translateZ(28px); opacity: 1; }
+  100% { transform: rotateY(0deg); opacity: 1; }
+}
+@keyframes shade { from { opacity: 0; } 45% { opacity: 1; } to { opacity: 0; } }
+/* the page beneath: a shadow sweeps off it as the sheet clears */
+.leaf.under { position: relative; }
+.leaf.under::after {
+  content: ""; position: absolute; inset: -4px 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(90deg, rgba(0,0,0,.30), rgba(0,0,0,.12) 45%, rgba(0,0,0,0) 100%);
+  transform-origin: left center; animation: sweep var(--flip, 760ms) cubic-bezier(.42,.0,.3,1) both;
+}
+@keyframes sweep { from { transform: scaleX(1); opacity: 1; } 60% { opacity: .7; } to { transform: scaleX(0); opacity: 0; } }
+.leaf.under .msg { animation-delay: calc(var(--d, 0ms) + 380ms); }
+
+/* ── Navigation ─────────────────────────────────────────────────── */
+.nav {
+  position: sticky; bottom: 0; z-index: 5; margin-top: 18px;
+  padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to bottom, transparent, var(--paper) 36%);
+  display: flex; align-items: center; gap: 14px;
+}
+.turn { font: inherit; flex: none; width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--navy); background: var(--card); color: var(--navy); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+html[data-mood="night"] .turn { color: #002169; }
+.turn:hover:not(:disabled) { background: var(--navy); color: var(--paper); }
+.turn:disabled { opacity: .3; cursor: default; }
+.turn:focus-visible, .again:focus-visible, .rail button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+.rail { flex: 1; min-width: 0; display: flex; align-items: center; gap: 3px; }
+.rail button { flex: 1; min-width: 0; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; display: flex; align-items: center; }
+.rail button::before { content: ""; display: block; width: 100%; height: 5px; border-radius: 3px; background: var(--blue-soft); }
+.rail button[data-on="1"]::before { background: var(--navy); }
+.pageno { flex: none; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
+
+@media (max-width: 860px) {
+  .stage, .stage.nopic { grid-template-columns: 1fr; gap: 14px; }
+  .side { gap: 12px; }
+  .plate { order: -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .msg { animation: none; transform: rotate(var(--r, 0deg)); }
+  .leaf.out, .leaf.in, .leaf.under::after, .leaf.flying::after { animation: none; }
+}
+
+/* Added for the live site: a quiet way back to tigertakesonthethames.com.
+   Delete this block and the <p class="colophon"> below to remove it. */
+.colophon {
+  margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 12.5px; color: var(--muted); text-align: center;
+}
+.colophon a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.colophon a:hover { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="tartan" aria-hidden="true"></div>
+
+<div class="book">
+  <main id="stage" aria-live="polite"></main>
+  <nav class="nav" aria-label="Pages">
+    <button class="turn" id="prev" type="button" aria-label="Previous page">←</button>
+    <div class="rail" id="rail"></div>
+    <button class="turn" id="next" type="button" aria-label="Next page">→</button>
+    <span class="pageno" id="pageno"></span>
+  </nav>
+
+  <p class="colophon"><a href="/">tigertakesonthethames.com</a><span aria-hidden="true"> · </span>Every message and photograph here is real.</p>
+</div>
+
+<script>
+var PICS = {"asleep": {"src": "img/asleep.jpg", "w": 1300, "h": 975}, "beacon22": {"src": "img/beacon22.jpg", "w": 506, "h": 1100}, "bench": {"src": "img/bench.jpg", "w": 619, "h": 1100}, "carried": {"src": "img/carried.jpg", "w": 464, "h": 832}, "crew": {"src": "img/crew.jpg", "w": 750, "h": 1000}, "cuttysark": {"src": "img/cuttysark.jpg", "w": 975, "h": 1300}, "dawn": {"src": "img/dawn.jpg", "w": 731, "h": 1300}, "dusk": {"src": "img/dusk.jpg", "w": 732, "h": 1300}, "duvet": {"src": "img/duvet.jpg", "w": 562, "h": 1000}, "field": {"src": "img/field.jpg", "w": 731, "h": 1300}, "filming": {"src": "img/filming.jpg", "w": 1200, "h": 900}, "flyer": {"src": "img/flyer.jpg", "w": 731, "h": 1300}, "g_cyclists": {"src": "img/g_cyclists.jpg", "w": 832, "h": 464}, "g_hugo": {"src": "img/g_hugo.jpg", "w": 750, "h": 1000}, "g_lara": {"src": "img/g_lara.jpg", "w": 576, "h": 1024}, "g_laralucy": {"src": "img/g_laralucy.jpg", "w": 832, "h": 464}, "g_oliver": {"src": "img/g_oliver.jpg", "w": 750, "h": 1000}, "g_strong": {"src": "img/g_strong.jpg", "w": 576, "h": 1024}, "g_toby": {"src": "img/g_toby.jpg", "w": 732, "h": 1300}, "g_toobs": {"src": "img/g_toobs.jpg", "w": 576, "h": 1024}, "kit": {"src": "img/kit.jpg", "w": 731, "h": 1300}, "lucky": {"src": "img/lucky.jpg", "w": 732, "h": 1300}, "mum": {"src": "img/mum.jpg", "w": 732, "h": 1300}, "phone": {"src": "img/phone.jpg", "w": 675, "h": 900}, "poles": {"src": "img/poles.jpg", "w": 1000, "h": 750}, "portmeadow": {"src": "img/portmeadow.jpg", "w": 900, "h": 1200}, "sign": {"src": "img/sign.jpg", "w": 825, "h": 1100}, "strava": {"src": "img/strava.jpg", "w": 600, "h": 1300}, "stretch": {"src": "img/stretch.jpg", "w": 975, "h": 1300}, "tomnight": {"src": "img/tomnight.jpg", "w": 825, "h": 1100}, "torches": {"src": "img/torches.jpg", "w": 731, "h": 1300}, "westminster": {"src": "img/westminster.jpg", "w": 1300, "h": 975}, "windsor": {"src": "img/windsor.jpg", "w": 1300, "h": 975}};
+/* Every message is real. Two WhatsApp exports sit behind this book: the core
+   support team (crew:true, blue edge) and everyone else (yellow edge). Tom's
+   own words carry tom:true. `at` pins a message to a stretch of the story;
+   `re` marks a reply, which travels with the card it answers. */
+var MESSAGES = [{"t":"You have all given me some indication you are willing to run or help during the big run on 10th/11th October although you might not realise quite what you are in for.","who":"Tom Spearman","role":"","at":"plan","tom":true,"crew":true,"id":"m1","when":"15 September 01:03"},{"t":"Quick introductions. We have family — sister Molly, uncle Rupert, cousin Theo and cousin snr Mat. Rosie who is multi talented runner and experienced support crew. Oxford friends all reputable athletes Tommy, Matt and Tancred. Andy is a real runner who knows the Thames Path well. The OMM squad of Benj, Tom B and Toby. And Jamie who says he is my friend from PNG but really he is from Chalfont St Giles.","who":"Tom Spearman","role":"","at":"plan","tom":true,"crew":true,"id":"m2","when":"15 September 01:04"},{"t":"For me, I’ll drive to the start with Molly, keep running for the next day and a half, meet everyone seamlessly at the scheduled time and place, and hopefully jog into Woolwich before Sunday sunset.","who":"Tom Spearman","role":"","at":"plan","tom":true,"crew":true,"big":true,"id":"m3","when":"15 September 01:05"},{"t":"I should also say, things will probably follow closely to the plan until Reading. After then, there will be a lot more uncertainty.","who":"Tom Spearman","role":"","at":"plan","tom":true,"crew":true,"id":"m4","when":"15 September 01:12"},{"t":"Pace will be around 6:20min/km, walking for 2 minutes every 30. This will probably drop to around 7min/km by Reading, and slow down further in London. Aim not to stop, even at checkpoints. 80g of carbohydrate every hour, which equates to 1 big gel, 2 sandwich, and 2 rice ball between checkpoints. Rinse repeat continue.","who":"Tom Spearman","role":"","at":"plan","tom":true,"crew":true,"id":"m5","when":"2 October 15:29"},{"t":"Hell to the yeahhhhhhhhh","who":"Tommy Lees","role":"","at":"plan","crew":true,"id":"m6","when":"15 September"},{"t":"When does the HypeTok drop?","who":"Toby","role":"","at":"plan","crew":true,"id":"m7","when":"15 September"},{"t":"i cant pump out content everyday like you. its phenomenal","who":"Tom Spearman","role":"","at":"plan","tom":true,"crew":true,"id":"m8","when":"15 September 09:35","re":"m7"},{"t":"24/7 live stream?","who":"Matt C","role":"","at":"plan","crew":true,"id":"m9","when":"15 September"},{"t":"Just watch me running all the time? I could probably fix something :)","who":"Tom Spearman","role":"","at":"plan","tom":true,"crew":true,"id":"m10","when":"15 September 11:41","re":"m9"},{"t":"Looking forward to doing what I can.","who":"Mat Clarke","role":"Tom’s cousin","at":"plan","crew":true,"id":"m11","when":"15 September"},{"t":"I was going to comment saying Saturday, went back through everything to check I was right and hadn’t got something very wrong 😹🙏","who":"Rosie Lees","role":"","at":"plan","crew":true,"id":"m12","when":"2 October 16:48"},{"t":"I have charged the car.","who":"Mat Clarke","role":"","at":"eve","crew":true,"big":true,"id":"m13","when":"Fri 13:28"},{"t":"I’ve inflated the tyres. Looking for the bike lights just in case….","who":"Rupert King","role":"Tom’s uncle","at":"eve","crew":true,"id":"m14","when":"Fri 13:34"},{"t":"I’ve definitely got some butterflies in my stomach!","who":"Tom Spearman","role":"","at":"eve","tom":true,"crew":true,"big":true,"id":"m15","when":"Fri 13:28"},{"t":"We’ve also got a load of flyers. Hopefuly use them to subdue a few tourists in London. If anyone else looks curious feel free to give them one. Might get lucky!","who":"Tom Spearman","role":"","at":"eve","tom":true,"crew":true,"id":"m16","when":"Fri 13:42"},{"t":"And most importantly.. a very generous supporter has offered to match all donations made over the weekend (or until I finish..)! Need lots of hype to get a bit more money rolling in.","who":"Tom Spearman","role":"","at":"eve","tom":true,"crew":true,"id":"m17","when":"Fri 13:46"},{"t":"Going hard on the beers already","who":"Jamie Gordon","role":"— a Lucky Saint 0.5%","at":"eve","crew":true,"big":true,"id":"m18","when":"Fri 13:42"},{"t":"This is what I’m hoping to carry between checkpoints. Fist sized lump of rice, gel, sandwich, 1 water 1 electrolyte.","who":"Tom Spearman","role":"","at":"eve","tom":true,"crew":true,"id":"m19","when":"Fri 20:10"},{"t":"All stations go here. Last minute for prep all under Theo’s watchful eye","who":"Tom Spearman","role":"","at":"eve","tom":true,"crew":true,"id":"m20","when":"Fri 20:11"},{"t":"Thank you and sleep well this evening","who":"Mat Clarke","role":"","at":"eve","crew":true,"big":true,"id":"m21","when":"Fri 20:15"},{"t":"Hell yeah lfgooooo","who":"Tommy Lees","role":"","at":"eve","crew":true,"id":"m22","when":"Fri 21:25"},{"t":"Hi all, good morning! I’m Shiori and I’m supporting social media posting from Japan during the midnight time in the UK today. Lots of support and love from Japan 🇯🇵","who":"Shiori","role":"","at":"sat","crew":true,"id":"m23","when":"Sat 04:54"},{"t":"Beautiful morning! Hope it’s not too muddy.","who":"Mat Clarke","role":"","at":"sat","crew":true,"big":true,"id":"m24","when":"Sat 07:02"},{"t":"What a morning!!! Come on tomcat 🎉🎉","who":"Tommy Lees","role":"","at":"sat","crew":true,"id":"m25","when":"Sat 07:06"},{"t":"Are timings on the website accurate? I realise they fluctuate a bit with his pace. Hoping to intercept somewhere between Abingdon and Goring.","who":"Sam","role":"","at":"sat","id":"m26","when":"Sat 11:57"},{"t":"I think website is pretty accurate right now. He’s approaching Newbridge, hopefully around 12:30pm (maybe quicker!)","who":"Rosie Lees","role":"","at":"sat","id":"m27","when":"Sat 12:00","re":"m26"},{"t":"Just coming into Newbridge now 🙆‍♀️","who":"Rosie Lees","role":"","at":"sat","id":"m28","when":"Sat 12:24"},{"t":"Strava is definitely the most accurate!","who":"Tommy Lees","role":"","at":"sat","id":"m29","when":"Sat 12:51","re":"m27"},{"t":"Website seems to have stopped updating in Oxford but strava beacon is working. Still going strong beyond Abingdon.","who":"Sam Garforth","role":"","at":"night","id":"m30","when":"Sat 17:45"},{"t":"Can someone please call me? I’m stuck at the Riverside restaurant at the second checkpoint","who":"Theo Spearman","role":"Tom’s cousin","at":"cp","crew":true,"big":true,"id":"m31","when":"Sat 09:46"},{"t":"All is good with Theo. Go Tiger!","who":"Mat Clarke","role":"","at":"cp","crew":true,"big":true,"id":"m32","when":"Sat 09:54","re":"m31"},{"t":"We’re just parked in the Maytree pub car park preparing sandwiches 😋!","who":"Rosie Lees","role":"","at":"cp","crew":true,"id":"m33","when":"Sat 11:50"},{"t":"At the checkpoint the next runner needs the bag of items. 1. 2 filled water bottles with electrolytes in. 2. Rice ball. 3. 90g carb gel. 4. Anything else he asks for. Make sure you get the phone and battery pack!!!!","who":"Tommy Lees","role":"","at":"cp","crew":true,"id":"m34","when":"Sat 12:48"},{"t":"See you then Dom, we are in a bashed up Old Ford Puma. Suitably battleship gray","who":"Mat Clarke","role":"","at":"cp","crew":true,"id":"m35","when":"Sat 13:05"},{"t":"I’ll be wearing a children’s rucksack 😂","who":"Dom","role":"","at":"cp","crew":true,"big":true,"id":"m36","when":"Sat 13:04","re":"m35"},{"t":"Is it possible to cut up the oranges","who":"Hermione","role":"","at":"cp","crew":true,"big":true,"id":"m37","when":"Sat 14:54"},{"t":"Is tiger doing his intermittent walking? Ie run for 28 minutes walk for 2.","who":"Rupert King","role":"","at":"cp","crew":true,"id":"m38","when":"Sat 16:11"},{"t":"He was!! Not sure currently","who":"Tommy Lees","role":"","at":"cp","crew":true,"big":true,"id":"m39","when":"Sat 16:14","re":"m38"},{"t":"£50,000 hit if you include the gift aid. Will someone tell Tiger. And money is coming in steadily.","who":"Rupert King","role":"","at":"cp","crew":true,"big":true,"id":"m40","when":"Sat 16:30"},{"t":"Mum has helpfully pointed out that the bridge between Hurley and Temple is closed. Wanted to flag it so that it wasn’t a new decision to be making at 2am.","who":"Tom B","role":"","at":"cp","crew":true,"id":"m41","when":"Sat 14:50"},{"t":"Thanks Tom, and yes sadly there’s two lovely bridges closed long term on my stretch. I know the diversions well.","who":"Andrew Sinclair","role":"","at":"cp","crew":true,"id":"m42","when":"Sat 14:54","re":"m41"},{"t":"Wallingford requests. Change shoes and socks (blue finger socks). Blister plasters — check the one we applied. Water or Coke. Beetroot juice. Pot noodle at Wallingford (not too hot!). Phone will need charging. Head torch ready for Tom. Maybe windbreaker.","who":"Tom B","role":"","at":"cp","crew":true,"id":"m43","when":"Sat 19:11"},{"t":"Supreme effort by Tiger, so impressive","who":"Mat Clarke","role":"","at":"cp","crew":true,"big":true,"id":"m44","when":"Sat 21:10"},{"t":"Only one head torch between us so tricky at the moment! Will have some from the next stop","who":"Tom B","role":"","at":"night","crew":true,"id":"m45","when":"Sat 19:42"},{"t":"I have arrived at goring. That will be because he’s running with me next. Wants to drown out my chat for the next two hours","who":"Jamie Gordon","role":"","at":"night","crew":true,"id":"m46","when":"Sat 20:03"},{"t":"There’s a lot of trepidation as he’s about to start running with me","who":"Jamie Gordon","role":"","at":"night","crew":true,"big":true,"id":"m47","when":"Sat 21:38"},{"t":"Good luck through the night gang 😘 keep going Tom, we all think you are AMAZING!!","who":"Rosie Lees","role":"","at":"night","crew":true,"id":"m48","when":"Sat 21:25"},{"t":"Good luck all going into the night.","who":"Mat Clarke","role":"","at":"night","crew":true,"big":true,"id":"m49","when":"Sat 21:09"},{"t":"He is the man! What an effort!","who":"Mat Clarke","role":"","at":"night","crew":true,"big":true,"id":"m50","when":"Sat 21:46"},{"t":"Andy, your phone is in the car. I’ll give it to you at the checkpoint","who":"Molly Spearman","role":"Tom’s sister","at":"dark","crew":true,"id":"m51","when":"Sun 01:35"},{"t":"What do you need at Reading?","who":"Andrew Sinclair","role":"","at":"dark","crew":true,"big":true,"id":"m52","when":"Sun 00:33"},{"t":"We left 1.06","who":"Andrew Sinclair","role":"Reading","at":"dark","crew":true,"big":true,"id":"m53","when":"Sun 02:13","re":"m55"},{"t":"2.14 left Shiplake — unofficial checkpoint","who":"Molly Spearman","role":"","at":"dark","crew":true,"big":true,"id":"m54","when":"Sun 02:14"},{"t":"It’s not really moving on the tracker, how’s he doing in Reading?","who":"Shiori","role":"from Japan","at":"dark","crew":true,"id":"m55","when":"Sun 02:13"},{"t":"What time was Henley so I can enter it on the sheets? Great effort everyone!!! Heroes the lot of you.","who":"Rupert King","role":"","at":"dark","crew":true,"id":"m56","when":"Sun 06:16"},{"t":"03.20","who":"Molly Spearman","role":"","at":"dark","crew":true,"big":true,"id":"m57","when":"Sun 06:18","re":"m56"},{"t":"Amazing! Unreal! Well done the night team, incredible!","who":"Mat Clarke","role":"","at":"dark","crew":true,"id":"m58","when":"Sun 07:00"},{"t":"Yayyyy! Love this!! Well done night team!!","who":"Rosie Lees","role":"","at":"dark","crew":true,"id":"m59","when":"Sun 07:23"},{"t":"Incredible effort overnight team!!!","who":"Toby","role":"","at":"dark","crew":true,"big":true,"id":"m60","when":"Sun 07:41"},{"t":"Hahaha we were anticipating 10am when we went to bed at 3 so were almost caught asunder… But we’re flying at the moment","who":"Jamie Gordon","role":"","at":"dark","crew":true,"id":"m61","when":"Sun 09:48"},{"t":"He’s now moving well again after having a bit of a rough moment with an emergency stop","who":"Theo Spearman","role":"","at":"wall","crew":true,"id":"m62","when":"Sun 11:14"},{"t":"GO GO TOM!!","who":"Toby","role":"","at":"wall","crew":true,"id":"m63","when":"Sun 11:41"},{"t":"I’m with his mum. We are coming!! Go tiger!","who":"Rupert King","role":"","at":"wall","crew":true,"big":true,"id":"m64","when":"Sun 11:43"},{"t":"Genuinely in awe of your mental strength Tom!!!! You are over the toughest part in the night! The river is always with you 🙆‍♀️ You are doing it, this is it!!!!!","who":"Rosie Lees","role":"","at":"wall","crew":true,"id":"m65","when":"Sun 11:44"},{"t":"You’ve been inspiring so many people already, well done! Try to hug yourself with lots of love 🥰 His friends in Japan are also supporting you 🐯","who":"Shiori","role":"from Japan","at":"wall","crew":true,"id":"m66","when":"Sun 11:48"},{"t":"Smashing it Tiger! So inspirational! Love from all on Boars Hill","who":"Mat Clarke","role":"","at":"wall","crew":true,"id":"m67","when":"Sun 11:49"},{"t":"Benj is on his way by thumb to offer support!!!","who":"Toby","role":"","at":"wall","crew":true,"big":true,"id":"m68","when":"Sun 11:49"},{"t":"Keep it moving!!! Inspiring and incredible stuff!","who":"Lodewijk Vriens","role":"from Hong Kong","at":"wall","crew":true,"id":"m69","when":"Sun 11:51"},{"t":"Tell him Alice’s famous flapjacks are on their way. Maybe an hour.","who":"Rupert King","role":"","at":"wall","crew":true,"id":"m70","when":"Sun 11:55"},{"t":"God he’s a machine to still be going. Superhuman","who":"Mat Clarke","role":"","at":"wall","crew":true,"big":true,"id":"m71","when":"Sun 11:59"},{"t":"Go Tom!!! You’re doing so well","who":"Lucy Scruton","role":"","at":"wall","id":"m72","when":"Sun 11:42"},{"t":"Come on Tom!!!!!","who":"Kat","role":"","at":"wall","id":"m73","when":"Sun 11:42"},{"t":"Think of that sausage roll at Richmond…!!!","who":"Lucy Scruton","role":"","at":"wall","id":"m74","when":"Sun 11:42"},{"t":"Come on Tom!!!!!! Just keep moving, one foot at a time !!!","who":"Olivia Chesser","role":"","at":"wall","id":"m75","when":"Sun 11:43"},{"t":"Let’s go Tom! Inside the M25 and just keep going! 💪🏻","who":"Sam Garforth","role":"","at":"wall","id":"m76","when":"Sun 11:46"},{"t":"You got this","who":"Charlie Nye","role":"","at":"wall","id":"m77","when":"Sun 11:46"},{"t":"Don’t stop!","who":"Sam","role":"","at":"wall","id":"m78","when":"Sun 11:47"},{"t":"A mammoth effort! And gave me ZERO excuses in the Oxford half!","who":"Charlie Nye","role":"","at":"wall","id":"m79","when":"Sun 11:47"},{"t":"Come on Tom! You are amazing & have done so brilliantly. The MacInnes clan are behind you x","who":"Tassy Barham","role":"","at":"wall","id":"m80","when":"Sun 11:47"},{"t":"Go on Tom!!! We’re all behind you mate, you can do this! This is going to be such an exceptional achievement but to get there you’re going to have to go through exceptional pain first. One step at a time and you’ll get there.","who":"Hugo Fleming","role":"","at":"wall","id":"m81","when":"Sun 11:48"},{"t":"Go Tiger!!! Such an incredible effort and not long to go now ⚡️⚡️⚡️ George and I coming to join you near Twickenham!","who":"Sophia","role":"","at":"wall","id":"m82","when":"Sun 11:48"},{"t":"So many people are following along and thinking of you, and are all so proud! Imagine each thought giving you a little push when it hits you!","who":"Lucy Scruton","role":"","at":"wall","id":"m83","when":"Sun 11:51"},{"t":"KEEP EATING","who":"Charlie Nye","role":"","at":"wall","id":"m84","when":"Sun 11:51"},{"t":"Can’t even express how much I admire you ❤️","who":"Sara","role":"","at":"wall","id":"m85","when":"Sun 12:01"},{"t":"Outstanding! Bring it home 🏃‍♂️","who":"Sam","role":"","at":"wall","id":"m86","when":"Sun 12:05"},{"t":"Keep going Tom. You are the only person I know who could do this!","who":"Sam Garforth","role":"","at":"wall","id":"m87","when":"Sun 12:14"},{"t":"Go on Tom you’ve got this 💪🏼","who":"Rufus","role":"","at":"wall","id":"m88","when":"Sun 12:15"},{"t":"You’ve got this Tom 💪💪💪","who":"Lara Crane","role":"","at":"wall","id":"m89","when":"Sun 12:17"},{"t":"It’s all over. As I understand it a knee has said No. Thank you all so much for your incredible efforts. We will organise a celebration of what has been a Herculean feat. If anyone is near Staines come along to cheer the hero up. My sister and I will be there in 15 mins.","who":"Rupert King","role":"","at":"stop","crew":true,"id":"m90","when":"Sun 12:34"},{"t":"Being out there overnight with him was so inspiring. He just kept going relentlessly. But pain and exhaustion are one thing, a knee injury is another. Glad he made the right choice. And wow, what a fund raiser.","who":"Andrew Sinclair","role":"","at":"stop","crew":true,"id":"m91","when":"Sun 14:01"},{"t":"It’s the most brilliant and wonderful mad caper I’ve seen for a very long time. Huge respect to him 💕","who":"Mat Clarke","role":"relaying the cousins","at":"stop","crew":true,"id":"m92","when":"Sun 13:05"},{"t":"He should be unbelievably proud of himself. 130 miles non stop is an insane achievement and it’s an incredible amount of money raised","who":"Mat Clarke","role":"","at":"stop","crew":true,"id":"m93","when":"Sun 13:05"},{"t":"The kids have been mesmerised by his progress","who":"Mat Clarke","role":"","at":"stop","crew":true,"big":true,"id":"m94","when":"Sun 13:05"},{"t":"Tom what an effort and such a good amount raised for such an amazing cause, you should be so proud you have done an amazing thing and it doesn’t go unnoticed.","who":"Rufus","role":"","at":"stop","id":"m95","when":"Sun 12:31"},{"t":"Tom, you are nothing short of incredible and this is the most AMAZING achievement. We’re all so proud of you. You can absolutely go home with your head held high, you truly gave it your all 👏","who":"Lara Crane","role":"","at":"stop","id":"m96","when":"Sun 12:34"},{"t":"You have done such an incredible thing and everyone is in awe!! What an achievement and to have raised so much for an amazing cause, how brilliant!!!","who":"Sophia","role":"","at":"stop","id":"m97","when":"Sun 12:34"},{"t":"Incredible achievement to have made it that far Tom, and to stay so chipper throughout. You’ve done brilliantly, now get some rest!","who":"Tancred Taylor","role":"","at":"stop","id":"m98","when":"Sun 12:44"},{"t":"Woooo Tom what an incredible feat!!!! Especially when on leg 2 you were saying to me you felt a 5/10!! 😹 Your mental resilience is just insane. When you’ve rested up we will all come and finish the final miles with you 🙆‍♀️😘🥰🫶","who":"Rosie Lees","role":"","at":"stop","id":"m99","when":"Sun 12:47"},{"t":"That is an incredible run and you have done so well both running and fundraising for an amazing cause!","who":"Kathryn","role":"","at":"stop","id":"m100","when":"Sun 12:55"},{"t":"What an incredible physical and mental achievement Tiger and you have raised awareness and a huge amount of money that will make a true difference to people who are suffering. Please look after yourself too. 🤗","who":"Sara","role":"","at":"stop","id":"m101","when":"Sun 13:13"},{"t":"Tancred and I are chatting… slightly mad thought but how about between the rest of us we finish for Tom?","who":"Lara Crane","role":"","at":"idea","big":true,"id":"m102","when":"Sun 13:04"},{"t":"We can take his shirt to the finish line","who":"Tancred Taylor","role":"","at":"idea","big":true,"id":"m103","when":"Sun 13:08","re":"m102"},{"t":"I’m with him currently","who":"Hugo Fleming","role":"Staines","at":"idea","id":"m104","when":"Sun 13:12"},{"t":"Tom is keen!","who":"Hugo Fleming","role":"","at":"idea","big":true,"id":"m105","when":"Sun 13:23","re":"m103"},{"t":"I’m near Westminster and could do a stint","who":"Rob","role":"","at":"idea","id":"m106","when":"Sun 13:22"},{"t":"Benj can defo do a stint — he’s in Staines now","who":"Toby","role":"","at":"idea","id":"m107","when":"Sun 13:23"},{"t":"Calum can do a stretch. What’s missing?","who":"Tassy Barham","role":"","at":"idea","id":"m108","when":"Sun 13:32"},{"t":"Let’s double up — if you’re able to do a stint, join in with whoever is running","who":"Jamie Gordon","role":"","at":"idea","id":"m109","when":"Sun 13:43"},{"t":"We’re on.","who":"Hugo Fleming","role":"","at":"idea","big":true,"id":"m110","when":"Sun 13:27","re":"m105"},{"t":"Join where you like!! The more the merrier.","who":"Rupert King","role":"","at":"relay","id":"m111","when":"Sun 16:18"},{"t":"Shirt still going strong !","who":"Benj Chesser","role":"","at":"relay","id":"m112","when":"Sun 14:22"},{"t":"New runner carrying the shirt!!","who":"Benj Chesser","role":"","at":"relay","id":"m113","when":"Sun 14:46"},{"t":"Fine afternoon for it","who":"Toby","role":"","at":"relay","id":"m114","when":"Sun 13:57"},{"t":"This is so fun! Well done team","who":"Tommy Lees","role":"","at":"relay","id":"m115","when":"Sun 14:00"},{"t":"What a shift from Tancred!","who":"Matt C","role":"","at":"relay","id":"m116","when":"Sun 14:13"},{"t":"I might regret having my Sunday roast","who":"Lara Crane","role":"","at":"relay","id":"m117","when":"Sun 14:38"},{"t":"Well done everyone, great team effort!","who":"Charlie Nye","role":"","at":"relay","id":"m118","when":"Sun 16:03"},{"t":"Tom, you are amazing! So much distance covered, so much money raised and smiling all the way! We loved doing a few steps with you last night, love Mike & Marlene","who":"Mike Sharrock","role":"","at":"relay","id":"m119","when":"Sun 13:57"},{"t":"What an incredible achievement Tom you are amazing!! 🌟 So happy that others are continuing on for you, sad I can’t be there to help but cheering you all on from afar 🫶","who":"Steph Gover","role":"","at":"relay","id":"m120","when":"Sun 15:00"},{"t":"Can’t help here in Oxford but it’s been amazing seeing this all get organised. Go team!","who":"Sam Garforth","role":"","at":"relay","id":"m121","when":"Sun 19:16"},{"t":"Guys the way we’re all coming together is so cool","who":"Jamie Gordon","role":"","at":"relay","id":"m122","when":"Sun 19:02"},{"t":"GO GO TIGER TEAM","who":"Tommy Lees","role":"","at":"relay","id":"m123","when":"Sun 19:12"},{"t":"You’re running too fast!!","who":"Benj Chesser","role":"","at":"relay","id":"m124","when":"Sun 19:29"},{"t":"Well done runners. ! Keep going!!","who":"Tom Spearman","role":"","at":"end","tom":true,"id":"m125","when":"Sun 20:20"},{"t":"Go go go!","who":"Dom","role":"","at":"end","id":"m126","when":"Sun 20:06"},{"t":"Amazing guys — so close now!","who":"Hugo Fleming","role":"","at":"end","id":"m127","when":"Sun 20:07"},{"t":"You’ve got this team 👏👏👏","who":"Lara Crane","role":"","at":"end","id":"m128","when":"Sun 22:06"},{"t":"Home stretch!!!!!","who":"Lara Crane","role":"","at":"end","id":"m129","when":"Sun 22:09"},{"t":"Dot watching","who":"Tommy Lees","role":"","at":"end","id":"m130","when":"Sun 22:21"},{"t":"Sprint finish!","who":"Hugo Fleming","role":"","at":"end","id":"m131","when":"Sun 22:22"},{"t":"Me too 🤣 why is every road closed !!!","who":"Lara Crane","role":"","at":"end","id":"m132","when":"Sun 22:30"},{"t":"He’s done it!!","who":"Tassy Barham","role":"","at":"done","big":true,"id":"m133","when":"Sun 22:42"},{"t":"Waheeeey well done!!!!!! Unreaaaal 👏","who":"Lara Crane","role":"","at":"done","id":"m134","when":"Sun 22:43","re":"m133"},{"t":"Incredible scenes!","who":"Hugo Fleming","role":"","at":"done","id":"m135","when":"Sun 22:44","re":"m134"},{"t":"Wellll in 👏👏","who":"Rufus","role":"","at":"done","id":"m136","when":"Sun 22:44"},{"t":"That’s such a cheery and positive w3w!!!","who":"Dom","role":"on the finish point","at":"done","id":"m137","when":"22:04"},{"t":"Just incredible!","who":"Theo Spearman","role":"","at":"after","id":"m138","when":"Mon 09:11"},{"t":"Well done everyone, amazing efforts all round! What an amazing weekend with such an inspirational team. Thank you","who":"Molly Spearman","role":"","at":"after","id":"m139","when":"Mon 09:16"},{"t":"I want it for the documentary I’m making about Tiger’s epic run","who":"Theo Spearman","role":"","at":"after","id":"m140","when":"Sun 21:41","re":"m141"},{"t":"Shall we share all photos here for the whole weekend so 1) they’re in one place 2) they remain hires 3) Tiger and Theo can pick and choose the best photos to document the weekend","who":"Tommy Lees","role":"","at":"after","crew":true,"id":"m141","when":"Sun 16:26"},{"t":"“Morning Run”","who":"Jamie Gordon","role":"on what Strava called it","at":"after","crew":true,"big":true,"id":"m142","when":"Sun 16:27"},{"t":"Precisely!!!","who":"Mat Clarke","role":"","at":"after","crew":true,"big":true,"id":"m143","when":"Sun 16:51","re":"m142"},{"t":"Tiger, I am still trying to process how far you ran, what an incredible achievement it was. And I feel so lucky to have joined you for so much of it.","who":"Theo Spearman","role":"in the guest book","when":"","at":"after","guest":true,"id":"g143"},{"t":"Fantastic achievement, marvellous amount raised","who":"Paul and Daphne Taylor","role":"in the guest book","when":"","at":"after","guest":true,"id":"g144"},{"t":"What a lovely crazy idea. You created some special moments for a lot of people and made them very proud of you. AMAZING.","who":"Rupert King","role":"in the guest book","when":"","at":"after","guest":true,"id":"g145"},{"t":"Team leader Tiger..what organisation, what stamina, we are very proud grandparents","who":"Tom and Jane King","role":"in the guest book","when":"","at":"after","guest":true,"id":"g146"},{"t":"Well done Tiger!! What an incredible achievement.","who":"Adam","role":"in the guest book","when":"","at":"after","guest":true,"id":"g147"},{"t":"So proud to be part of your day mate. You're a monster. You're a tiger","who":"Tommy","role":"in the guest book","when":"","at":"after","guest":true,"id":"g148"},{"t":"We are very proud of you. It was a hugely courageous endeavour and you have raised a substantial sum of money. Very well done.","who":"Belinda and Emile Bekheit","role":"in the guest book","when":"","at":"after","guest":true,"id":"g149"},{"t":"Ridiculous work on the Thames run Tom. Well done to you and everyone who carried it over the line.","who":"Stef & Will","role":"in the guest book","when":"","at":"after","guest":true,"id":"g150"},{"t":"WELL DONE TIGER, what an amazing thing to achieve and special thing to do. Lots of love and reverence!","who":"Clara King","role":"in the guest book","when":"","at":"after","guest":true,"id":"g151"},{"t":"You’re a maverick, a maniac and a complete inspiration to us all Tom!","who":"Benj","role":"in the guest book","when":"","at":"after","guest":true,"id":"g152"},{"t":"Tom that was pretty good","who":"Jamie G","role":"in the guest book","when":"","at":"after","guest":true,"id":"g153"}];
+var GUESTS = [{"name":"Theo Spearman","how":"I was with him at all the stations on the Saturday and cycled with him on Sunday, as well as making a documentary that I’m gonna bring out soon!","where":"I was with him from the start until Abingdon and then from Windsor until he finished and then till Richmond with the relay runners.","msg":"Tiger, I am still trying to process how far you ran, what an incredible achievement it was. And I feel so lucky to have joined you for so much of it."},{"name":"Rosie Lees","how":"Came from Tetbury - met in Cricklade.","where":"I ran the second leg from Cricklade to Lechlade, then crewed to Lechlade. Tommy (husband) and I then helped crew to Oxford. I did some social media posting for Tom along the way","msg":"Tom, absolutely in awe of you, what an incredible feat! We had the best time supporting you all weekend, and it was so lovely to meet your amazing family and friends along the way.\nRaising SO much for Doddie’s is just a huge achievement.. We know how close it is to your heart.. and what a fitting end, having your friends come through for you!"},{"name":"Oliver Bekheit","how":"Supported as a runner","where":"Windsor to Halfords","msg":"Huge congratulations, what you have done is beyond incredible. It is a privilege to be a part of your mission and I am truly inspired by your willpower, your courage to take on such an huge challenge and the cause behind it all."},{"name":"Toby Chesser","how":"Speculative support rider; Staines interviewer; shirt relay runner; social media strategy team","where":"Staines; shirt relay checkpoints","msg":"I've never seen a man push so hard. Huge respect for what you have done, both on the running and in how you created a huge platform for MND with no ego at all. It was amazingly impressive and inspiring."},{"name":"Mat Clarke","how":"I drove the support car from Newbridge to Wallingford","where":"From Newbridge, Eynsham, Oxford, Abingdon and Wallingford","msg":"You inspiration you! Best thing I’ve been involved in for years. What an incredible day, absolutely unforgettable. What friends you have, what spirit you have, determination and drive. Thank you!"},{"name":"Sophia Clarke","how":"Relay finish cycle supporter!","where":"Cycled from Tower Bridge to finish","msg":"In total awe that you managed 130 miles (!!), and even more so that you’ve raised so much for the most worthy cause. I feel very lucky to have played a small part in the relay finish and to have celebrated with you afterwards. A Sunday night beer at Woolwich Foot Tunnel was definitely a first (and probably last..)! You should be unbelievably proud of what you’ve achieved. Sheer physical and mental determination like no other!!"},{"name":"Paul and Daphne Taylor","how":"From from afar in Ireland","where":"Watched on the app","msg":"Fantastic achievement, marvellous amount raised"},{"name":"Rupert King","how":"Usual uncle stuff. Plus Emotional support in Staines. Part of the closing team","where":"Closing miles","msg":"What a lovely crazy idea. You created some special moments for a lot of people and made them very proud of you. AMAZING."},{"name":"Tom and Jane King","how":"Proud grandparents","where":"Cheered him on from spots before Oxford","msg":"Team leader Tiger..what organisation, what stamina, we are very proud grandparents"},{"name":"Adam","how":"","where":"","msg":"Well done Tiger!! What an incredible achievement."},{"name":"Mike & Marlene Sharrock","how":"From afar and near!","where":"We joined Tom, Tancred and Jamie in Pangbourne","msg":"What an awesome achievement, Tom! So much money raised and so many miles run - and so moving to see what you did for your mum and how your friends rallied around to get you (and your shirt) to the finish line! With love from Mike & Marlene"},{"name":"Elisa Spearman","how":"Both","where":"Lechlade, kelmcott, Runnymeade","msg":"A really happy exciting tumultuous weekend. Special friends being totally amazing willing you on and embracing it all a wonderful atmosphere, I am a proud mum such an emotional achievement"},{"name":"Olivia Chesser","how":"A quick FaceTime !","where":"Near the end of his running","msg":"Who knew it was possible to run that far! I could do about 10% of it. And you’ve raised such a meaningful amount for a brilliant cause, well done Tom!!!!"},{"name":"Toobs Graves","how":"Joined the relay team for section of the run in London.","where":"I ran the relay from Hampton Court Bridge to Hammersmith Bridge.","msg":"Tiger! Huge congratulations on your Herculean effort! Such an extraordinary achievement. Your mental toughness is incredible, and you raised so much money for such a great cause - you must be so proud!\nHonoured to join for a small part of it, thanks for having me. Rest up and I look forward to hearing what adventure’s next!\nMuch love, from Toobs"},{"name":"Lucy Scruton","how":"Part of the relay","where":"Hammersmith bridge-end","msg":"Well done Tom, what a fantastic achievement for such a worthy cause. If my foot hurts after my measly contribution, I can only imagine how you’re feeling!\nHopefully you venture east again soon for another beer, or no doubt I’ll be back west before long.\nLucy xxx"},{"name":"Alice King","how":"I made flapjacks and brought him by car and wheelchair to different stops along the way after he couldn’t run any more and his friends finished the run for him. The hardest part was waking him up after a bath and sleep to get him to the finish line","where":"Staines with his mum and then all afternoon and evening Walton Bridge, Hampton Court Bridge, Richmond, Surrey Quays, Greenwich, Woolwich Foot Tunnel","msg":"It was the most amazing day I loved spending time with you and seeing your brilliant organisation and dedication in action. It was a wonderful to see what a great bunch of friends you have, and to see you with Elisa on the Thames Path."},{"name":"Tommy","how":"Near","where":"CP1-5 Rosie Lees did leg 2 && then Henley to staines","msg":"So proud to be part of your day mate. You're a monster. You're a tiger"},{"name":"Molly Spearman","how":"Both","where":"Start, crew through CP7-12","msg":"Tiger takes on the Thames / 184 miles\nIrrational dream probably? But with\nGrit and sheer determination\nElations and deflations\nResults were commendable\n\nJust wow what a cool weekend to be part of. It was tough, ambitious and courageous. What a great team of people you had supporting you. An inspirational weekend. You achieved a lot.\n\nYou are superhuman.\n\nWell done :)"},{"name":"Belinda and Emile Bekheit","how":"From afar","where":"We tracked you all Saturday, drove our son Olly to join you from Windsor on Sunday morning and then track the progress of the relay team until it reached Battersea and then we went to the end of Albert Bridge and cheered Lucy on as she ran into Battersea Park.","msg":"We are very proud of you. It was a hugely courageous endeavour and you have raised a substantial sum of money. Very well done."},{"name":"Lara Crane","how":"When Tom couldn’t go on, Tancred and I suggested that his supporters finished the race for him. And team Tiger turned out in force! It was a complete honour to run from Richmond to Bermondsey, and wear his shirt from Richmond to Hammersmith","where":"Saw Tom in Richmond before I set off - then ran from there to Bermondsey","msg":"Thank you, Tom, for not only leading by example in this incredible challenge, but for inspiring a whole community of supporters to get running too. I am so bloody proud to be your friend and so honoured to have played a small part in carrying your shirt towards the finish line. You are AMAZING. Big love, Lara xxx"},{"name":"Stef & Will","how":"Singing your praises from Brazzaville and Manila.","where":"","msg":"Ridiculous work on the Thames run Tom. Well done to you and everyone who carried it over the line."},{"name":"Hermione","how":"Ran from Newbridge to Oxford","where":"Newbridge to Oxford","msg":"It’s so incredible what you’ve achieved and the money you’ve raised for such an important cause. It was a pleasure running with you. You’re such a glass-half-full person, and your positivity and resilience were truly inspiring. It was incredible to see everyone come together throughout and at the end."},{"name":"Caroline Leclerc","how":"From The Netherlands!","where":"","msg":"Very impressive run, well done Tom! It’s inspiring to see how you pushed yourself out of your comfort zone to contribute to fighting back against something so much bigger than us. We followed the whole 41.5 hours closely. Seeing how you brought people together, with the team taking over for the final stretch, was a beautiful moment of friendship and teamswork."},{"name":"Steph Gover","how":"Afar","where":"","msg":"Congratulations Tom on this amazing achievement!! I hope you are very proud of how far you ran (which is insanely far) and all the money you’ve raised, truly incredible work! Steph x"},{"name":"Tancred Taylor","how":"Ran with him!","where":"Ran from Goring to Reading; cycled Hammersmith to Westminster; ran Westminster to the finish line","msg":"Tom: an inspirational run. Not in the sense of inspiring anybody to want to do the same, because we couldn’t (and frankly, who’d want to?); but in the sense that it showed a selfless, determined, and entirely idiosyncratic character. And most of all, you did it with absolute good grace and cheer, in the good times and bad.\n\nYou did it for your mother and MND. It makes the run a horrible journey in many ways, but the support of so many friends and family, along the route and from afar, for you and your mother will leave a deep impression, and is a testament to the community you’ve built.\n\nLove and admiration to your mother and to you.\n\nTancred"},{"name":"Clara King","how":"Following along online from Edinburgh!","where":"","msg":"WELL DONE TIGER, what an amazing thing to achieve and special thing to do. Lots of love and reverence!"},{"name":"Tom Bellamy and Alfy Weston","how":"From very afar, would have loved to have been on the path with Tiger.","where":"","msg":"Before the Thames Path Tiger showed the promise of Lancelot Constant “Diplomat and linguist. In charge of the porters. Chosen especially for his social tact and good-fellowship. Was expected to go high. Just back from the Atlas Mountains”. (The Ascent of Rumdoodle, Chapter 1, The Team). He is now the equal of Tom Burley “Major in the RASC. In charge of the commissariat. Well-known for his prodigious feats of endurance on many mountains, and chosen as our strong man. Had been high”. Or perhaps even a Christopher Wish “had been higher than most”. Tiger has been higher and further than most, barely returned from the East. A remarkable achievement. Very well done."},{"name":"Benj","how":"Staines - Richmond!","where":"Arrived at Staines just after he’d called it a day. Joined the relay on foot to Richmond. Then Westminster -> Woolwich by bike for the grand finale!","msg":"You’re a maverick, a maniac and a complete inspiration to us all Tom!"},{"name":"Jamie G","how":"I did my best to break his morale but it seems to have had the opposite effect","where":"I saw him peeing on the side of a towpath and thought - this is a man who needs support","msg":"Tom that was pretty good"}];
+var LEGS = [{"from":"Thames Head","to":"Cricklade","miles":"Sat 05:06 → 07:39","who":"Tommy","note":"Theo at the start, Tommy crewing Cricklade","tbc":true},{"from":"Cricklade","to":"Lechlade","miles":"07:39 → 09:35","who":"Rosie","note":"Rosie crewing Lechlade"},{"from":"Lechlade","to":"Newbridge","miles":"09:35 → 12:28","who":"Tommy","note":"Mat crewing from here to Wallingford","tbc":true},{"from":"Newbridge","to":"Oxford","miles":"12:28 → 15:03","who":"Hermione, with Al and Sam","note":"into Port Meadow"},{"from":"Oxford","to":"Abingdon","miles":"15:03 → 16:55","who":"Dom"},{"from":"Abingdon","to":"Wallingford","miles":"16:55 → 20:00","who":"Tom B","note":"Molly crewing from here through the night"},{"from":"Wallingford","to":"Goring","miles":"20:00 → 21:21","who":"Tom B","note":"one head torch between them"},{"from":"Goring","to":"Reading","miles":"21:21 → 01:06","who":"Jamie and Tancred","note":"Mike and Marlene joined at Pangbourne"},{"from":"Reading","to":"Henley","miles":"01:06 → 03:20","who":"Andy"},{"from":"Henley","to":"Marlow","miles":"03:20 → 05:49","who":"Andy"},{"from":"Marlow","to":"Windsor","miles":"05:49 → 08:57","who":"Tommy","note":"Ben crewing Windsor","tbc":true},{"from":"Windsor","to":"Staines","miles":"08:57 → 12:29","who":"Jamie and Oliver","note":"Theo and Toby on bicycles. Tom stopped at Staines, 12:29, mile 130"},{"from":"Staines","to":"Walton Bridge","miles":"the shirt, from 13:30","who":"Benj and Toby","relay":true},{"from":"Walton Bridge","to":"Hampton Court","miles":"the shirt","who":"Hugo","relay":true},{"from":"Hampton Court","to":"Richmond","miles":"the shirt","who":"Toobs","note":"Toby crewing Hampton Court","relay":true},{"from":"Richmond","to":"Hammersmith","miles":"the shirt","who":"Lara, with Toobs and Jack","note":"Rupert crewing from Richmond to Greenwich","relay":true},{"from":"Hammersmith","to":"Westminster","miles":"the shirt","who":"Tancred; Rob from Westminster","relay":true},{"from":"Westminster","to":"Greenwich","miles":"the shirt","who":"Tancred and Lucy","note":"Sophia and Benj cycling from Tower Bridge","relay":true},{"from":"Greenwich","to":"Thames Barrier","miles":"the shirt, 22:42","who":"Tancred, Lucy and Rupert","note":"Tom carried over the line by Tancred, Toby and Lucy","relay":true}];
+var PAGES = [{"kind":"cover","pic":"field"},{"kind":"spread","at":"plan","chapter":"The reason","title":"Why","meta":["300km","non-stop","£50,000"],"blurb":"Tom’s mum was diagnosed with motor neurone disease last year. He decided to run the whole Thames Path, 184 miles, without stopping, and try to raise £50,000 for the My Name’5 Doddie Foundation.","pic":"flyer","cap":"The flyer","pin":["m1","m3"]},{"kind":"list","at":"plan","chapter":"Four weeks out","title":"The plan","blurb":"One in the morning, 15 September. Tom makes the crew group, introduces everyone, and sets out who hands over to whom. Family, Oxford friends, the OMM squad, and others.","rows":[["Grandmother → CP2","the food box and the equipment box"],["CP2 – CP3","Rosie"],["CP4 Newbridge – CP5","Mat"],["CP6 Wallingford","Molly takes over"],["CP7 – CP11, overnight","Molly — “a hero session”"],["CP12 Windsor","Toby, on a bicycle"],["CP13 – CP14 Richmond","Toby cycles the backpack on"],["CP15 and the finish","Rupert, on his bike"]],"pic":"kit","cap":"One leg’s worth of food","pin":["m2","m7","m9"]},{"kind":"spread","at":"eve","chapter":"Friday","title":"The night before","meta":["9 October"],"blurb":"Car charged. Tyres pumped. Rice balls made. Butterflies.","pic":"lucky","cap":"“Going hard on the beers already” — Jamie, Friday 13:42","pin":["m13","m15"]},{"kind":"spread","at":"sat","mile":0,"milelabel":"Mile 0 · Thames Head","chapter":"Saturday","title":"05:06, Thames Head","meta":["Mile 0","05:06","+6 min"],"blurb":"A field, a trickle of water, the early morning sun, and a start.","pic":"dawn","cap":"First light","pin":["m23","m24"]},{"kind":"spread","at":"sat","mile":39.5,"milelabel":"Mile 39.5 · Newbridge","chapter":"Saturday morning","title":"Newbridge, 40 miles","meta":["Mile 39","Newbridge","12:28","+19 min"],"blurb":"Everyone is watching the tracker. Tom is making steady progress.","pic":"sign","cap":"40 miles done, 153 to go","pin":["m26","m28"]},{"kind":"spread","at":"sat","mile":45,"chapter":"Saturday afternoon","title":"Oxford, 53 miles","meta":["Oxford","15:03","+22 min"],"blurb":"Ten hours in and feeling good. Al, Hermione and Sam alongside into Port Meadow.","pic":"portmeadow","cap":"Port Meadow"},{"kind":"spread","at":"cp","mile":53.5,"milelabel":"Mile 53.5 · Oxford","chapter":"Saturday","title":"The crew","meta":["Fifteen checkpoints","one grey Ford Puma"],"blurb":"Everyone looking on cheerfully as Tom fuels as hard as he can at each checkpoint.","pic":"crew","cap":"A checkpoint","pin":["m31","m35","m37"]},{"kind":"spread","at":"cp","mile":62.5,"milelabel":"Mile 62.5 · Abingdon","chapter":"Saturday","title":"Theo filmed everything","meta":["Abingdon","16:55","+23 min"],"blurb":"Theo followed along on foot, by bike and occasionally by car to capture every moment.","pic":"filming","cap":"Theo, Saturday","pin":["m38","m40"]},{"kind":"spread","at":"night","night":true,"mile":86,"milelabel":"Mile 86 · Goring","chapter":"Saturday night","title":"Goring, 83 miles","meta":["Mile 82.8","Goring","21:21","+57 min"],"blurb":"Dark by Wallingford, 51 minutes down. One head torch between them. Jamie and Tancred took him on from Goring.","pic":"dusk","cap":"Leaving the village at dusk","pin":["m45","m46","m41"]},{"kind":"spread","at":"dark","night":true,"wave":true,"mile":94,"milelabel":"Mile 94 · Reading","chapter":"Through the night","title":"Reading, 01:06","meta":["Mile 94.9","01:06","+2h 22m"],"blurb":"Molly crewed every checkpoint from Wallingford to Marlow. Andy ran Reading to Marlow. Shiori posted from Japan. Tancred stretched him out when needed.","pic":"stretch","cap":"Tancred stretching him out on the towpath","pin":["m55","m56","m54"]},{"kind":"spread","at":"dark","night":true,"mile":115,"milelabel":"Mile 115 · Marlow","chapter":"Sunday, before dawn","title":"Marlow, 05:49","meta":["Mile 113.9","Marlow","05:49","+3h 17m"],"blurb":"Twenty-four hours of running. Pulled out of a hedge to stop him sleeping.","pic":"torches","cap":"Somewhere after Reading","pin":["m51","m58"]},{"kind":"spread","at":"wall","wave":true,"mile":128,"milelabel":"Mile 128 · Staines","chapter":"Sunday, 11:41","title":"The wall","meta":["Windsor","08:57","+3h 32m"],"blurb":"Jamie asked the group for help. Ninety seconds later the phones started.","pic":"poles","cap":"On poles, Sunday morning","lead":{"t":"Tom has been doing amazingly but is currently trying to scale a wall. Can everyone message 💪💪💪 so he can see how much support there is for him out there?","who":"Jamie Gordon","when":"Sun 11:41","role":""},"pin":["m72","m75","m74","m65"]},{"kind":"spread","at":"wall","wave":true,"mile":129,"chapter":"Sunday, 11:51","title":"Moving again","meta":["Mile 129"],"blurb":"Every message read out to him on the towpath. Flapjacks on the way. Benj hitch-hiking to Staines.","pic":"windsor","cap":"Windsor bridge","lead":{"t":"Guys these are brilliant messages — he’s doing his best not to smile whilst hearing them but he can’t help himself. You’ve got him up and moving again!!","who":"Jamie Gordon","when":"Sun 11:51","role":"and 11:53"},"pin":["m83","m68","m70"]},{"kind":"spread","at":"stop","mile":130,"milelabel":"Mile 130 · Staines","chapter":"Sunday, 12:29","title":"Staines, 130 miles","meta":["31 hours 23 minutes","non-stop"],"blurb":"","pic":"phone","cap":"Staines","lead":{"t":"Has been absolutely best experience ever. It would have been nice to reach the finish line today but unfortunately I am well and truly unable to move any further. I ran 130 miles, reached London, raised an absolute heap of money. Thank you so so much to everyone and sorry to all that were waiting to join in London","who":"Tom Spearman","when":"Sun 12:29","role":"","tom":true},"pin":["m90","m91"]},{"kind":"spread","at":"idea","mile":130,"shirt":true,"milelabel":"Still at Staines","chapter":"Sunday, 13:04","title":"A mad thought","meta":["35 minutes later"],"blurb":"Lara had an idea. Twenty minutes later, the shirt was off.","pic":"duvet","cap":"Staines","pin":["m102","m106","m109"]},{"kind":"list","at":"relay","mile":157,"shirt":true,"milelabel":"Mile 157 · Richmond","chapter":"Sunday afternoon","title":"The shirt goes on","blurb":"Hugo’s roster, 14:04. The shirt had 45 miles to go, leg by leg.","rows":[["Staines to Walton Bridge","Benj and Toby"],["From Walton Bridge","Hugo"],["From Hampton Court","Toobs"],["Richmond","Lara"],["Hammersmith","Tancred"],["Chelsea","Tancred"],["Westminster","Rob and Tancred"],["Southwark Bridge","Lucy and Tancred"],["Greenwich to the Barrier","Lucy, Tancred and Rupert"]],"pic":"beacon22","cap":"The beacon, moving again","pin":["m112","m113","m117"]},{"kind":"gallery","at":"relay","mile":165,"shirt":true,"milelabel":"The shirt, Staines to Westminster","chapter":"Sunday","title":"Who carried it","blurb":"","tiles":[{"pic":"g_strong","who":"Benj Chesser","when":"Sun 14:22","msg":"Shirt still going strong !"},{"pic":"g_hugo","who":"Benj Chesser","when":"Sun 14:46","msg":"New runner carrying the shirt!!","note":"Hugo, from Walton Bridge"},{"pic":"g_toby","who":"Toby","when":"Sun 13:57","msg":"Fine afternoon for it"},{"pic":"g_toobs","who":"Benj Chesser","when":"Sun 16:07","msg":"","note":"From Hampton Court"},{"pic":"g_oliver","who":"Benj Chesser","when":"Sun 16:43","msg":"","note":"Oliver"},{"pic":"g_lara","who":"Lara Crane","when":"Sun 18:02","msg":"","note":"Richmond, in the shirt. Toobs, Lara and Jack ran this stretch"},{"pic":"g_laralucy","who":"Tancred Taylor","when":"Sun 18:39","msg":"","note":"Lara and Lucy"},{"pic":"westminster","who":"Tassy Barham","when":"Sun 19:40","msg":"","note":"Westminster Bridge"},{"pic":"g_cyclists","who":"Benj Chesser","when":"Sun 22:00","msg":"","note":"Tancred, with the bikes, Canary Wharf behind"}],"pin":["m116","m124","m115","m117"]},{"kind":"spread","at":"relay","night":true,"mile":178,"shirt":true,"milelabel":"Mile 178 · Greenwich","chapter":"Sunday, 21:30","title":"Greenwich","meta":["Mile 180","Lucy and Tancred running"],"blurb":"The relay had become a crowd, on foot and on bikes.","pic":"cuttysark","cap":"The Cutty Sark","lead":{"t":"Large group of cyclists with Lucy and Tancred doing the running 💪 about to arrive in Greenwich","who":"Tom Spearman","when":"Sun 21:30","role":"watching from home","tom":true},"pin":["m122","m124"]},{"kind":"spread","at":"done","night":true,"wave":true,"mile":184,"shirt":true,"milelabel":"Mile 184 · Thames Barrier","chapter":"Sunday, 22:42","title":"The Barrier","meta":["Mile 184","10 hours after he stopped"],"blurb":"Tom carried at the last. Tancred, Toby and Lucy took him over the line.","pic":"carried","cap":"22:42","pin":["m133","m132","m130"]},{"kind":"legs","chapter":"The whole way","title":"Who ran what","blurb":"Checkpoint to checkpoint.","note":"Times from the website. TBC means the plan said so and nobody has confirmed it. If you ran and you’re not here, tell Jamie."},{"kind":"spread","at":"after","chapter":"In typical Tom form","title":"Morning Run","meta":["227.92 km","27:26:01 moving","7:13 /km"],"blurb":"","pic":"strava","cap":"The activity","pin":["m142"]},{"kind":"spread","at":"after","night":true,"chapter":"Monday, 00:55","title":"Afterwards","meta":["Forty-five miles short"],"blurb":"Done.","pic":"asleep","cap":"Asleep in the car","pin":["m141","m139"]},{"kind":"finale","at":"after","pic":"mum","cap":"Tom and his mum"},{"kind":"guestbook","from":0},{"kind":"guestbook","from":5},{"kind":"guestbook","from":10},{"kind":"guestbook","from":15},{"kind":"guestbook","from":20},{"kind":"guestbook","from":25},{"kind":"bench"},{"kind":"spread","at":"after","night":true,"wave":true,"chapter":"Monday","title":"Still laughing","blurb":"He ran 130 miles. His friends came together to run the rest, and carried the shirt over the line. 485 people contributed, and the messages came in from all over the world.","pic":"tomnight","cap":"After","pin":["m138","m139"]},{"kind":"index"}];
+var TOTAL_MILES = 184, STOP_MILE = 130;
+
+/* ── Plumbing ───────────────────────────────────────────────────────────── */
+var stage = document.getElementById("stage");
+var rail = document.getElementById("rail");
+var pageno = document.getElementById("pageno");
+var prevBtn = document.getElementById("prev");
+var nextBtn = document.getElementById("next");
+var page = Math.max(0, Math.min(PAGES.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+var seed = Math.floor(Math.random() * 100000);
+var byId = {}; MESSAGES.forEach(function (m) { byId[m.id] = m; });
+var replies = {}; MESSAGES.forEach(function (m) { if (m.re) (replies[m.re] = replies[m.re] || []).push(m); });
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+}
+function rnd(n) { seed = (seed * 1664525 + 1013904223) % 4294967296; return (seed / 4294967296) * n; }
+
+/* Pinned cards first, in the order given; then random fill from the pool for
+   that moment. Replies never come up on their own: they ride with their parent. */
+function pick(p, n) {
+  var out = [], used = {};
+  (p.pin || []).forEach(function (id) { if (byId[id]) { out.push(byId[id]); used[id] = 1; } });
+  var pool = MESSAGES.filter(function (m) { return m.at === p.at && !m.re && !used[m.id]; });
+  var guard = 0;
+  while (out.length < n && pool.length && guard++ < 500) {
+    var i = Math.floor(rnd(pool.length));
+    out.push(pool[i]); pool.splice(i, 1);
+  }
+  return out;
+}
+
+function cardHTML(m, i, fromLeft, extraCls) {
+  var rot = (((i * 37) % 7) - 3) * 0.7;
+  var dx = (fromLeft ? -1 : 1) * (58 + (i % 3) * 24);
+  var dy = ((i % 2) ? 18 : -14);
+  var cls = "msg" + (m.t.length < 44 || m.big ? " short" : "") + (m.tom ? " tom" : (m.crew ? " crew" : "")) + (extraCls || "");
+  var when = m.when ? '<span class="t">' + esc(m.when) + '</span>' : '';
+  return '<figure class="' + cls + '" style="--r:' + rot.toFixed(2) + 'deg;--dx:' + dx + 'px;--dy:' + dy + 'px;--d:' + (i * 90) + 'ms">' +
+    '<q>' + esc(m.t) + '</q>' +
+    '<figcaption class="by"><b>' + esc(m.who) + '</b> ' + when + ' <span>' + esc(m.role) + '</span></figcaption></figure>';
+}
+/* A card plus anything that answered it, as one unit. */
+function msgHTML(m, i, fromLeft) {
+  var chain = [m], cur = m, guard = 0;
+  while (replies[cur.id] && guard++ < 6) { cur = replies[cur.id][0]; chain.push(cur); }
+  if (chain.length === 1) return cardHTML(m, i, fromLeft);
+  return '<div class="thread">' + chain.map(function (c, k) { return cardHTML(c, i + k * 1.8, fromLeft); }).join("") + '</div>';
+}
+
+function imgTag(pic, alt) {
+  // No loading="lazy", ever: pages are swapped by script, so a lazy image below
+  // the fold is never requested and the page renders with a hole.
+  return '<img src="' + pic.src + '" width="' + pic.w + '" height="' + pic.h + '" alt="' + esc(alt) + '" decoding="async">';
+}
+function plateHTML(p) {
+  if (!p.pic || !PICS[p.pic]) return '';
+  return '<figure class="plate">' + imgTag(PICS[p.pic], p.cap || "") + (p.cap ? '<figcaption>' + esc(p.cap) + '</figcaption>' : '') + '</figure>';
+}
+function riverHTML(p) {
+  if (p.mile == null) return '';
+  var pct = Math.min(100, p.mile / TOTAL_MILES * 100);
+  var ticks = [12, 23, 39.5, 53.5, 62.5, 76, 86, 94, 106, 115, 130, 143, 157, 170].map(function (mi) {
+    return '<span class="tick" style="left:' + (mi / TOTAL_MILES * 100) + '%"></span>';
+  }).join("");
+  var lblCls = pct < 12 ? ' l' : (pct > 88 ? ' r' : '');
+  var stopped = p.shirt ? '<span class="stopped" style="left:' + (STOP_MILE / TOTAL_MILES * 100) + '%" title="Tom stopped here"></span>' : '';
+  return '<div class="river" aria-label="Mile ' + p.mile + ' of 184"><div class="track"></div>' + ticks + stopped +
+    '<span class="dot' + (p.shirt ? ' shirt' : '') + '" style="left:' + pct + '%"></span>' +
+    '<span class="lbl' + lblCls + '" style="left:' + pct + '%">' + esc(p.milelabel || ('Mile ' + p.mile)) + '</span>' +
+    (pct > 20 ? '<span class="end" style="left:0">Source</span>' : '') + (pct < 80 ? '<span class="end" style="right:0">Barrier</span>' : '') + '</div>';
+}
+function headHTML(p) {
+  return riverHTML(p) + '<p class="chapter">' + esc(p.chapter) + '</p><h2>' + esc(p.title) + '</h2>' +
+    (p.meta ? '<p class="meta">' + p.meta.map(function (x) { return '<span' + (/\+/.test(x) ? ' class="behind"' : '') + '>' + esc(x) + '</span>'; }).join("") + '</p>' : '') +
+    (p.blurb ? '<p class="blurb">' + esc(p.blurb) + '</p>' : '');
+}
+function sidesHTML(all, hasPic, extra) {
+  var left = all.slice(0, Math.ceil(all.length / 2)), right = all.slice(Math.ceil(all.length / 2));
+  return '<div class="stage' + (hasPic ? '' : ' nopic') + '"><div class="side">' +
+    left.map(function (m, i) { return msgHTML(m, i + 1, true); }).join("") + '</div>' + (extra || '') + '<div class="side">' +
+    right.map(function (m, i) { return msgHTML(m, i + 1 + left.length, false); }).join("") + '</div></div>';
+}
+
+function pageHTML(p) {
+  if (p.kind === "cover") {
+    return '<section class="cover"><h1>Tiger Took On<br>The Thames</h1>' +
+      '<p class="dates">10 – 11 October 2026 · Thames Head to the Thames Barrier</p>' +
+      '<p class="lede">Tom set out to run the length of England’s longest river without stopping. For his mum, for MND, and for the My Name’5 Doddie Foundation.</p>' +
+      '<figure class="plate">' + imgTag(PICS[p.pic], "Tom, Saturday afternoon") + '</figure>' +
+      '<div class="numbers"><div><b>130 miles</b><span>Tom ran, in 31 hours</span></div>' +
+      '<div><b>45 miles</b><span>everyone else carried the shirt</span></div>' +
+      '<div><b>£81,239</b><span>from 485 people</span></div></div></section>';
+  }
+  if (p.kind === "list") {
+    return '<section class="spread">' + headHTML(p) + sidesHTML(pick(p, 4), !!p.pic, plateHTML(p)) +
+      '<div class="relay">' + p.rows.map(function (r) { return '<div class="leg"><span class="where">' + esc(r[0]) + '</span><span class="who">' + esc(r[1]) + '</span></div>'; }).join("") + '</div></section>';
+  }
+  if (p.kind === "legs") {
+    return '<section class="spread">' + headHTML(p) + '<div class="legs">' + LEGS.map(function (l) {
+      return '<div class="leg' + (l.relay ? ' relay-leg' : '') + '"><span class="where">' + esc(l.from) + ' → ' + esc(l.to) +
+        (l.tbc ? '<span class="tbc" title="From the plan, not yet confirmed">TBC</span>' : '') + '</span>' +
+        '<span class="mi">' + esc(l.miles) + '</span><span class="who">' + esc(l.who) + (l.note ? ' <i>' + esc(l.note) + '</i>' : '') + '</span></div>';
+    }).join("") + '</div><p class="legnote">' + esc(p.note) + '</p></section>';
+  }
+  if (p.kind === "gallery") {
+    return '<section class="spread">' + headHTML(p) +
+      '<div class="tiles">' + p.tiles.map(function (g, i) {
+        var pic = PICS[g.pic]; if (!pic) return '';
+        var rot = (((i * 37) % 7) - 3) * 0.5;
+        return '<figure class="tile" style="--r:' + rot.toFixed(2) + 'deg;--d:' + (i * 80) + 'ms">' + imgTag(pic, g.msg || g.note || '') +
+          '<figcaption>' + (g.msg ? '<q>' + esc(g.msg) + '</q>' : '') + '<b>' + esc(g.who) + '</b><span class="t">' + esc(g.when) + '</span>' +
+          (g.note ? '<span class="n">' + esc(g.note) + '</span>' : '') + '</figcaption></figure>';
+      }).join('') + '</div>' + sidesHTML(pick(p, 4), false) + '</section>';
+  }
+  if (p.kind === "finale") {
+    return '<section class="finale"><p class="chapter">What it came to</p><p class="total">£81,239</p>' +
+      '<p class="of">from 485 people, including Gift Aid, against a target of £50,000</p>' +
+      '<p class="body">All of it to the My Name’5 Doddie Foundation, for MND research.</p>' +
+      sidesHTML(pick(p, 4), !!p.pic, plateHTML(p)) + '<button class="again" id="again" type="button">Read it again from the start</button></section>';
+  }
+  if (p.kind === "guestbook") {
+    var first = p.from === 0, per = 5;
+    var slice = GUESTS.slice(p.from, p.from + per);
+    var pageOf = Math.floor(p.from / per) + 1, pagesOf = Math.ceil(GUESTS.length / per);
+    return '<section class="spread"><p class="chapter">' + (first ? 'Afterwards' : 'The guest book · ' + pageOf + ' of ' + pagesOf) + '</p>' +
+      (first ? '<h2>The guest book</h2>'
+             : '<h2 class="quiet">Continued</h2>') +
+      '<div class="guests">' + slice.map(function (g, i) {
+        var rot = (((i * 37) % 7) - 3) * 0.6, dx = (i % 2 ? 1 : -1) * (48 + (i % 3) * 20);
+        return '<article class="msg guest" style="--r:' + rot.toFixed(2) + 'deg;--dx:' + dx + 'px;--dy:' + (i % 2 ? 16 : -12) + 'px;--d:' + (i * 110) + 'ms">' +
+          '<q>' + esc(g.msg) + '</q><p class="by"><b>' + esc(g.name) + '</b></p>' +
+          (g.how ? '<p class="did"><span class="k">How</span>' + esc(g.how) + '</p>' : '') +
+          (g.where ? '<p class="did"><span class="k">Where</span>' + esc(g.where) + '</p>' : '') + '</article>';
+      }).join('') + '</div></section>';
+  }
+  if (p.kind === "bench") {
+    return '<section class="finale"><p class="chapter">On a bench at Wytham, near Oxford</p>' +
+      '<figure class="plate" style="max-width:520px;margin-inline:auto">' + imgTag(PICS.bench, "A memorial bench plaque") + '</figure>' +
+      '<p class="body" style="font-family:var(--serif);font-size:21px;margin-top:22px">“People do not decide to become extraordinary. They decide to accomplish extraordinary things.”</p>' +
+      '<p class="of">Grant Bates, 1953–2011. A spot of local inspiration along the way.</p></section>';
+  }
+  if (p.kind === "index") {
+    return '<section class="spread"><p class="chapter">The index</p><h2>Every message</h2>' +
+      '<p class="blurb">Both groups, in order.</p>' +
+      '<div class="index-grid">' + MESSAGES.map(function (m, i) { return cardHTML(m, 0, i % 2 === 0); }).join("") + '</div></section>';
+  }
+  // an ordinary spread
+  var n = p.wave ? 6 : 4;
+  var lead = p.lead ? cardHTML({ t: p.lead.t, who: p.lead.who, role: p.lead.role, when: p.lead.when, tom: p.lead.tom }, 0, true, " lead") : '';
+  return '<section class="spread">' + headHTML(p) + lead + sidesHTML(pick(p, n), !!p.pic, plateHTML(p)) + '</section>';
+}
+
+var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var FLIP = 760;
+
+function render(dir) {
+  var p = PAGES[page];
+  document.documentElement.setAttribute("data-mood", p.night ? "night" : "day");
+  var old = stage.querySelector(".leaf:not(.flying)");
+  var leaf = document.createElement("div");
+  leaf.className = "leaf";
+  leaf.innerHTML = pageHTML(p);
+
+  if (old && dir && !reduced) {
+    // Forward: the old page lifts at its right edge and turns over the spine.
+    // Back: the new page comes over from the left and lands.
+    stage.querySelectorAll(".leaf.flying").forEach(function (f) { f.remove(); });
+    if (dir > 0) {
+      old.classList.add("flying", "out");
+      leaf.classList.add("under");
+      stage.appendChild(leaf);
+      setTimeout(function () { old.remove(); }, FLIP + 40);
+    } else {
+      old.remove();
+      stage.appendChild(leaf);
+      var ghost = old.cloneNode(true); ghost.classList.remove("flying", "out", "under");
+      // keep the old page visible underneath while the new one turns in
+      ghost.className = "leaf";
+      leaf.classList.add("flying", "in");
+      stage.insertBefore(ghost, leaf);
+      setTimeout(function () { ghost.remove(); leaf.classList.remove("flying", "in"); }, FLIP + 40);
+    }
+  } else {
+    stage.innerHTML = ""; stage.appendChild(leaf);
+  }
+
+  var again = document.getElementById("again");
+  if (again) again.addEventListener("click", function () { seed = Math.floor(Math.random() * 100000); go(0); });
+
+  prevBtn.disabled = page === 0;
+  nextBtn.disabled = page === PAGES.length - 1;
+  pageno.textContent = (page + 1) + " / " + PAGES.length;
+  Array.prototype.forEach.call(rail.children, function (b, i) { b.setAttribute("data-on", i <= page ? "1" : "0"); });
+
+  var nxt = PAGES[page + 1];
+  if (nxt && nxt.pic && PICS[nxt.pic]) { var warm = new Image(); warm.src = PICS[nxt.pic].src; }
+}
+
+var turning = false;
+function go(n) {
+  var target = Math.max(0, Math.min(PAGES.length - 1, n));
+  if (target === page && stage.children.length) return;
+  if (turning) return;
+  var dir = target > page ? 1 : (target < page ? -1 : 0);
+  page = target;
+  window.scrollTo({ top: 0, behavior: "instant" });
+  render(dir);
+  if (dir && !reduced) { turning = true; setTimeout(function () { turning = false; }, FLIP); }
+  try { history.replaceState(null, "", page ? "#" + (page + 1) : location.pathname + location.search); } catch (e) {}
+}
+
+PAGES.forEach(function (p, i) {
+  var b = document.createElement("button");
+  b.type = "button"; b.setAttribute("aria-label", "Page " + (i + 1));
+  b.addEventListener("click", function () { go(i); });
+  rail.appendChild(b);
+});
+prevBtn.addEventListener("click", function () { go(page - 1); });
+nextBtn.addEventListener("click", function () { go(page + 1); });
+document.addEventListener("keydown", function (e) {
+  if (e.key === "ArrowRight") go(page + 1);
+  if (e.key === "ArrowLeft") go(page - 1);
+});
+var tx = 0, ty = 0;
+document.addEventListener("touchstart", function (e) { tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, { passive: true });
+document.addEventListener("touchend", function (e) {
+  var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) go(page + (dx < 0 ? 1 : -1));
+}, { passive: true });
+
+render(0);
+</script>
+</body>
+</html>
